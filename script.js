@@ -4,6 +4,17 @@ const palette = document.querySelector('.command-palette');
 const progress = document.querySelector('.scroll-progress span');
 const quickNav = document.querySelector('.quick-nav');
 const closeDialog = document.querySelector('.dialog-close');
+const loader = document.querySelector('.loading-screen');
+const loaderPercent = document.querySelector('.loader-percent');
+
+const loaderStart = performance.now();
+const updateLoader = (now) => {
+  const elapsed = Math.min(now - loaderStart, 5000);
+  loaderPercent.textContent = `${String(Math.round((elapsed / 5000) * 100)).padStart(2, '0')}%`;
+  if (elapsed < 5000) requestAnimationFrame(updateLoader);
+};
+requestAnimationFrame(updateLoader);
+setTimeout(() => loader.remove(), 5800);
 
 const togglePalette = () => {
   if (palette.open) palette.close();
