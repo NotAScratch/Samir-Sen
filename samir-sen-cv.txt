@@ -1,0 +1,48 @@
+SAMIR SEN
+AI ROBOTICIST | BACKEND ENGINEER
+Kathmandu, Nepal
+
+PROFILE
+AI roboticist and backend engineer focused on computer vision, edge intelligence,
+spatial systems, and reliable tools for the physical world.
+
+EXPERIENCE
+Junior R&D AI Roboticist
+Baliyo Ventures
+Focus: computer vision, edge devices, spatial intelligence, and robotic systems.
+
+AI / Software Intern
+Ants Pvt. Ltd.
+Hands-on software and applied AI development.
+
+Software Intern
+Atreya Software Solutions
+Backend and software engineering experience.
+
+EDUCATION
+BSc Hons in Computing with AI, Islington College, 2025
+
+SELECTED PROJECTS
+- Real-Time Object Detection, Distance & Direction Estimation
+  SSD MobileNetV2, FastAPI, live video, spatial awareness
+- Orientation & Spatial Edge Intelligence
+  Jetson Nano, Lidar, PyTorch, depth sensing
+- Predictive Meteorological Modeling
+  scikit-learn, Random Forest, regression
+- Salary Insights & Analytics
+  Pandas, NumPy, Matplotlib
+- Interactive Robot Display
+  Hardware integration, Linux, edge devices
+- Wireless Quiz Buzzer System
+  Microcontrollers, embedded systems, wireless communication
+
+TECHNICAL STACK
+AI & Computer Vision: PyTorch, OpenCV, SSD MobileNetV2, Edge AI, Jetson Nano, Lidar
+Backend: Java, Spring Boot, Python, FastAPI, REST APIs, Microservices, Docker
+Data: scikit-learn, NumPy, Pandas, Matplotlib, Seaborn, Regression
+Operations: Linux, SSH, AWS, Azure, ClickUp workflows
+
+LINKS
+Portfolio: https://notascratch.github.io/Samir-Sen/
+GitHub: https://github.com/NotAScratch
+LinkedIn: https://www.linkedin.com/in/samirsen8/
