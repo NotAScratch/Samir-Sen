@@ -1,3 +1,10 @@
+/* Keep the header and action colors tied to the active theme. */
+.site-header{display:grid!important;grid-template-columns:1fr auto 1fr!important;gap:24px;align-items:center;padding:0 24px;border:1px solid var(--line);border-top:0;border-radius:0 0 3px 3px;box-shadow:0 8px 24px var(--shadow);backdrop-filter:blur(12px)}
+.wordmark{min-width:0}.wordmark b{color:var(--ink)}.main-nav{justify-self:center!important;align-items:center;gap:28px}.header-tools{justify-self:end!important}
+.button-primary{background:var(--ink);color:var(--acid)!important}.button-light{background:var(--acid);color:#17211f!important}
+body.dark .button-primary{background:var(--acid)!important;color:#14201d!important}body.dark .button-light{background:#e9eee5!important;color:#14201d!important}
+body.dark .wordmark span{background:var(--acid)!important;color:#14201d!important}.dark .hero-actions .text-link{color:var(--acid)}
+@media(max-width:760px){.site-header{grid-template-columns:1fr auto!important;padding:0 12px}.header-tools{gap:5px}.main-nav{display:none!important}}
 @media(max-width:760px){.header-tools{gap:5px}.quick-nav{padding:0 7px}.quick-nav span{display:none}.theme-toggle{padding:8px}.field-notes{margin-top:42px}.note-meta{font-size:7px}}
 .ticker,.ticker-track,.ticker-track span,.ticker-track b{color:#17211f!important}
 .button-primary{background:#17211f;color:#d7f85a!important}.dark .button-primary{background:#d7f85a;color:#17211f!important}.dark .hero-actions .text-link{color:#d7f85a}
