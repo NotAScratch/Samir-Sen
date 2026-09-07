@@ -8,7 +8,7 @@ const loader = document.querySelector('.loading-screen');
 const loaderPercent = document.querySelector('.loader-percent');
 
 const loaderStart = performance.now();
-const loaderDuration = 3000;
+const loaderDuration = 6000;
 const updateLoader = (now) => {
   const elapsed = Math.min(now - loaderStart, loaderDuration);
   const percentage = Math.round((elapsed / loaderDuration) * 100);
