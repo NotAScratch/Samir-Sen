@@ -116,7 +116,25 @@ const openCaseStudy = (key) => {
   caseStudy.showModal();
 };
 
+const projectImages = [
+  ['images/image1.png', 'Computer vision workbench with camera hardware and object detection output'],
+  ['images/image2.png', 'Camera and edge-computing board mounted for spatial sensing'],
+  [null, null],
+  [null, null],
+  ['images/image3.png', 'Spatial sensing prototype with lidar scan pattern and edge device'],
+  ['images/image.png', 'Embedded electronics board being tested with power and measurement equipment']
+];
+
 document.querySelectorAll('.project-card').forEach((card, index) => {
+  const [source, alt] = projectImages[index] || [];
+  if (source) {
+    const image = document.createElement('img');
+    image.className = 'project-image';
+    image.src = source;
+    image.alt = alt;
+    image.loading = 'lazy';
+    card.querySelector('.project-visual')?.prepend(image);
+  }
   if (index > 1) return;
   const button = document.createElement('button');
   button.className = 'case-study-trigger';
