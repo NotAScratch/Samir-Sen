@@ -8,29 +8,38 @@ const loader = document.querySelector('.loading-screen');
 const loaderPercent = document.querySelector('.loader-percent');
 
 const loaderStart = performance.now();
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const updateLoader = (now) => {
-  const elapsed = Math.min(now - loaderStart, 5000);
-  loaderPercent.textContent = `${String(Math.round((elapsed / 5000) * 100)).padStart(2, '0')}%`;
-  if (elapsed < 5000) requestAnimationFrame(updateLoader);
+  const elapsed = Math.min(now - loaderStart, 900);
+  loaderPercent.textContent = `${String(Math.round((elapsed / 900) * 100)).padStart(2, '0')}%`;
+  if (elapsed < 900) requestAnimationFrame(updateLoader);
 };
-requestAnimationFrame(updateLoader);
-setTimeout(() => loader.remove(), 5800);
+if (!prefersReducedMotion) requestAnimationFrame(updateLoader);
+setTimeout(() => loader?.remove(), prefersReducedMotion ? 0 : 1100);
 
+const setPaletteState = (isOpen) => {
+  quickNav.setAttribute('aria-expanded', String(isOpen));
+};
 const togglePalette = () => {
-  if (palette.open) palette.close();
-  else palette.showModal();
+  if (palette.open) {
+    palette.close();
+    setPaletteState(false);
+  } else {
+    palette.showModal();
+    setPaletteState(true);
+  }
 };
 
 quickNav.addEventListener('click', togglePalette);
-closeDialog.addEventListener('click', () => palette.close());
-palette.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => palette.close()));
+closeDialog.addEventListener('click', () => { palette.close(); setPaletteState(false); });
+palette.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { palette.close(); setPaletteState(false); }));
 
 document.addEventListener('keydown', (event) => {
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
     togglePalette();
   }
-  if (event.key === 'Escape' && palette.open) palette.close();
+  if (event.key === 'Escape' && palette.open) { palette.close(); setPaletteState(false); }
 });
 
 window.addEventListener('scroll', () => {
@@ -48,10 +57,18 @@ const navObserver = new IntersectionObserver((entries) => {
 }, { rootMargin: '-35% 0px -55% 0px' });
 sections.forEach((section) => navObserver.observe(section));
 
+const storedTheme = localStorage.getItem('samir-theme');
+const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const initialDark = storedTheme ? storedTheme === 'dark' : systemPrefersDark;
+document.body.classList.toggle('dark', initialDark);
+themeLabel.textContent = initialDark ? 'Dark' : 'Light';
+themeToggle.setAttribute('aria-pressed', String(initialDark));
+
 themeToggle.addEventListener('click', () => {
   const isDark = document.body.classList.toggle('dark');
   themeLabel.textContent = isDark ? 'Dark' : 'Light';
   themeToggle.setAttribute('aria-pressed', String(isDark));
+  localStorage.setItem('samir-theme', isDark ? 'dark' : 'light');
 });
 
 document.querySelectorAll('.details-toggle').forEach((button) => {
@@ -59,6 +76,7 @@ document.querySelectorAll('.details-toggle').forEach((button) => {
     const card = button.closest('.project-card');
     const isOpen = card.classList.toggle('is-open');
     button.setAttribute('aria-expanded', String(isOpen));
+    document.getElementById(button.getAttribute('aria-controls')).hidden = !isOpen;
     button.innerHTML = isOpen ? 'Hide problem solved <span>−</span>' : 'View problem solved <span>+</span>';
   });
 });
