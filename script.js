@@ -8,15 +8,16 @@ const loader = document.querySelector('.loading-screen');
 const loaderPercent = document.querySelector('.loader-percent');
 
 const loaderStart = performance.now();
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const loaderDuration = 3000;
 const updateLoader = (now) => {
   const elapsed = Math.min(now - loaderStart, loaderDuration);
-  loaderPercent.textContent = `${String(Math.round((elapsed / loaderDuration) * 100)).padStart(2, '0')}%`;
+  const percentage = Math.round((elapsed / loaderDuration) * 100);
+  loaderPercent.textContent = `${String(percentage).padStart(2, '0')}%`;
+  loader.querySelector('.loader-bar span').style.transform = `scaleX(${percentage / 100})`;
   if (elapsed < loaderDuration) requestAnimationFrame(updateLoader);
 };
-if (!prefersReducedMotion) requestAnimationFrame(updateLoader);
-setTimeout(() => loader?.remove(), prefersReducedMotion ? 0 : loaderDuration + 200);
+requestAnimationFrame(updateLoader);
+setTimeout(() => loader?.remove(), loaderDuration + 200);
 
 const setPaletteState = (isOpen) => {
   quickNav.setAttribute('aria-expanded', String(isOpen));
