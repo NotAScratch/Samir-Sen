@@ -9,13 +9,14 @@ const loaderPercent = document.querySelector('.loader-percent');
 
 const loaderStart = performance.now();
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const loaderDuration = 3000;
 const updateLoader = (now) => {
-  const elapsed = Math.min(now - loaderStart, 900);
-  loaderPercent.textContent = `${String(Math.round((elapsed / 900) * 100)).padStart(2, '0')}%`;
-  if (elapsed < 900) requestAnimationFrame(updateLoader);
+  const elapsed = Math.min(now - loaderStart, loaderDuration);
+  loaderPercent.textContent = `${String(Math.round((elapsed / loaderDuration) * 100)).padStart(2, '0')}%`;
+  if (elapsed < loaderDuration) requestAnimationFrame(updateLoader);
 };
 if (!prefersReducedMotion) requestAnimationFrame(updateLoader);
-setTimeout(() => loader?.remove(), prefersReducedMotion ? 0 : 1100);
+setTimeout(() => loader?.remove(), prefersReducedMotion ? 0 : loaderDuration + 200);
 
 const setPaletteState = (isOpen) => {
   quickNav.setAttribute('aria-expanded', String(isOpen));
