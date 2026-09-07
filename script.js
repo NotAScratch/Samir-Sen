@@ -63,6 +63,57 @@ document.querySelectorAll('.details-toggle').forEach((button) => {
   });
 });
 
+const caseStudy = document.querySelector('.case-study');
+const caseClose = document.querySelector('.case-close');
+const caseFields = {
+  vision: {
+    index: '01',
+    kicker: 'PERCEPTION PIPELINE',
+    title: 'Real-time object detection',
+    summary: 'A computer-vision pipeline that turns a live camera feed into spatial information a robotic system can use.',
+    problem: 'Raw video is rich in information but difficult for a downstream system to act on without a clear, structured signal.',
+    approach: 'SSD MobileNetV2 handles detection while FastAPI exposes the result as a lightweight service for distance and direction estimation.',
+    lesson: 'Perception becomes valuable when it is designed around the next decision, not just the model output.'
+  },
+  edge: {
+    index: '02',
+    kicker: 'EDGE INTELLIGENCE',
+    title: 'Orientation and spatial intelligence',
+    summary: 'A Jetson Nano experiment combining Lidar, depth sensing, and PyTorch inference for local environmental context.',
+    problem: 'Remote inference adds latency and connectivity assumptions to systems that need to respond close to the sensor.',
+    approach: 'Sensor input and model inference are brought closer to the device so spatial reasoning can happen with a smaller feedback loop.',
+    lesson: 'Hardware constraints are design inputs: memory, latency, and power shape the useful version of an AI system.'
+  }
+};
+
+const openCaseStudy = (key) => {
+  const content = caseFields[key];
+  if (!content || !caseStudy) return;
+  Object.entries(content).forEach(([field, value]) => {
+    const element = document.querySelector(`#case-${field}`) || document.querySelector(`#case-title`);
+    if (element) element.textContent = value;
+  });
+  document.querySelector('#case-index').textContent = content.index;
+  document.querySelector('#case-kicker').textContent = content.kicker;
+  caseStudy.showModal();
+};
+
+document.querySelectorAll('.project-card').forEach((card, index) => {
+  if (index > 1) return;
+  const button = document.createElement('button');
+  button.className = 'case-study-trigger';
+  button.type = 'button';
+  button.dataset.case = index === 0 ? 'vision' : 'edge';
+  button.innerHTML = 'Open case study <span>↗</span>';
+  button.addEventListener('click', () => openCaseStudy(button.dataset.case));
+  card.querySelector('.project-content').append(button);
+});
+
+caseClose?.addEventListener('click', () => caseStudy.close());
+caseStudy?.addEventListener('click', (event) => {
+  if (event.target === caseStudy) caseStudy.close();
+});
+
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
