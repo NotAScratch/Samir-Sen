@@ -150,25 +150,3 @@ document.querySelectorAll('.case-study-trigger').forEach((button) => {
 });
 caseClose?.addEventListener('click', () => caseStudy.close());
 caseStudy?.addEventListener('click', (event) => { if (event.target === caseStudy) caseStudy.close(); });
-
-/* ---- Inject real project imagery into the work blocks ---------------------*/
-const projectImages = [
-  ['images/image1.png', 'Computer vision workbench with camera hardware and object detection output'],
-  ['images/image2.png', 'Camera and edge-computing board mounted for spatial sensing'],
-  [null, null],
-  [null, null],
-  ['images/image3.png', 'Spatial sensing prototype with lidar scan pattern and edge device'],
-  ['images/image.png', 'Embedded electronics board being tested with power and measurement equipment']
-];
-
-document.querySelectorAll('.work-block').forEach((block, index) => {
-  const [source, alt] = projectImages[index] || [];
-  const media = block.querySelector('.work-media');
-  if (source && media) {
-    const image = document.createElement('img');
-    image.src = source;
-    image.alt = alt;
-    image.loading = 'lazy';
-    media.prepend(image);
-  }
-});

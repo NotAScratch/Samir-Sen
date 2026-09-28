@@ -39,6 +39,21 @@
 - Custom cursor (dot + ring, grows over interactive elements) on
   pointer:fine devices only; falls back to the native cursor on touch.
 
+## Imagery (added after removing the AI-generated stock photos)
+
+- No photography, no stock imagery, no AI-generated images anywhere on this
+  site. Every visual is either the Three.js gyroscope or a hand-authored
+  inline SVG this project owns outright.
+- Each of the 6 work blocks gets a bespoke line-art technical diagram that
+  actually represents what the project does (a detection reticle for the
+  vision project, a radar sweep for the lidar project, a regression curve
+  for the forecasting project, etc.) — not a generic decorative shape.
+- The skill icons and social icons are drawn in the same isometric
+  line-art language as the diagrams, so the "3D" feeling comes from a
+  consistent vector style used everywhere, not from scattering multiple
+  competing WebGL scenes around the page. The hero gyroscope stays the
+  only real-time 3D — everything else is styled to rhyme with it.
+
 ## Banned by default
 
 - Gradient text, gradient backgrounds, gradient buttons
