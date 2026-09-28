@@ -45,10 +45,8 @@ function initGyroscope(canvas) {
 
   rig.add(ringOuter, ringMid, ringInner);
 
-  const core = new THREE.Mesh(
-    new THREE.IcosahedronGeometry(0.32, 1),
-    new THREE.MeshBasicMaterial({ color: accent, wireframe: true, transparent: true, opacity: 0.95 })
-  );
+  const coreMaterial = new THREE.MeshBasicMaterial({ color: accent, wireframe: true, transparent: true, opacity: 0.95 });
+  const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.32, 1), coreMaterial);
   rig.add(core);
 
   const starCount = 180;
@@ -63,8 +61,20 @@ function initGyroscope(canvas) {
   }
   const starGeometry = new THREE.BufferGeometry();
   starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-  const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ color: muted, size: 0.02, transparent: true, opacity: 0.4 }));
+  const starsMaterial = new THREE.PointsMaterial({ color: muted, size: 0.02, transparent: true, opacity: 0.4 });
+  const stars = new THREE.Points(starGeometry, starsMaterial);
   scene.add(stars);
+
+  // Keep the gyroscope's colours tied to the active theme.
+  document.addEventListener('themechange', () => {
+    const nextAccent = readColor('--accent', '#FF5A1F');
+    const nextMuted = readColor('--text-faint', '#6E6858');
+    ringMaterialOuter.color.set(nextMuted);
+    ringMaterialMid.color.set(nextMuted);
+    ringMaterialInner.color.set(nextAccent);
+    coreMaterial.color.set(nextAccent);
+    starsMaterial.color.set(nextMuted);
+  });
 
   let pointerX = 0;
   let pointerY = 0;

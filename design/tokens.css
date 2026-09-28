@@ -84,6 +84,23 @@
   --gutter:    var(--space-6);
 }
 
+/* Dark is the default identity; this is the opt-in light variant,
+   toggled manually (see script.js) and remembered per visitor. */
+body.theme-light {
+  --bg:               #F7F4EE;
+  --surface:          #FFFFFF;
+  --surface-sunken:   #ECE8DC;
+  --border:           #DEDACC;
+  --border-strong:    #C2BCA8;
+  --text:             #14120D;
+  --text-muted:       #5C5647;
+  --text-faint:       #8A8471;
+  --accent:           #D84E12;
+  --accent-hover:     #B93E0A;
+  --accent-contrast:  #FFF8F0;
+  --focus:            #0B6FA3;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -1,6 +1,25 @@
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 
+/* ---- Theme toggle ---------------------------------------------------------
+   Dark is the default brand identity regardless of OS preference; the
+   toggle is an explicit opt-in to the light variant, remembered per visitor. */
+const themeToggle = document.querySelector('.theme-toggle');
+const themeLabel = document.querySelector('.theme-label');
+const storedTheme = localStorage.getItem('samir-theme');
+const initialLight = storedTheme === 'light';
+document.body.classList.toggle('theme-light', initialLight);
+themeLabel.textContent = initialLight ? 'Light' : 'Dark';
+themeToggle.setAttribute('aria-pressed', String(initialLight));
+
+themeToggle.addEventListener('click', () => {
+  const isLight = document.body.classList.toggle('theme-light');
+  themeLabel.textContent = isLight ? 'Light' : 'Dark';
+  themeToggle.setAttribute('aria-pressed', String(isLight));
+  localStorage.setItem('samir-theme', isLight ? 'light' : 'dark');
+  document.dispatchEvent(new CustomEvent('themechange'));
+});
+
 /* ---- Custom cursor ------------------------------------------------------*/
 const cursorDot = document.querySelector('.cursor-dot');
 const cursorRing = document.querySelector('.cursor-ring');
