@@ -1,0 +1,125 @@
+/* design/tokens.css
+   Signal — dark-first instrumentation aesthetic for an AI robotics engineer.
+   Scale: 1.25 major third, base 17px. Every size below is on the scale
+   or is a deliberate exception, noted inline. */
+
+:root {
+  /* ---- Type ------------------------------------------------------------ */
+  --font-sans: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  --text-xs:    0.75rem;    /* 12px  labels, meta, legal */
+  --text-sm:    0.875rem;   /* 14px  secondary body, tags */
+  --text-base:  1.0625rem;  /* 17px  body */
+  --text-lg:    1.3125rem;  /* 21px  lead paragraph */
+  --text-xl:    1.625rem;   /* 26px  h3 */
+  --text-2xl:   2.0625rem;  /* 33px  h2, mobile hero */
+  --text-3xl:   2.5625rem;  /* 41px  h1 mobile */
+  --text-4xl:   4rem;       /* 64px  section h1 */
+  --text-5xl:   5.75rem;    /* 92px  hero, desktop */
+
+  --leading-hero:  0.98;
+  --leading-tight: 1.12;
+  --leading-snug:  1.3;
+  --leading-body:  1.6;
+
+  --tracking-hero:  -0.03em;
+  --tracking-head:  -0.018em;
+  --tracking-body:   0;
+  --tracking-label:  0.12em;   /* uppercase mono labels only */
+
+  --weight-body:   400;
+  --weight-medium: 500;
+  --weight-head:   600;
+
+  /* ---- Space ------------------------------------------------------------
+     4px base, 8px rhythm. Nothing between steps. */
+  --space-1:   0.25rem;  /*   4px */
+  --space-2:   0.5rem;   /*   8px */
+  --space-3:   0.75rem;  /*  12px */
+  --space-4:   1rem;     /*  16px */
+  --space-5:   1.5rem;   /*  24px */
+  --space-6:   2rem;     /*  32px */
+  --space-7:   3rem;     /*  48px */
+  --space-8:   4rem;     /*  64px */
+  --space-10:  6rem;     /*  96px */
+  --space-12:  8rem;     /* 128px  section gap, desktop */
+  --space-16: 11rem;     /* 176px  hero top, desktop */
+
+  /* ---- Colour, by role ---------------------------------------------------
+     Dark canvas is the default identity. A light variant exists for the
+     manual toggle and is defined under body.theme-light below. */
+  --bg:               #0A0B0A;
+  --surface:          #16180F;
+  --surface-sunken:   #060706;
+  --border:           #363A2C;
+  --border-strong:    #545A44;
+  --text:             #F2F1EA;
+  --text-muted:       #9AA097;
+  --text-faint:       #6C7264;
+  --accent:           #B6FF4C;
+  --accent-hover:     #CCFF77;
+  --accent-contrast:  #0A0B0A;
+  --focus:            #6FE0FF;
+  --danger:           #FF6B5E;
+
+  /* ---- Shape -------------------------------------------------------------
+     Sharp and technical. Hairlines instead of shadows. */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   10px;
+  --radius-pill: 999px;
+  --border-hairline: 1px;
+
+  /* ---- Depth: none. Borders carry the weight shadows normally would. --- */
+  --shadow-1: none;
+  --shadow-2: none;
+
+  /* ---- Motion ------------------------------------------------------------ */
+  --dur-fast:  120ms;
+  --dur-base:  240ms;
+  --dur-slow:  480ms;
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---- Layout ------------------------------------------------------------ */
+  --measure:   66ch;
+  --container: 1180px;
+  --gutter:    var(--space-5);
+}
+
+body.theme-light {
+  --bg:               #F7F7F2;
+  --surface:          #FFFFFF;
+  --surface-sunken:   #ECEBE3;
+  --border:           #DEDCD1;
+  --border-strong:    #C3C0B2;
+  --text:             #14150F;
+  --text-muted:       #565A4F;
+  --text-faint:       #8B8F80;
+  --accent:           #4C8A16;
+  --accent-hover:     #3B6C10;
+  --accent-contrast:  #F7F7F2;
+  --focus:            #0B6FA3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- How to use this file ------------------------------------------------
+ * 1. No raw values in styles.css. If a value isn't here, add it here first.
+ * 2. Section rhythm: --space-12 between sections on desktop, --space-8 on
+ *    mobile. Never a value in between.
+ * 3. Only the hero h1 uses --text-5xl. Section heads use --text-4xl.
+ * 4. Body copy is capped at --measure.
+ * 5. No shadows. Borders (--border, --border-strong) carry separation.
+ * 6. --accent is for actions, live-status dots, and the 3D scene only. A
+ *    heading is never the accent colour. Only one accent exists.
+ * 7. Focus is always visible: 2px solid var(--focus), 2px offset.
+ * ------------------------------------------------------------------------ */

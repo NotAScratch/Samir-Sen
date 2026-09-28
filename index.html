@@ -10,22 +10,13 @@
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Fraunces:ital,wght@1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design/tokens.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="loading-screen" aria-live="polite" aria-label="Loading Samir Sen portfolio">
-    <div class="loader-grid" aria-hidden="true"></div>
-    <div class="loader-content">
-      <div class="loader-mark">SS</div>
-      <p class="loader-kicker"><span>INITIALIZING PORTFOLIO</span><span>06.09</span></p>
-      <h1>Samir<span>.</span></h1>
-      <div class="loader-status"><span>PERCEPTION / READY</span><span class="loader-percent">00%</span></div>
-      <div class="loader-bar" aria-hidden="true"><span></span></div>
-      <p class="loader-caption">AI ROBOTICS · BACKEND · EMBEDDED SYSTEMS</p>
-    </div>
-  </div>
   <div class="page-grid" aria-hidden="true"></div>
+
   <header class="site-header">
     <a class="wordmark" href="#top" aria-label="Samir Sen home"><span>SS</span><b>Samir Sen</b></a>
     <nav class="main-nav" aria-label="Main navigation">
@@ -36,7 +27,10 @@
       <a href="#notes">Notes</a>
       <a href="#connect">Connect</a>
     </nav>
-    <div class="header-tools"><button class="quick-nav" type="button" aria-label="Open quick navigation" aria-controls="command-palette" aria-expanded="false" title="Open quick navigation"><span>⌘</span><kbd>K</kbd></button><button class="theme-toggle" type="button" aria-label="Toggle color theme" aria-pressed="false" title="Toggle color theme"><span class="theme-icon">◐</span><span class="theme-label">Light</span></button></div>
+    <div class="header-tools">
+      <button class="quick-nav" type="button" aria-label="Open quick navigation" aria-controls="command-palette" aria-expanded="false" title="Open quick navigation"><span>⌘</span><kbd>K</kbd></button>
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme" aria-pressed="false" title="Toggle color theme"><span class="theme-icon" aria-hidden="true"></span><span class="theme-label">Dark</span></button>
+    </div>
   </header>
 
   <main id="top">
@@ -50,19 +44,23 @@
           <a class="button button-cv" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download my CV <span>↓</span></a>
           <a class="text-link" href="https://github.com/NotAScratch" target="_blank" rel="noreferrer">GitHub ↗</a>
         </div>
-        <div class="field-notes"><div class="field-note-head"><span>FIELD NOTES / 001</span><span class="note-live"><i></i> IN PROGRESS</span></div><p>Currently exploring how machines can understand space, context, and intent.</p><div class="note-meta"><span>BASE // KATHMANDU, NEPAL</span><span>MODE // BUILD</span></div></div>
+        <div class="field-notes">
+          <div class="field-note-head"><span>FIELD NOTES / 001</span><span class="note-live"><i></i> IN PROGRESS</span></div>
+          <p>Currently exploring how machines can understand space, context, and intent.</p>
+          <div class="note-meta"><span>BASE // KATHMANDU, NEPAL</span><span>MODE // BUILD</span></div>
+        </div>
       </div>
       <div class="hero-visual reveal delay-1" aria-hidden="true">
-        <div class="sensor-orbit orbit-one"></div><div class="sensor-orbit orbit-two"></div>
-        <div class="sensor-core"><span>AI</span><small>ACTIVE</small></div>
-        <span class="data-point point-a">01 / VISION</span><span class="data-point point-b">LIDAR · 02</span><span class="data-point point-c">SYS.READY</span>
-        <div class="crosshair crosshair-a">+</div><div class="crosshair crosshair-b">+</div>
+        <canvas id="hero-scene"></canvas>
+        <span class="data-point point-a">01 / VISION</span>
+        <span class="data-point point-b">LIDAR · 02</span>
+        <span class="data-point point-c">SYS.READY</span>
       </div>
       <div class="hero-foot reveal delay-2"><span>01 — INTRODUCTION</span><span>SCROLL TO DISCOVER <b>↓</b></span></div>
     </section>
 
     <section class="ticker" aria-label="Capabilities">
-      <div class="ticker-track"><span>COMPUTER VISION</span><b>✳</b><span>EDGE INTELLIGENCE</span><b>✳</b><span>BACKEND SYSTEMS</span><b>✳</b><span>EMBEDDED HARDWARE</span><b>✳</b><span>COMPUTER VISION</span><b>✳</b><span>EDGE INTELLIGENCE</span><b>✳</b></div>
+      <div class="ticker-track"><span>COMPUTER VISION</span><b>·</b><span>EDGE INTELLIGENCE</span><b>·</b><span>BACKEND SYSTEMS</span><b>·</b><span>EMBEDDED HARDWARE</span><b>·</b><span>COMPUTER VISION</span><b>·</b><span>EDGE INTELLIGENCE</span><b>·</b></div>
     </section>
 
     <section class="proof-strip shell" aria-label="At a glance">
@@ -85,29 +83,185 @@
     </section>
 
     <section class="work shell section" id="work" aria-labelledby="work-title">
-      <div class="section-heading"><div class="section-kicker"><span>03</span><span>SELECTED WORK</span></div><h2 id="work-title">From signal to <em>solution.</em></h2><p>A selection of systems built across vision, prediction, analytics, and hardware.</p></div>
+      <div class="section-heading">
+        <div class="section-kicker"><span>03</span><span>SELECTED WORK</span></div>
+        <h2 id="work-title">From signal to <em>solution.</em></h2>
+        <p>A selection of systems built across vision, prediction, analytics, and hardware.</p>
+      </div>
       <div class="project-grid">
-        <article class="project-card project-feature reveal"><div class="project-number">01 / 06</div><div class="project-visual vision-visual"><span class="visual-label">LIVE FEED</span><div class="vision-frame"><i></i><b>OBJECT</b><small>0.94</small></div><div class="scan-line"></div></div><div class="project-content"><div class="project-title"><h3>Real-Time Object Detection, Distance &amp; Direction Estimation</h3><span>↗</span></div><p>Turns live video feeds into spatial awareness, detecting objects while estimating their distance and direction for downstream robotic decisions.</p><div class="tags"><span>SSD MobileNetV2</span><span>FastAPI</span><span>Live video</span></div><button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-1">View problem solved <span>+</span></button><p class="project-detail" id="project-detail-1" hidden>Bridges the gap between raw camera input and actionable perception through a lightweight, accessible API.</p></div></article>
-        <article class="project-card reveal delay-1"><div class="project-number">02 / 06</div><div class="project-visual lidar-visual"><div class="lidar-sweep"></div><span class="lidar-label">DEPTH MAP / 360°</span><span class="lidar-node node-1"></span><span class="lidar-node node-2"></span><span class="lidar-node node-3"></span></div><div class="project-content"><div class="project-title"><h3>Orientation &amp; Spatial Edge Intelligence</h3><span>↗</span></div><p>Gives an edge device environmental context by combining Lidar and depth sensors with PyTorch inference on a Jetson Nano.</p><div class="tags"><span>Jetson Nano</span><span>Lidar</span><span>PyTorch</span></div><button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-2">View problem solved <span>+</span></button><p class="project-detail" id="project-detail-2" hidden>Moves spatial reasoning closer to the sensor, reducing dependence on remote compute for responsive robotics.</p></div></article>
-        <article class="project-card reveal delay-2"><div class="project-number">03 / 06</div><div class="project-visual chart-visual"><div class="chart-bars"><i></i><i></i><i></i><i></i><i></i><i></i></div><span>MODEL / FORECAST</span></div><div class="project-content"><div class="project-title"><h3>Predictive Meteorological Modeling</h3><span>↗</span></div><p>Uses machine learning regression to find patterns in weather data and produce informed meteorological predictions.</p><div class="tags"><span>scikit-learn</span><span>Random Forest</span><span>Regression</span></div><button class="details-toggle" type="button" aria-expanded="false">View problem solved <span>+</span></button><p class="project-detail">Converts historical measurements into a practical forecasting workflow with interpretable model experimentation.</p></div></article>
-        <article class="project-card reveal"><div class="project-number">04 / 06</div><div class="project-visual analytics-visual"><span class="metric">+ insight</span><div class="analytics-line"></div><span class="analytics-label">WORKFORCE DATA</span></div><div class="project-content"><div class="project-title"><h3>Salary Insights &amp; Analytics</h3><span>↗</span></div><p>Transforms workforce data into clearer salary insights through careful data processing and analytical exploration.</p><div class="tags"><span>Pandas</span><span>NumPy</span><span>Matplotlib</span></div><button class="details-toggle" type="button" aria-expanded="false">View problem solved <span>+</span></button><p class="project-detail">Makes compensation patterns easier to inspect, compare, and use in workforce decision-making.</p></div></article>
-        <article class="project-card reveal delay-1"><div class="project-number">05 / 06</div><div class="project-visual robot-visual"><div class="robot-head"><i></i><i></i></div><div class="robot-body"></div><span>INTERACTIVE / 01</span></div><div class="project-content"><div class="project-title"><h3>Interactive Robot Display</h3><span>↗</span></div><p>Connects hardware and software into a responsive interactive display that makes robotic behavior visible and engaging.</p><div class="tags"><span>Hardware integration</span><span>Linux</span><span>Edge device</span></div><button class="details-toggle" type="button" aria-expanded="false">View problem solved <span>+</span></button><p class="project-detail">Creates a tangible interface for demonstrating intelligent behavior beyond a screen or simulation.</p></div></article>
-        <article class="project-card reveal delay-2"><div class="project-number">06 / 06</div><div class="project-visual buzzer-visual"><div class="buzzer-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div><span>READY / BUZZ</span></div><div class="project-content"><div class="project-title"><h3>Wireless Quiz Buzzer System</h3><span>↗</span></div><p>An embedded, wireless response system designed to make quiz participation immediate, fair, and easy to operate.</p><div class="tags"><span>Microcontroller</span><span>Embedded systems</span><span>Wireless</span></div><button class="details-toggle" type="button" aria-expanded="false">View problem solved <span>+</span></button><p class="project-detail">Replaces tangled manual signaling with a reliable hardware workflow for real-time group interaction.</p></div></article>
+        <article class="project-card project-feature reveal">
+          <div class="project-number">01 / 06</div>
+          <div class="project-visual"><span class="visual-label">LIVE FEED</span></div>
+          <div class="project-content">
+            <div class="project-title"><h3>Real-Time Object Detection, Distance &amp; Direction Estimation</h3><span>↗</span></div>
+            <p>Turns live video feeds into spatial awareness, detecting objects while estimating their distance and direction for downstream robotic decisions.</p>
+            <div class="tags"><span>SSD MobileNetV2</span><span>FastAPI</span><span>Live video</span></div>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-1">View problem solved <span>+</span></button>
+            <p class="project-detail" id="project-detail-1" hidden>Bridges the gap between raw camera input and actionable perception through a lightweight, accessible API.</p>
+          </div>
+        </article>
+        <article class="project-card reveal delay-1">
+          <div class="project-number">02 / 06</div>
+          <div class="project-visual"><span class="visual-label">DEPTH MAP</span></div>
+          <div class="project-content">
+            <div class="project-title"><h3>Orientation &amp; Spatial Edge Intelligence</h3><span>↗</span></div>
+            <p>Gives an edge device environmental context by combining Lidar and depth sensors with PyTorch inference on a Jetson Nano.</p>
+            <div class="tags"><span>Jetson Nano</span><span>Lidar</span><span>PyTorch</span></div>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-2">View problem solved <span>+</span></button>
+            <p class="project-detail" id="project-detail-2" hidden>Moves spatial reasoning closer to the sensor, reducing dependence on remote compute for responsive robotics.</p>
+          </div>
+        </article>
+        <article class="project-card reveal delay-2">
+          <div class="project-number">03 / 06</div>
+          <div class="project-visual project-visual-placeholder"><span class="placeholder-index">03</span></div>
+          <div class="project-content">
+            <div class="project-title"><h3>Predictive Meteorological Modeling</h3><span>↗</span></div>
+            <p>Uses machine learning regression to find patterns in weather data and produce informed meteorological predictions.</p>
+            <div class="tags"><span>scikit-learn</span><span>Random Forest</span><span>Regression</span></div>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-3">View problem solved <span>+</span></button>
+            <p class="project-detail" id="project-detail-3" hidden>Converts historical measurements into a practical forecasting workflow with interpretable model experimentation.</p>
+          </div>
+        </article>
+        <article class="project-card reveal">
+          <div class="project-number">04 / 06</div>
+          <div class="project-visual project-visual-placeholder"><span class="placeholder-index">04</span></div>
+          <div class="project-content">
+            <div class="project-title"><h3>Salary Insights &amp; Analytics</h3><span>↗</span></div>
+            <p>Transforms workforce data into clearer salary insights through careful data processing and analytical exploration.</p>
+            <div class="tags"><span>Pandas</span><span>NumPy</span><span>Matplotlib</span></div>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-4">View problem solved <span>+</span></button>
+            <p class="project-detail" id="project-detail-4" hidden>Makes compensation patterns easier to inspect, compare, and use in workforce decision-making.</p>
+          </div>
+        </article>
+        <article class="project-card reveal delay-1">
+          <div class="project-number">05 / 06</div>
+          <div class="project-visual"><span class="visual-label">INTERACTIVE</span></div>
+          <div class="project-content">
+            <div class="project-title"><h3>Interactive Robot Display</h3><span>↗</span></div>
+            <p>Connects hardware and software into a responsive interactive display that makes robotic behavior visible and engaging.</p>
+            <div class="tags"><span>Hardware integration</span><span>Linux</span><span>Edge device</span></div>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-5">View problem solved <span>+</span></button>
+            <p class="project-detail" id="project-detail-5" hidden>Creates a tangible interface for demonstrating intelligent behavior beyond a screen or simulation.</p>
+          </div>
+        </article>
+        <article class="project-card reveal delay-2">
+          <div class="project-number">06 / 06</div>
+          <div class="project-visual"><span class="visual-label">READY / BUZZ</span></div>
+          <div class="project-content">
+            <div class="project-title"><h3>Wireless Quiz Buzzer System</h3><span>↗</span></div>
+            <p>An embedded, wireless response system designed to make quiz participation immediate, fair, and easy to operate.</p>
+            <div class="tags"><span>Microcontroller</span><span>Embedded systems</span><span>Wireless</span></div>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-6">View problem solved <span>+</span></button>
+            <p class="project-detail" id="project-detail-6" hidden>Replaces tangled manual signaling with a reliable hardware workflow for real-time group interaction.</p>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section class="skills shell section" id="skills" aria-labelledby="skills-title"><div class="section-kicker"><span>04</span><span>THE TOOLKIT</span></div><div class="skills-heading"><h2 id="skills-title">A practical <em>stack.</em></h2><p>Tools are only useful when they help an idea survive contact with reality.</p></div><div class="skills-list"><div class="skill-row"><span class="skill-index">01</span><h3>AI &amp; Computer Vision</h3><div class="skill-tags"><span>PyTorch</span><span>OpenCV</span><span>SSD MobileNetV2</span><span>Edge AI</span><span>Jetson Nano</span><span>Lidar</span></div></div><div class="skill-row"><span class="skill-index">02</span><h3>Backend &amp; Architecture</h3><div class="skill-tags"><span>Java</span><span>Spring Boot</span><span>Python</span><span>FastAPI</span><span>REST APIs</span><span>Microservices</span><span>Docker</span></div></div><div class="skill-row"><span class="skill-index">03</span><h3>Data &amp; Analytics</h3><div class="skill-tags"><span>scikit-learn</span><span>NumPy</span><span>Pandas</span><span>Matplotlib</span><span>Seaborn</span><span>Regression</span><span>Feature engineering</span></div></div><div class="skill-row"><span class="skill-index">04</span><h3>Embedded &amp; Operations</h3><div class="skill-tags"><span>Edge device integration</span><span>Linux</span><span>SSH</span><span>ClickUp workflows</span><span>AWS</span><span>Azure</span></div></div></div></section>
+    <section class="experience shell section" id="experience" aria-labelledby="experience-title">
+      <div class="section-kicker"><span>04</span><span>THE PATH SO FAR</span></div>
+      <div class="experience-layout">
+        <div>
+          <h2 id="experience-title">Learning by <em>shipping.</em></h2>
+          <p class="section-intro">A practical route through software, data, and machines that have to work outside the notebook.</p>
+        </div>
+        <div class="timeline">
+          <article class="timeline-item"><span class="timeline-date">2025 — NOW</span><div><h3>R&amp;D AI Roboticist · Baliyo Ventures</h3><p>Exploring computer vision, edge devices, spatial intelligence, and practical robotic systems.</p></div></article>
+          <article class="timeline-item"><span class="timeline-date">2025</span><div><h3>BSc Hons Computing with AI · Islington College</h3><p>Built a foundation across artificial intelligence, software engineering, data, and systems.</p></div></article>
+          <article class="timeline-item"><span class="timeline-date">EARLIER</span><div><h3>Engineering internships · Ants · Atreya Software Solutions</h3><p>Learned to move from coursework into team workflows, implementation, and delivery.</p></div></article>
+        </div>
+      </div>
+    </section>
 
-    <section class="community shell section"><div class="community-mark">✳</div><div><div class="section-kicker"><span>05</span><span>BEYOND THE BUILD</span></div><h2>Good systems are <em>collaborative.</em></h2><p>As Club Tamer for Leo Club of Temple Peace (2021–2022), I learned to turn shared energy into organized action. That spirit still shapes how I work with people and projects.</p></div></section>
+    <section class="skills shell section" id="skills" aria-labelledby="skills-title">
+      <div class="section-kicker"><span>05</span><span>THE TOOLKIT</span></div>
+      <div class="skills-heading"><h2 id="skills-title">A practical <em>stack.</em></h2><p>Tools are only useful when they help an idea survive contact with reality.</p></div>
+      <div class="skills-list">
+        <div class="skill-row"><span class="skill-index">01</span><h3>AI &amp; Computer Vision</h3><div class="skill-tags"><span>PyTorch</span><span>OpenCV</span><span>SSD MobileNetV2</span><span>Edge AI</span><span>Jetson Nano</span><span>Lidar</span></div></div>
+        <div class="skill-row"><span class="skill-index">02</span><h3>Backend &amp; Architecture</h3><div class="skill-tags"><span>Java</span><span>Spring Boot</span><span>Python</span><span>FastAPI</span><span>REST APIs</span><span>Microservices</span><span>Docker</span></div></div>
+        <div class="skill-row"><span class="skill-index">03</span><h3>Data &amp; Analytics</h3><div class="skill-tags"><span>scikit-learn</span><span>NumPy</span><span>Pandas</span><span>Matplotlib</span><span>Seaborn</span><span>Regression</span><span>Feature engineering</span></div></div>
+        <div class="skill-row"><span class="skill-index">04</span><h3>Embedded &amp; Operations</h3><div class="skill-tags"><span>Edge device integration</span><span>Linux</span><span>SSH</span><span>ClickUp workflows</span><span>AWS</span><span>Azure</span></div></div>
+      </div>
+    </section>
 
-    <section class="connect shell" id="connect" aria-labelledby="connect-title"><div class="connect-inner"><div><div class="section-kicker"><span>06</span><span>OPEN CHANNEL</span></div><h2 id="connect-title">Have a difficult<br><em>problem?</em></h2></div><div class="connect-copy"><p>Let’s talk about what you’re building, what’s stuck, and where intelligent systems could take it next.</p><a class="email-link" href="mailto:samirsen66@gmail.com">samirsen66@gmail.com</a><a class="button button-light" href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer">Start a conversation <span>↗</span></a></div></div><div class="social-links"><a href="https://github.com/NotAScratch" target="_blank" rel="noopener noreferrer">GitHub <span>↗</span></a><a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer">LinkedIn <span>↗</span></a><a href="mailto:samirsen66@gmail.com">Email <span>↗</span></a></div></section>
-    <section class="experience shell section" id="experience" aria-labelledby="experience-title"><div class="section-kicker"><span>04</span><span>THE PATH SO FAR</span></div><div class="experience-layout"><div><h2 id="experience-title">Learning by <em>shipping.</em></h2><p class="section-intro">A practical route through software, data, and machines that have to work outside the notebook.</p></div><div class="timeline"><article class="timeline-item"><span class="timeline-date">2025 — NOW</span><div><h3>R&amp;D AI Roboticist · Baliyo Ventures</h3><p>Exploring computer vision, edge devices, spatial intelligence, and practical robotic systems.</p></div></article><article class="timeline-item"><span class="timeline-date">2025</span><div><h3>BSc Hons Computing with AI · Islington College</h3><p>Built a foundation across artificial intelligence, software engineering, data, and systems.</p></div></article><article class="timeline-item"><span class="timeline-date">EARLIER</span><div><h3>Engineering internships · Ants · Atreya Software Solutions</h3><p>Learned to move from coursework into team workflows, implementation, and delivery.</p></div></article></div></div></section>
-    <section class="field-log shell section" id="notes" aria-labelledby="notes-title"><div class="section-kicker"><span>05</span><span>FIELD NOTES</span></div><div class="field-log-head"><div><h2 id="notes-title">Work in <em>progress.</em></h2><p>Short observations from the space between an idea, a sensor, and a system that finally behaves.</p></div><span class="note-status"><i></i> LIVE LOG</span></div><div class="note-grid"><article><span>NOTE / 001</span><h3>Perception is only useful when it changes a decision.</h3><p>The next layer after detection is context: what should the system do with what it sees?</p></article><article><span>NOTE / 002</span><h3>Edge systems make constraints visible.</h3><p>Latency, power, memory, and deployment shape the model as much as the dataset does.</p></article><article><span>NOTE / 003</span><h3>Build the smallest loop that can teach you something.</h3><p>Hardware and software become clearer when the first experiment is close to reality.</p></article></div></section>
+    <section class="community shell section">
+      <div class="community-mark" aria-hidden="true">·</div>
+      <div>
+        <div class="section-kicker"><span>06</span><span>BEYOND THE BUILD</span></div>
+        <h2>Good systems are <em>collaborative.</em></h2>
+        <p>As Club Tamer for Leo Club of Temple Peace (2021–2022), I learned to turn shared energy into organized action. That spirit still shapes how I work with people and projects.</p>
+      </div>
+    </section>
+
+    <section class="field-log shell section" id="notes" aria-labelledby="notes-title">
+      <div class="section-kicker"><span>07</span><span>FIELD NOTES</span></div>
+      <div class="field-log-head">
+        <div><h2 id="notes-title">Work in <em>progress.</em></h2><p>Short observations from the space between an idea, a sensor, and a system that finally behaves.</p></div>
+        <span class="note-status"><i></i> LIVE LOG</span>
+      </div>
+      <div class="note-grid">
+        <article><span>NOTE / 001</span><h3>Perception is only useful when it changes a decision.</h3><p>The next layer after detection is context: what should the system do with what it sees?</p></article>
+        <article><span>NOTE / 002</span><h3>Edge systems make constraints visible.</h3><p>Latency, power, memory, and deployment shape the model as much as the dataset does.</p></article>
+        <article><span>NOTE / 003</span><h3>Build the smallest loop that can teach you something.</h3><p>Hardware and software become clearer when the first experiment is close to reality.</p></article>
+      </div>
+    </section>
+
+    <section class="connect shell" id="connect" aria-labelledby="connect-title">
+      <div class="connect-inner">
+        <div><div class="section-kicker"><span>08</span><span>OPEN CHANNEL</span></div><h2 id="connect-title">Have a difficult<br><em>problem?</em></h2></div>
+        <div class="connect-copy">
+          <p>Let’s talk about what you’re building, what’s stuck, and where intelligent systems could take it next.</p>
+          <a class="email-link" href="mailto:samirsen66@gmail.com">samirsen66@gmail.com</a>
+          <a class="button button-light" href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer">Start a conversation <span>↗</span></a>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="https://github.com/NotAScratch" target="_blank" rel="noopener noreferrer">GitHub <span>↗</span></a>
+        <a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer">LinkedIn <span>↗</span></a>
+        <a href="mailto:samirsen66@gmail.com">Email <span>↗</span></a>
+      </div>
+    </section>
   </main>
-  <dialog class="command-palette" id="command-palette" aria-labelledby="command-title"><div class="command-head"><span id="command-title">QUICK NAVIGATION</span><button class="dialog-close" type="button" aria-label="Close quick navigation">×</button></div><p class="command-hint">Jump to a section or open a profile.</p><div class="command-list"><a href="#work"><span>01</span>Selected work <b>↘</b></a><a href="#about"><span>02</span>Profile <b>↘</b></a><a href="#experience"><span>03</span>Path <b>↘</b></a><a href="#skills"><span>04</span>Toolkit <b>↘</b></a><a href="#notes"><span>05</span>Field notes <b>↘</b></a><a href="#connect"><span>06</span>Connect <b>↘</b></a><a href="https://www.linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer"><span>↗</span>LinkedIn <b>↗</b></a></div></dialog>
-  <dialog class="case-study" aria-labelledby="case-title"><div class="case-study-head"><span>CASE STUDY / <b id="case-index">01</b></span><button class="case-close" type="button" aria-label="Close case study">×</button></div><div class="case-study-body"><p class="eyebrow" id="case-kicker">PERCEPTION PIPELINE</p><h2 id="case-title">Real-time object detection</h2><p id="case-summary"></p><div class="case-study-grid"><div><span>THE PROBLEM</span><p id="case-problem"></p></div><div><span>THE APPROACH</span><p id="case-approach"></p></div><div><span>THE LESSON</span><p id="case-lesson"></p></div></div></div></dialog>
+
+  <dialog class="command-palette" id="command-palette" aria-labelledby="command-title">
+    <div class="command-head"><span id="command-title">QUICK NAVIGATION</span><button class="dialog-close" type="button" aria-label="Close quick navigation">×</button></div>
+    <p class="command-hint">Jump to a section or open a profile.</p>
+    <div class="command-list">
+      <a href="#work"><span>01</span>Selected work <b>↘</b></a>
+      <a href="#about"><span>02</span>Profile <b>↘</b></a>
+      <a href="#experience"><span>03</span>Path <b>↘</b></a>
+      <a href="#skills"><span>04</span>Toolkit <b>↘</b></a>
+      <a href="#notes"><span>05</span>Field notes <b>↘</b></a>
+      <a href="#connect"><span>06</span>Connect <b>↘</b></a>
+      <a href="https://www.linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer"><span>↗</span>LinkedIn <b>↗</b></a>
+    </div>
+  </dialog>
+
+  <dialog class="case-study" aria-labelledby="case-title">
+    <div class="case-study-head"><span>CASE STUDY / <b id="case-index">01</b></span><button class="case-close" type="button" aria-label="Close case study">×</button></div>
+    <div class="case-study-body">
+      <p class="eyebrow" id="case-kicker">PERCEPTION PIPELINE</p>
+      <h2 id="case-title">Real-time object detection</h2>
+      <p id="case-summary"></p>
+      <div class="case-study-grid">
+        <div><span>THE PROBLEM</span><p id="case-problem"></p></div>
+        <div><span>THE APPROACH</span><p id="case-approach"></p></div>
+        <div><span>THE LESSON</span><p id="case-lesson"></p></div>
+      </div>
+    </div>
+  </dialog>
+
   <div class="scroll-progress" aria-hidden="true"><span></span></div>
-  <footer class="site-footer shell"><span>© 2025 Samir Sen</span><span>BUILT WITH CURIOSITY <b>✳</b></span><a href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">DOWNLOAD CV ↓</a><a href="mailto:samirsen66@gmail.com">samirsen66@gmail.com</a><a href="#top">BACK TO TOP ↑</a></footer>
+
+  <footer class="site-footer shell">
+    <span>© 2025 Samir Sen</span>
+    <span>BUILT WITH CURIOSITY</span>
+    <a href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">DOWNLOAD CV ↓</a>
+    <a href="mailto:samirsen66@gmail.com">samirsen66@gmail.com</a>
+    <a href="#top">BACK TO TOP ↑</a>
+  </footer>
+
   <script src="script.js"></script>
+  <script type="module" src="hero-scene.js"></script>
 </body>
 </html>

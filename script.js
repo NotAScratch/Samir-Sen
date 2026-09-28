@@ -4,20 +4,6 @@ const palette = document.querySelector('.command-palette');
 const progress = document.querySelector('.scroll-progress span');
 const quickNav = document.querySelector('.quick-nav');
 const closeDialog = document.querySelector('.dialog-close');
-const loader = document.querySelector('.loading-screen');
-const loaderPercent = document.querySelector('.loader-percent');
-
-const loaderStart = performance.now();
-const loaderDuration = 6000;
-const updateLoader = (now) => {
-  const elapsed = Math.min(now - loaderStart, loaderDuration);
-  const percentage = Math.round((elapsed / loaderDuration) * 100);
-  loaderPercent.textContent = `${String(percentage).padStart(2, '0')}%`;
-  loader.querySelector('.loader-bar span').style.transform = `scaleX(${percentage / 100})`;
-  if (elapsed < loaderDuration) requestAnimationFrame(updateLoader);
-};
-requestAnimationFrame(updateLoader);
-setTimeout(() => loader?.remove(), loaderDuration + 200);
 
 const setPaletteState = (isOpen) => {
   quickNav.setAttribute('aria-expanded', String(isOpen));
@@ -59,18 +45,19 @@ const navObserver = new IntersectionObserver((entries) => {
 }, { rootMargin: '-35% 0px -55% 0px' });
 sections.forEach((section) => navObserver.observe(section));
 
+// Dark is the default brand identity regardless of OS preference; the
+// toggle is an explicit opt-in to the light variant, remembered per visitor.
 const storedTheme = localStorage.getItem('samir-theme');
-const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const initialDark = storedTheme ? storedTheme === 'dark' : systemPrefersDark;
-document.body.classList.toggle('dark', initialDark);
-themeLabel.textContent = initialDark ? 'Dark' : 'Light';
-themeToggle.setAttribute('aria-pressed', String(initialDark));
+const initialLight = storedTheme === 'light';
+document.body.classList.toggle('theme-light', initialLight);
+themeLabel.textContent = initialLight ? 'Light' : 'Dark';
+themeToggle.setAttribute('aria-pressed', String(initialLight));
 
 themeToggle.addEventListener('click', () => {
-  const isDark = document.body.classList.toggle('dark');
-  themeLabel.textContent = isDark ? 'Dark' : 'Light';
-  themeToggle.setAttribute('aria-pressed', String(isDark));
-  localStorage.setItem('samir-theme', isDark ? 'dark' : 'light');
+  const isLight = document.body.classList.toggle('theme-light');
+  themeLabel.textContent = isLight ? 'Light' : 'Dark';
+  themeToggle.setAttribute('aria-pressed', String(isLight));
+  localStorage.setItem('samir-theme', isLight ? 'light' : 'dark');
 });
 
 document.querySelectorAll('.details-toggle').forEach((button) => {
