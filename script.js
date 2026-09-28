@@ -1,75 +1,116 @@
-const themeToggle = document.querySelector('.theme-toggle');
-const themeLabel = document.querySelector('.theme-label');
-const palette = document.querySelector('.command-palette');
-const progress = document.querySelector('.scroll-progress span');
-const quickNav = document.querySelector('.quick-nav');
-const closeDialog = document.querySelector('.dialog-close');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isFinePointer = window.matchMedia('(pointer: fine)').matches;
 
-const setPaletteState = (isOpen) => {
-  quickNav.setAttribute('aria-expanded', String(isOpen));
+/* ---- Custom cursor ------------------------------------------------------*/
+const cursorDot = document.querySelector('.cursor-dot');
+const cursorRing = document.querySelector('.cursor-ring');
+if (isFinePointer && !prefersReducedMotion) {
+  document.body.classList.add('has-cursor');
+  let ringX = window.innerWidth / 2;
+  let ringY = window.innerHeight / 2;
+  window.addEventListener('pointermove', (event) => {
+    cursorDot.style.transform = `translate(${event.clientX}px, ${event.clientY}px) translate(-50%, -50%)`;
+    ringX = event.clientX;
+    ringY = event.clientY;
+  });
+  (function animateRing() {
+    cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+    requestAnimationFrame(animateRing);
+  })();
+  document.querySelectorAll('a, button').forEach((el) => {
+    el.addEventListener('mouseenter', () => cursorRing.classList.add('is-active'));
+    el.addEventListener('mouseleave', () => cursorRing.classList.remove('is-active'));
+  });
+}
+
+/* ---- Magnetic buttons -----------------------------------------------------*/
+if (isFinePointer && !prefersReducedMotion) {
+  document.querySelectorAll('.button').forEach((button) => {
+    button.addEventListener('mousemove', (event) => {
+      const rect = button.getBoundingClientRect();
+      const x = event.clientX - rect.left - rect.width / 2;
+      const y = event.clientY - rect.top - rect.height / 2;
+      button.style.transform = `translate(${x * 0.18}px, ${y * 0.32}px)`;
+    });
+    button.addEventListener('mouseleave', () => { button.style.transform = ''; });
+  });
+}
+
+/* ---- Fullscreen nav overlay -----------------------------------------------*/
+const menuTrigger = document.querySelector('.menu-trigger');
+const menuClose = document.querySelector('.menu-close');
+const navOverlay = document.getElementById('nav-overlay');
+const setNavState = (isOpen) => {
+  navOverlay.classList.toggle('is-open', isOpen);
+  navOverlay.setAttribute('aria-hidden', String(!isOpen));
+  menuTrigger.setAttribute('aria-expanded', String(isOpen));
+  document.body.style.overflow = isOpen ? 'hidden' : '';
 };
-const togglePalette = () => {
-  if (palette.open) {
-    palette.close();
-    setPaletteState(false);
-  } else {
-    palette.showModal();
-    setPaletteState(true);
-  }
-};
-
-quickNav.addEventListener('click', togglePalette);
-closeDialog.addEventListener('click', () => { palette.close(); setPaletteState(false); });
-palette.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { palette.close(); setPaletteState(false); }));
-
+menuTrigger.addEventListener('click', () => setNavState(!navOverlay.classList.contains('is-open')));
+menuClose.addEventListener('click', () => setNavState(false));
+navOverlay.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setNavState(false)));
 document.addEventListener('keydown', (event) => {
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-    event.preventDefault();
-    togglePalette();
-  }
-  if (event.key === 'Escape' && palette.open) { palette.close(); setPaletteState(false); }
+  if (event.key === 'Escape' && navOverlay.classList.contains('is-open')) setNavState(false);
 });
 
+/* ---- Hero kinetic headline reveal (GSAP, progressively enhanced) ---------
+   Wait for webfonts: Unbounded swapping in after the CSS transform:110%
+   has already resolved (against fallback-font metrics) would otherwise
+   leave GSAP animating from a stale pixel offset instead of the real one. */
+if (window.gsap && !prefersReducedMotion) {
+  document.documentElement.classList.add('js-ready');
+  const revealHero = () => {
+    gsap.set('.kinetic .line > span', { yPercent: 110, opacity: 0 });
+    gsap.to('.kinetic .line > span', {
+      yPercent: 0,
+      opacity: 1,
+      duration: 1.1,
+      ease: 'expo.out',
+      stagger: 0.09,
+      delay: 0.15,
+    });
+  };
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(revealHero);
+  } else {
+    revealHero();
+  }
+}
+
+/* ---- Scroll progress -------------------------------------------------- */
+const progress = document.querySelector('.scroll-progress span');
 window.addEventListener('scroll', () => {
   const scrollable = document.documentElement.scrollHeight - window.innerHeight;
   progress.style.width = `${scrollable ? (window.scrollY / scrollable) * 100 : 0}%`;
 });
 
-const navLinks = [...document.querySelectorAll('.main-nav a')];
-const sections = [...document.querySelectorAll('main section[id]')];
-const navObserver = new IntersectionObserver((entries) => {
+/* ---- Section reveal on scroll --------------------------------------------*/
+const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
-    if (!entry.isIntersecting) return;
-    navLinks.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`));
+    if (entry.isIntersecting) {
+      entry.target.style.animationPlayState = 'running';
+      revealObserver.unobserve(entry.target);
+    }
   });
-}, { rootMargin: '-35% 0px -55% 0px' });
-sections.forEach((section) => navObserver.observe(section));
+}, { threshold: 0.1 });
 
-// Dark is the default brand identity regardless of OS preference; the
-// toggle is an explicit opt-in to the light variant, remembered per visitor.
-const storedTheme = localStorage.getItem('samir-theme');
-const initialLight = storedTheme === 'light';
-document.body.classList.toggle('theme-light', initialLight);
-themeLabel.textContent = initialLight ? 'Light' : 'Dark';
-themeToggle.setAttribute('aria-pressed', String(initialLight));
-
-themeToggle.addEventListener('click', () => {
-  const isLight = document.body.classList.toggle('theme-light');
-  themeLabel.textContent = isLight ? 'Light' : 'Dark';
-  themeToggle.setAttribute('aria-pressed', String(isLight));
-  localStorage.setItem('samir-theme', isLight ? 'light' : 'dark');
+document.querySelectorAll('.reveal-group').forEach((element) => {
+  element.style.animationPlayState = 'paused';
+  revealObserver.observe(element);
 });
 
+/* ---- Project detail toggle ---------------------------------------------*/
 document.querySelectorAll('.details-toggle').forEach((button) => {
   button.addEventListener('click', () => {
-    const card = button.closest('.project-card');
-    const isOpen = card.classList.toggle('is-open');
-    button.setAttribute('aria-expanded', String(isOpen));
-    document.getElementById(button.getAttribute('aria-controls')).hidden = !isOpen;
-    button.innerHTML = isOpen ? 'Hide problem solved <span>−</span>' : 'View problem solved <span>+</span>';
+    const isOpen = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', String(!isOpen));
+    const detail = document.getElementById(button.getAttribute('aria-controls'));
+    detail.hidden = isOpen;
+    button.innerHTML = !isOpen ? 'Hide problem solved <span>−</span>' : 'The problem solved <span>+</span>';
   });
 });
 
+/* ---- Case study dialog ---------------------------------------------------*/
 const caseStudy = document.querySelector('.case-study');
 const caseClose = document.querySelector('.case-close');
 const caseFields = {
@@ -93,18 +134,24 @@ const caseFields = {
   }
 };
 
-const openCaseStudy = (key) => {
-  const content = caseFields[key];
-  if (!content || !caseStudy) return;
-  Object.entries(content).forEach(([field, value]) => {
-    const element = document.querySelector(`#case-${field}`) || document.querySelector(`#case-title`);
-    if (element) element.textContent = value;
+document.querySelectorAll('.case-study-trigger').forEach((button) => {
+  button.addEventListener('click', () => {
+    const content = caseFields[button.dataset.case];
+    if (!content || !caseStudy) return;
+    document.querySelector('#case-index').textContent = content.index;
+    document.querySelector('#case-kicker').textContent = content.kicker;
+    document.querySelector('#case-title').textContent = content.title;
+    document.querySelector('#case-summary').textContent = content.summary;
+    document.querySelector('#case-problem').textContent = content.problem;
+    document.querySelector('#case-approach').textContent = content.approach;
+    document.querySelector('#case-lesson').textContent = content.lesson;
+    caseStudy.showModal();
   });
-  document.querySelector('#case-index').textContent = content.index;
-  document.querySelector('#case-kicker').textContent = content.kicker;
-  caseStudy.showModal();
-};
+});
+caseClose?.addEventListener('click', () => caseStudy.close());
+caseStudy?.addEventListener('click', (event) => { if (event.target === caseStudy) caseStudy.close(); });
 
+/* ---- Inject real project imagery into the work blocks ---------------------*/
 const projectImages = [
   ['images/image1.png', 'Computer vision workbench with camera hardware and object detection output'],
   ['images/image2.png', 'Camera and edge-computing board mounted for spatial sensing'],
@@ -114,41 +161,14 @@ const projectImages = [
   ['images/image.png', 'Embedded electronics board being tested with power and measurement equipment']
 ];
 
-document.querySelectorAll('.project-card').forEach((card, index) => {
+document.querySelectorAll('.work-block').forEach((block, index) => {
   const [source, alt] = projectImages[index] || [];
-  if (source) {
+  const media = block.querySelector('.work-media');
+  if (source && media) {
     const image = document.createElement('img');
-    image.className = 'project-image';
     image.src = source;
     image.alt = alt;
     image.loading = 'lazy';
-    card.querySelector('.project-visual')?.prepend(image);
+    media.prepend(image);
   }
-  if (index > 1) return;
-  const button = document.createElement('button');
-  button.className = 'case-study-trigger';
-  button.type = 'button';
-  button.dataset.case = index === 0 ? 'vision' : 'edge';
-  button.innerHTML = 'Open case study <span>↗</span>';
-  button.addEventListener('click', () => openCaseStudy(button.dataset.case));
-  card.querySelector('.project-content').append(button);
-});
-
-caseClose?.addEventListener('click', () => caseStudy.close());
-caseStudy?.addEventListener('click', (event) => {
-  if (event.target === caseStudy) caseStudy.close();
-});
-
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.style.animationPlayState = 'running';
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12 });
-
-document.querySelectorAll('.reveal').forEach((element) => {
-  element.style.animationPlayState = 'paused';
-  revealObserver.observe(element);
 });
