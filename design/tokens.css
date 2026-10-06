@@ -65,6 +65,10 @@
   --radius-md:   6px;
   --radius-lg:   14px;
   --radius-pill: 999px;
+  --radius-xl:   2rem;      /* double-bezel outer shell */
+  --bezel:       6px;       /* gap between bezel shell and core */
+  --radius-core: calc(var(--radius-xl) - var(--bezel)); /* concentric inner curve */
+  --icon-well:   2rem;      /* circular well for button-in-button arrows */
   --border-hairline: 1px;
 
   /* ---- Depth: none. Borders + grain carry the texture shadows would. -- */
@@ -77,6 +81,13 @@
   --dur-slow:  620ms;
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1); /* heavy, mass-like settle */
+  --dur-reveal:  900ms;     /* scroll entry fade-up */
+  --stagger:     60ms;      /* per-item delay in staggered reveals */
+  --blur-reveal: 8px;       /* entry blur, resolves to 0 */
+  --press-scale: 0.98;      /* physical press on buttons */
+  --lift-scale:  1.05;      /* button arrow well on hover */
+  --cursor-grow: 1.88;      /* cursor ring over links: 34px -> ~64px */
 
   /* ---- Layout ----------------------------------------------------------- */
   --measure:   62ch;

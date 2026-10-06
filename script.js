@@ -49,24 +49,28 @@ if (isFinePointer && !prefersReducedMotion) {
       const rect = button.getBoundingClientRect();
       const x = event.clientX - rect.left - rect.width / 2;
       const y = event.clientY - rect.top - rect.height / 2;
-      button.style.transform = `translate(${x * 0.18}px, ${y * 0.32}px)`;
+      // `translate`, not `transform`, so the CSS :active press-scale still composes.
+      button.style.translate = `${x * 0.18}px ${y * 0.32}px`;
     });
-    button.addEventListener('mouseleave', () => { button.style.transform = ''; });
+    button.addEventListener('mouseleave', () => { button.style.translate = ''; });
   });
 }
 
 /* ---- Fullscreen nav overlay -----------------------------------------------*/
+/* The trigger stays above the open overlay and morphs into an X (CSS keyed
+   on aria-expanded), so it doubles as the close control. */
 const menuTrigger = document.querySelector('.menu-trigger');
-const menuClose = document.querySelector('.menu-close');
+const menuLabel = menuTrigger.querySelector('span');
 const navOverlay = document.getElementById('nav-overlay');
 const setNavState = (isOpen) => {
   navOverlay.classList.toggle('is-open', isOpen);
   navOverlay.setAttribute('aria-hidden', String(!isOpen));
   menuTrigger.setAttribute('aria-expanded', String(isOpen));
+  menuLabel.textContent = isOpen ? 'Close' : 'Menu';
+  document.body.classList.toggle('nav-open', isOpen);
   document.body.style.overflow = isOpen ? 'hidden' : '';
 };
 menuTrigger.addEventListener('click', () => setNavState(!navOverlay.classList.contains('is-open')));
-menuClose.addEventListener('click', () => setNavState(false));
 navOverlay.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setNavState(false)));
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && navOverlay.classList.contains('is-open')) setNavState(false);
@@ -98,10 +102,16 @@ if (window.gsap && !prefersReducedMotion) {
 
 /* ---- Scroll progress -------------------------------------------------- */
 const progress = document.querySelector('.scroll-progress span');
+let progressQueued = false;
 window.addEventListener('scroll', () => {
-  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-  progress.style.width = `${scrollable ? (window.scrollY / scrollable) * 100 : 0}%`;
-});
+  if (progressQueued) return;
+  progressQueued = true;
+  requestAnimationFrame(() => {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${scrollable ? window.scrollY / scrollable : 0})`;
+    progressQueued = false;
+  });
+}, { passive: true });
 
 /* ---- Section reveal on scroll --------------------------------------------*/
 const revealObserver = new IntersectionObserver((entries) => {

@@ -21,8 +21,10 @@ em{font-style:normal;color:var(--accent)}
 /* ---- Custom cursor ---------------------------------------------------- */
 .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:90;border-radius:50%;transform:translate(-50%,-50%);will-change:transform}
 .cursor-dot{width:6px;height:6px;background:var(--accent)}
-.cursor-ring{width:34px;height:34px;border:1px solid var(--border-strong);transition:width var(--dur-base) var(--ease-out),height var(--dur-base) var(--ease-out),border-color var(--dur-base) var(--ease-out)}
-.cursor-ring.is-active{width:64px;height:64px;border-color:var(--accent)}
+/* The ring grows via `scale` (composes with the JS-set `transform` that
+   positions it), never width/height, so hovering links doesn't trigger layout. */
+.cursor-ring{width:34px;height:34px;border:1px solid var(--border-strong);transition:scale var(--dur-base) var(--ease-spring),border-color var(--dur-base) var(--ease-out)}
+.cursor-ring.is-active{scale:var(--cursor-grow);border-color:var(--accent)}
 @media(pointer:coarse),(prefers-reduced-motion:reduce){.cursor-dot,.cursor-ring{display:none}}
 body.has-cursor,body.has-cursor a,body.has-cursor button{cursor:none}
 
@@ -42,36 +44,42 @@ body.has-cursor,body.has-cursor a,body.has-cursor button{cursor:none}
 .theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
 .theme-icon{width:7px;height:7px;border-radius:50%;background:currentColor}
 .menu-trigger{display:flex;align-items:center;gap:var(--space-3);border:0;background:transparent;color:var(--text);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);text-transform:uppercase;cursor:pointer}
-.menu-trigger i{display:block;width:22px;height:1px;background:var(--text);position:relative}
-.menu-trigger i::before,.menu-trigger i::after{content:"";position:absolute;left:0;width:100%;height:1px;background:var(--text);transition:transform var(--dur-fast) var(--ease-out)}
+.menu-trigger i{display:block;width:22px;height:1px;background:var(--text);position:relative;transition:background var(--dur-fast) var(--ease-out)}
+.menu-trigger i::before,.menu-trigger i::after{content:"";position:absolute;left:0;width:100%;height:1px;background:var(--text);transition:transform var(--dur-base) var(--ease-spring)}
 .menu-trigger i::before{top:-6px}
 .menu-trigger i::after{top:6px}
 .menu-trigger:hover i::before{transform:translateY(2px)}
 .menu-trigger:hover i::after{transform:translateY(-2px)}
+/* Open: the outer bars rotate into an X on the middle bar's line, which fades out. */
+.menu-trigger[aria-expanded="true"] i{background:transparent}
+.menu-trigger[aria-expanded="true"] i::before{transform:translateY(6px) rotate(45deg)}
+.menu-trigger[aria-expanded="true"] i::after{transform:translateY(-6px) rotate(-45deg)}
+/* While the overlay is open the corner chrome sits above it, so the same
+   trigger becomes the close control. */
+body.nav-open .corner{z-index:75}
 
 /* ---- Fullscreen nav overlay --------------------------------------------*/
 .nav-overlay{
   position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;flex-direction:column;justify-content:center;
-  overflow-y:auto;padding:var(--space-8) var(--space-8);transform:translateY(-100%);transition:transform var(--dur-slow) var(--ease-in-out);
+  overflow-y:auto;padding:var(--space-8) var(--space-8);transform:translateY(-100%);transition:transform var(--dur-slow) var(--ease-spring);
 }
 .nav-overlay.is-open{transform:translateY(0)}
-.menu-close{position:absolute;top:var(--space-6);right:var(--space-6);display:flex;align-items:center;gap:var(--space-2);border:0;background:transparent;color:var(--text);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);text-transform:uppercase;cursor:pointer}
-.menu-close i{width:16px;height:16px;position:relative}
-.menu-close i::before,.menu-close i::after{content:"";position:absolute;top:50%;left:0;width:100%;height:1px;background:var(--text)}
-.menu-close i::before{transform:rotate(45deg)}
-.menu-close i::after{transform:rotate(-45deg)}
 .nav-list{list-style:none;margin:0;padding:0}
-.nav-list li{border-top:var(--border-hairline) solid var(--border)}
+/* Each row is a mask: the link slides up out of it, staggered by --i. */
+.nav-list li{border-top:var(--border-hairline) solid var(--border);overflow:hidden}
 .nav-list li:last-child{border-bottom:var(--border-hairline) solid var(--border)}
-.nav-list a{display:flex;align-items:baseline;gap:var(--space-5);padding:var(--space-4) 0;text-decoration:none;color:var(--text);font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);font-weight:600;letter-spacing:var(--tracking-tight);transition:color var(--dur-fast) var(--ease-out),padding-left var(--dur-base) var(--ease-out)}
+.nav-list a{display:flex;align-items:baseline;gap:var(--space-5);padding:var(--space-4) 0;text-decoration:none;color:var(--text);font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);font-weight:600;letter-spacing:var(--tracking-tight);opacity:0;transform:translateY(100%);transition:color var(--dur-fast) var(--ease-out),opacity var(--dur-slow) var(--ease-spring),transform var(--dur-slow) var(--ease-spring)}
+.nav-overlay.is-open .nav-list a{opacity:1;transform:none;transition-delay:0s,calc(var(--dur-fast) + var(--i) * var(--stagger)),calc(var(--dur-fast) + var(--i) * var(--stagger))}
+.nav-overlay.is-open .nav-list a:hover{transform:translateX(var(--space-4));transition-delay:0s}
 .nav-list a span{font:var(--weight-medium) var(--text-sm) var(--font-mono);color:var(--text-faint)}
-.nav-list a:hover{color:var(--accent);padding-left:var(--space-4)}
-.nav-foot{display:flex;gap:var(--space-6);margin-top:var(--space-8)}
+.nav-list a:hover{color:var(--accent)}
+.nav-foot{display:flex;gap:var(--space-6);margin-top:var(--space-8);opacity:0;transition:opacity var(--dur-slow) var(--ease-spring)}
+.nav-overlay.is-open .nav-foot{opacity:1;transition-delay:calc(var(--dur-fast) + 6 * var(--stagger))}
 .nav-foot a{text-decoration:none;color:var(--text-muted);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);text-transform:uppercase}
 .nav-foot a:hover{color:var(--accent)}
 
 /* ---- Hero -----------------------------------------------------------*/
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hero{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:center;overflow:hidden}
 .hero-scene-wrap{position:absolute;inset:0;z-index:0;opacity:.55}
 .hero-scene-wrap canvas{width:100%;height:100%;display:block}
 .hero-inner{position:relative;z-index:1;padding-top:var(--space-8)}
@@ -85,10 +93,18 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 .hero-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--space-6);margin-top:var(--space-7);flex-wrap:wrap}
 .hero-intro{max-width:34ch;color:var(--text-muted);font-size:var(--text-lg)}
 .hero-actions{display:flex;gap:var(--space-4);align-items:center;flex-wrap:wrap}
-.button{display:inline-flex;align-items:center;gap:var(--space-5);padding:var(--space-3) var(--space-6);text-decoration:none;font:var(--weight-medium) var(--text-xs) var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-label);border-radius:var(--radius-pill);transition:transform var(--dur-base) var(--ease-out),background var(--dur-fast) var(--ease-out);position:relative}
+/* Button-in-button: the trailing arrow sits in its own circular well, flush
+   with the pill's right inner padding. Magnetic pull (script.js) uses the
+   `translate` property so this `transform` press-scale composes with it. */
+.button{display:inline-flex;align-items:center;gap:var(--space-5);padding:var(--space-2) var(--space-2) var(--space-2) var(--space-6);text-decoration:none;font:var(--weight-medium) var(--text-xs) var(--font-mono);text-transform:uppercase;letter-spacing:var(--tracking-label);border-radius:var(--radius-pill);transition:transform var(--dur-base) var(--ease-spring),translate var(--dur-slow) var(--ease-spring),background var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out);position:relative}
+.button:active{transform:scale(var(--press-scale))}
+.button span{display:inline-grid;place-items:center;width:var(--icon-well);height:var(--icon-well);border-radius:var(--radius-pill);transition:transform var(--dur-base) var(--ease-spring),background var(--dur-fast) var(--ease-out)}
+.button:hover span{transform:translate(var(--space-1),calc(var(--space-1) * -1)) scale(var(--lift-scale))}
 .button-primary{background:var(--accent);color:var(--accent-contrast)}
+.button-primary span{background:color-mix(in srgb,var(--accent-contrast) 14%,transparent)}
 .button-primary:hover{background:var(--accent-hover)}
 .button-ghost{border:var(--border-hairline) solid var(--border-strong);color:var(--text)}
+.button-ghost span{background:var(--surface)}
 .button-ghost:hover{border-color:var(--accent);color:var(--accent)}
 .scroll-cue{position:absolute;left:50%;bottom:var(--space-6);transform:translateX(-50%);z-index:1;display:flex;flex-direction:column;align-items:center;gap:var(--space-3);color:var(--text-faint)}
 .scroll-cue span{font:var(--weight-medium) 10px var(--font-mono);letter-spacing:var(--tracking-label)}
@@ -103,13 +119,20 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 
 /* ---- Sections generic ---------------------------------------------------*/
 .section{padding-top:var(--space-12)}
-.section-kicker{display:flex;gap:var(--space-5);color:var(--text-faint);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);text-transform:uppercase;margin-bottom:var(--space-6)}
+/* Eyebrow pill above every section head. */
+.section-kicker{display:inline-flex;gap:var(--space-4);color:var(--text-faint);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);text-transform:uppercase;margin-bottom:var(--space-6);padding:var(--space-1) var(--space-4);border:var(--border-hairline) solid var(--border);border-radius:var(--radius-pill)}
 .section-kicker span:first-child{color:var(--accent)}
 .display{font-family:var(--font-display);font-weight:700;font-size:var(--text-display);line-height:var(--leading-tight);letter-spacing:var(--tracking-tight)}
 
-/* reveal-on-scroll, plain IO-driven (see script.js) */
-@keyframes reveal{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
-.reveal-group{animation:reveal var(--dur-slow) var(--ease-out) both}
+/* reveal-on-scroll, plain IO-driven (see script.js): a heavy fade-up that
+   resolves out of a blur. One-shot, so the filter never persists on scroll. */
+@keyframes reveal{from{opacity:0;transform:translateY(var(--space-8));filter:blur(var(--blur-reveal))}to{opacity:1;transform:none;filter:none}}
+.reveal-group{animation:reveal var(--dur-reveal) var(--ease-spring) both}
+
+/* ---- Double bezel: a core panel seated in a hairline tray ------------- */
+.bezel{padding:var(--bezel);border:var(--border-hairline) solid var(--border);border-radius:var(--radius-xl);background:var(--surface-sunken);transition:border-color var(--dur-base) var(--ease-out),transform var(--dur-slow) var(--ease-spring)}
+.bezel-core{height:100%;border:var(--border-hairline) solid var(--border);border-top-color:var(--border-strong);border-radius:var(--radius-core);background:var(--surface)}
+.bezel:hover{border-color:var(--border-strong);transform:translateY(calc(var(--space-1) * -1))}
 
 /* ---- Profile -------------------------------------------------------------*/
 .profile-layout{display:grid;grid-template-columns:1fr 1fr;gap:12%;align-items:start}
@@ -177,8 +200,8 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 
 /* ---- Skills: icon-card grid --------------------------------------------*/
 .skills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4);margin-top:var(--space-7)}
-.skill-card{min-width:0;padding:var(--space-6) var(--space-5);border:var(--border-hairline) solid var(--border);border-radius:var(--radius-lg);transition:border-color var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out)}
-.skill-card:hover{border-color:var(--border-strong);transform:translateY(-4px)}
+.skill-card{min-width:0}
+.skill-card .bezel-core{padding:var(--space-6) var(--space-5)}
 .skill-icon{width:48px;height:48px;margin-bottom:var(--space-5)}
 .skill-card h3{margin:0 0 var(--space-4);font-family:var(--font-display);font-weight:600;font-size:var(--text-lg);letter-spacing:var(--tracking-tight)}
 
@@ -187,9 +210,8 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 .note-status{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--accent);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);text-transform:uppercase}
 .note-status i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 16%,transparent)}
 .note-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin-top:var(--space-7)}
-.note-grid article{min-height:220px;padding:var(--space-5);border:var(--border-hairline) solid var(--border);border-radius:var(--radius-lg);transition:border-color var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out)}
-.note-grid article:hover{transform:translateY(-4px);border-color:var(--border-strong)}
-.note-grid article>span{color:var(--text-faint);font:var(--weight-medium) 10px var(--font-mono);letter-spacing:var(--tracking-label)}
+.note-grid .bezel-core{min-height:220px;padding:var(--space-5)}
+.note-grid .bezel-core>span{color:var(--text-faint);font:var(--weight-medium) 10px var(--font-mono);letter-spacing:var(--tracking-label)}
 .note-grid h3{margin:var(--space-6) 0 var(--space-3);font-size:var(--text-lg);line-height:1.25;font-weight:var(--weight-head)}
 .note-grid p{margin:0;color:var(--text-muted);font-size:var(--text-sm)}
 .community-line{margin-top:var(--space-7);padding-top:var(--space-6);border-top:var(--border-hairline) solid var(--border);color:var(--text-muted);max-width:60ch}
@@ -208,7 +230,11 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 .social-links span{color:var(--accent);margin-left:var(--space-2)}
 
 /* ---- Case study dialog -------------------------------------------------*/
-.case-study{border:var(--border-hairline) solid var(--border);border-radius:var(--radius-lg);background:var(--surface);color:var(--text);padding:0;width:min(760px,calc(100% - 32px))}
+/* Dialog is a double bezel too: the <dialog> is the tray, its children the core. */
+.case-study{border:var(--border-hairline) solid var(--border);border-radius:var(--radius-xl);background:var(--surface-sunken);color:var(--text);padding:var(--bezel);width:min(760px,calc(100% - 32px))}
+.case-study-head,.case-study-body{background:var(--surface);border-inline:var(--border-hairline) solid var(--border)}
+.case-study-head{border-top:var(--border-hairline) solid var(--border-strong);border-radius:var(--radius-core) var(--radius-core) 0 0}
+.case-study-body{border-bottom:var(--border-hairline) solid var(--border);border-radius:0 0 var(--radius-core) var(--radius-core)}
 .case-study::backdrop{background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(6px)}
 .case-study-head{display:flex;justify-content:space-between;align-items:center;padding:var(--space-5) var(--space-6);border-bottom:var(--border-hairline) solid var(--border);font:var(--weight-medium) 10px var(--font-mono);letter-spacing:var(--tracking-label);color:var(--accent)}
 .case-close{border:0;background:transparent;color:var(--text);font-size:22px;line-height:1;cursor:pointer}
@@ -222,14 +248,15 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 
 /* ---- Scroll progress / footer -------------------------------------------*/
 .scroll-progress{position:fixed;top:0;left:0;width:100%;height:2px;z-index:60;background:transparent}
-.scroll-progress span{display:block;width:0;height:100%;background:var(--accent);transition:width .1s linear}
+.scroll-progress span{display:block;width:100%;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}
 .site-footer{display:flex;justify-content:space-between;align-items:center;padding:var(--space-6) 0;border-top:var(--border-hairline) solid var(--border);font:var(--weight-medium) 10px var(--font-mono);color:var(--text-faint);letter-spacing:var(--tracking-label)}
 .site-footer a{color:var(--text-muted);text-decoration:none}
 .site-footer a:hover{color:var(--accent)}
 
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .reveal-group,.note-grid article,.diagram{animation:none!important;transition:none!important;transform:none!important}
+  .reveal-group,.bezel,.diagram{animation:none!important;transition:none!important;transform:none!important}
+  .nav-list a,.nav-foot{opacity:1!important;transform:none!important}
   .ticker-track,.scroll-cue i,.diagram-scan,.diagram-sweep-line,.diagram-pulse-ring{animation:none!important}
   .diagram-pulse-ring{opacity:.4}
   .kinetic .line > span{opacity:1!important;transform:none!important}
