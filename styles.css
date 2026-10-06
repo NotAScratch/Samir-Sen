@@ -1,12 +1,17 @@
 /* ---- Reset & base ------------------------------------------------------- */
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+/* scroll-padding keeps anchor jumps and keyboard focus clear of the fixed corner chrome. */
+html{scroll-behavior:smooth;scroll-padding-top:var(--space-8);color-scheme:dark;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+html:has(body.theme-light){color-scheme:light}
 body{
   margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);
   font-size:var(--text-base);line-height:var(--leading-body);overflow-x:hidden;
   transition:background var(--dur-base) var(--ease-out),color var(--dur-base) var(--ease-out);
 }
 h1,h2,h3,p{margin-top:0}
+h1,h2,h3{text-wrap:balance}
+.skip-link{position:fixed;top:var(--space-4);left:var(--space-4);z-index:95;padding:var(--space-2) var(--space-4);border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-contrast);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);text-transform:uppercase;text-decoration:none;transform:translateY(calc(-100% - var(--space-6)))}
+.skip-link:focus-visible{transform:none}
 a{color:inherit}
 *:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .shell{width:min(var(--container),calc(100% - 96px));margin-inline:auto}
@@ -61,7 +66,7 @@ body.nav-open .corner{z-index:75}
 /* ---- Fullscreen nav overlay --------------------------------------------*/
 .nav-overlay{
   position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;flex-direction:column;justify-content:center;
-  overflow-y:auto;padding:var(--space-8) var(--space-8);transform:translateY(-100%);transition:transform var(--dur-slow) var(--ease-spring);
+  overflow-y:auto;overscroll-behavior:contain;padding:var(--space-8) var(--space-8);transform:translateY(-100%);transition:transform var(--dur-slow) var(--ease-spring);
 }
 .nav-overlay.is-open{transform:translateY(0)}
 .nav-list{list-style:none;margin:0;padding:0}
@@ -115,6 +120,7 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 .ticker{overflow:hidden;border-top:var(--border-hairline) solid var(--border);border-bottom:var(--border-hairline) solid var(--border);padding:var(--space-5) 0;white-space:nowrap}
 .ticker-track{width:max-content;display:flex;gap:var(--space-8);animation:marquee 36s linear infinite}
 .ticker-track span{font-family:var(--font-display);font-weight:600;font-size:var(--text-2xl);color:transparent;-webkit-text-stroke:1px var(--border-strong);letter-spacing:var(--tracking-tight)}
+.ticker:hover .ticker-track{animation-play-state:paused}
 @keyframes marquee{to{transform:translateX(-50%)}}
 
 /* ---- Sections generic ---------------------------------------------------*/
@@ -165,11 +171,16 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 .diagram-bar-accent .diagram-bar-side{fill:color-mix(in srgb,var(--accent) 55%,var(--surface-sunken))}
 .diagram-scan{stroke-width:1.5;animation:diagram-scan 3.4s ease-in-out infinite}
 @keyframes diagram-scan{0%,100%{transform:translateX(0)}50%{transform:translateX(352px)}}
-.diagram-sweep-line{stroke-width:1.5;animation:diagram-sweep 4s linear infinite}
+/* SVG motion pivots on each element's own box centre (fill-box), not
+   hard-coded viewBox pixels. The sweep group carries an invisible guide
+   circle so its box centre is the radar centre. */
+.diagram-sweep-line{stroke-width:1.5}
+.diagram-sweep,.diagram-pulse-ring{transform-box:fill-box;transform-origin:center}
+.diagram-sweep{animation:diagram-sweep 4s linear infinite}
 @keyframes diagram-sweep{to{transform:rotate(360deg)}}
 .diagram-pulse-ring{animation:diagram-pulse 2.6s ease-out infinite}
 .diagram-pulse-ring-delay{animation-delay:1.3s}
-@keyframes diagram-pulse{0%{opacity:.9;transform:scale(.6);transform-origin:200px 150px}80%,100%{opacity:0;transform:scale(1.15);transform-origin:200px 150px}}
+@keyframes diagram-pulse{0%{opacity:.9;transform:scale(.6)}80%,100%{opacity:0;transform:scale(1.15)}}
 .work-index{position:absolute;top:var(--space-5);left:var(--space-5);color:var(--text-faint);font:var(--weight-medium) var(--text-xs) var(--font-mono);letter-spacing:var(--tracking-label);z-index:2}
 .work-block-reverse .work-index{left:auto;right:var(--space-5)}
 .work-copy{padding:var(--space-8) var(--space-7);display:flex;flex-direction:column;justify-content:center;width:auto;margin:0;max-width:560px}
@@ -231,7 +242,7 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
 
 /* ---- Case study dialog -------------------------------------------------*/
 /* Dialog is a double bezel too: the <dialog> is the tray, its children the core. */
-.case-study{border:var(--border-hairline) solid var(--border);border-radius:var(--radius-xl);background:var(--surface-sunken);color:var(--text);padding:var(--bezel);width:min(760px,calc(100% - 32px))}
+.case-study{border:var(--border-hairline) solid var(--border);border-radius:var(--radius-xl);background:var(--surface-sunken);color:var(--text);padding:var(--bezel);width:min(760px,calc(100% - 32px));overscroll-behavior:contain}
 .case-study-head,.case-study-body{background:var(--surface);border-inline:var(--border-hairline) solid var(--border)}
 .case-study-head{border-top:var(--border-hairline) solid var(--border-strong);border-radius:var(--radius-core) var(--radius-core) 0 0}
 .case-study-body{border-bottom:var(--border-hairline) solid var(--border);border-radius:0 0 var(--radius-core) var(--radius-core)}
@@ -257,7 +268,7 @@ h1.kinetic{font-family:var(--font-display);font-weight:700;font-size:var(--text-
   html{scroll-behavior:auto}
   .reveal-group,.bezel,.diagram{animation:none!important;transition:none!important;transform:none!important}
   .nav-list a,.nav-foot{opacity:1!important;transform:none!important}
-  .ticker-track,.scroll-cue i,.diagram-scan,.diagram-sweep-line,.diagram-pulse-ring{animation:none!important}
+  .ticker-track,.scroll-cue i,.diagram-scan,.diagram-sweep,.diagram-pulse-ring{animation:none!important}
   .diagram-pulse-ring{opacity:.4}
   .kinetic .line > span{opacity:1!important;transform:none!important}
 }

@@ -6,17 +6,24 @@ const isFinePointer = window.matchMedia('(pointer: fine)').matches;
    toggle is an explicit opt-in to the light variant, remembered per visitor. */
 const themeToggle = document.querySelector('.theme-toggle');
 const themeLabel = document.querySelector('.theme-label');
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+// Browser chrome tint follows the active theme's --bg token.
+const syncThemeColor = () => {
+  themeColorMeta.content = getComputedStyle(document.body).getPropertyValue('--bg').trim();
+};
 const storedTheme = localStorage.getItem('samir-theme');
 const initialLight = storedTheme === 'light';
 document.body.classList.toggle('theme-light', initialLight);
 themeLabel.textContent = initialLight ? 'Light' : 'Dark';
 themeToggle.setAttribute('aria-pressed', String(initialLight));
+syncThemeColor();
 
 themeToggle.addEventListener('click', () => {
   const isLight = document.body.classList.toggle('theme-light');
   themeLabel.textContent = isLight ? 'Light' : 'Dark';
   themeToggle.setAttribute('aria-pressed', String(isLight));
   localStorage.setItem('samir-theme', isLight ? 'light' : 'dark');
+  syncThemeColor();
   document.dispatchEvent(new CustomEvent('themechange'));
 });
 
@@ -45,8 +52,11 @@ if (isFinePointer && !prefersReducedMotion) {
 /* ---- Magnetic buttons -----------------------------------------------------*/
 if (isFinePointer && !prefersReducedMotion) {
   document.querySelectorAll('.button').forEach((button) => {
+    // Measure once per hover, not on every mousemove (avoids a layout read per event).
+    let rect;
+    button.addEventListener('mouseenter', () => { rect = button.getBoundingClientRect(); });
     button.addEventListener('mousemove', (event) => {
-      const rect = button.getBoundingClientRect();
+      if (!rect) return;
       const x = event.clientX - rect.left - rect.width / 2;
       const y = event.clientY - rect.top - rect.height / 2;
       // `translate`, not `transform`, so the CSS :active press-scale still composes.
@@ -62,13 +72,25 @@ if (isFinePointer && !prefersReducedMotion) {
 const menuTrigger = document.querySelector('.menu-trigger');
 const menuLabel = menuTrigger.querySelector('span');
 const navOverlay = document.getElementById('nav-overlay');
+// While the overlay is open, everything behind it is inert so Tab stays in
+// the menu (plus the corner trigger, which is the close control).
+const behindNav = [document.querySelector('main'), document.querySelector('.site-footer'), document.querySelector('.corner-tl'), document.querySelector('.skip-link')];
 const setNavState = (isOpen) => {
+  const focusWasInMenu = navOverlay.contains(document.activeElement);
   navOverlay.classList.toggle('is-open', isOpen);
   navOverlay.setAttribute('aria-hidden', String(!isOpen));
+  navOverlay.inert = !isOpen;
+  behindNav.forEach((el) => { if (el) el.inert = isOpen; });
   menuTrigger.setAttribute('aria-expanded', String(isOpen));
   menuLabel.textContent = isOpen ? 'Close' : 'Menu';
   document.body.classList.toggle('nav-open', isOpen);
   document.body.style.overflow = isOpen ? 'hidden' : '';
+  if (isOpen) {
+    navOverlay.querySelector('a')?.focus({ preventScroll: true });
+  } else if (focusWasInMenu) {
+    // The menu just went inert; hand focus back to the control that opened it.
+    menuTrigger.focus({ preventScroll: true });
+  }
 };
 menuTrigger.addEventListener('click', () => setNavState(!navOverlay.classList.contains('is-open')));
 navOverlay.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setNavState(false)));
@@ -135,7 +157,7 @@ document.querySelectorAll('.details-toggle').forEach((button) => {
     button.setAttribute('aria-expanded', String(!isOpen));
     const detail = document.getElementById(button.getAttribute('aria-controls'));
     detail.hidden = isOpen;
-    button.innerHTML = !isOpen ? 'Hide problem solved <span>−</span>' : 'The problem solved <span>+</span>';
+    button.innerHTML = !isOpen ? 'Hide Problem Solved <span aria-hidden="true">−</span>' : 'The Problem Solved <span aria-hidden="true">+</span>';
   });
 });
 
@@ -163,19 +185,33 @@ const caseFields = {
   }
 };
 
+/* The open case study is reflected in the URL (?case=vision) so it can be
+   linked to and survives a reload; closing removes the param. */
+const setCaseParam = (key) => {
+  const url = new URL(window.location.href);
+  if (key) url.searchParams.set('case', key); else url.searchParams.delete('case');
+  history.replaceState(null, '', url);
+};
+const openCase = (key) => {
+  const content = caseFields[key];
+  if (!content || !caseStudy) return;
+  document.querySelector('#case-index').textContent = content.index;
+  document.querySelector('#case-kicker').textContent = content.kicker;
+  document.querySelector('#case-title').textContent = content.title;
+  document.querySelector('#case-summary').textContent = content.summary;
+  document.querySelector('#case-problem').textContent = content.problem;
+  document.querySelector('#case-approach').textContent = content.approach;
+  document.querySelector('#case-lesson').textContent = content.lesson;
+  caseStudy.showModal();
+  setCaseParam(key);
+};
+
 document.querySelectorAll('.case-study-trigger').forEach((button) => {
-  button.addEventListener('click', () => {
-    const content = caseFields[button.dataset.case];
-    if (!content || !caseStudy) return;
-    document.querySelector('#case-index').textContent = content.index;
-    document.querySelector('#case-kicker').textContent = content.kicker;
-    document.querySelector('#case-title').textContent = content.title;
-    document.querySelector('#case-summary').textContent = content.summary;
-    document.querySelector('#case-problem').textContent = content.problem;
-    document.querySelector('#case-approach').textContent = content.approach;
-    document.querySelector('#case-lesson').textContent = content.lesson;
-    caseStudy.showModal();
-  });
+  button.addEventListener('click', () => openCase(button.dataset.case));
 });
+// Fires for every way the dialog closes: close button, backdrop click, Esc.
+caseStudy?.addEventListener('close', () => setCaseParam(null));
+const initialCase = new URLSearchParams(window.location.search).get('case');
+if (initialCase && Object.hasOwn(caseFields, initialCase)) openCase(initialCase);
 caseClose?.addEventListener('click', () => caseStudy.close());
 caseStudy?.addEventListener('click', (event) => { if (event.target === caseStudy) caseStudy.close(); });

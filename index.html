@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0B0A08">
   <meta name="description" content="Samir Sen is a junior R&D AI roboticist and backend engineer building intelligent systems for the physical world.">
   <title>Samir Sen | AI Roboticist &amp; Automation Engineer</title>
   <meta property="og:title" content="Samir Sen | AI Roboticist &amp; Automation Engineer">
@@ -11,16 +12,18 @@
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="design/tokens.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#top">Skip to content</a>
   <div class="grain" aria-hidden="true"></div>
   <div class="cursor-dot" aria-hidden="true"></div>
   <div class="cursor-ring" aria-hidden="true"></div>
 
-  <div class="corner corner-tl"><a class="wordmark" href="#top">Samir Sen<span>.</span></a></div>
+  <div class="corner corner-tl"><a class="wordmark" href="#top" translate="no">Samir Sen<span>.</span></a></div>
   <div class="corner corner-tr">
     <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle color theme" title="Toggle color theme">
       <span class="theme-icon" aria-hidden="true"></span><span class="theme-label">Dark</span>
@@ -29,7 +32,7 @@
       <span>Menu</span><i></i>
     </button>
   </div>
-  <nav class="nav-overlay" id="nav-overlay" aria-label="Main navigation" aria-hidden="true">
+  <nav class="nav-overlay" id="nav-overlay" aria-label="Main navigation" aria-hidden="true" inert>
     <ol class="nav-list">
       <li style="--i:1"><a href="#work"><span>01</span>Selected Work</a></li>
       <li style="--i:2"><a href="#about"><span>02</span>Profile</a></li>
@@ -39,9 +42,9 @@
       <li style="--i:6"><a href="#connect"><span>06</span>Connect</a></li>
     </ol>
     <div class="nav-foot">
-      <a href="https://github.com/NotAScratch" target="_blank" rel="noreferrer">GitHub ↗</a>
-      <a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
-      <a href="mailto:samirsen66@gmail.com">Email ↗</a>
+      <a href="https://github.com/NotAScratch" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      <a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
+      <a href="mailto:samirsen66@gmail.com">Email <span aria-hidden="true">↗</span></a>
     </div>
   </nav>
 
@@ -60,8 +63,8 @@
         <div class="hero-foot">
           <p class="hero-intro">Turning computer vision research into reliable, physical-world automation — one perception loop at a time.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#work">Selected work <span>↘</span></a>
-            <a class="button button-ghost" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download CV <span>↓</span></a>
+            <a class="button button-primary" href="#work">Selected Work <span aria-hidden="true">↘</span></a>
+            <a class="button button-ghost" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download CV <span aria-hidden="true">↓</span></a>
           </div>
         </div>
       </div>
@@ -70,7 +73,7 @@
 
     <section class="ticker" aria-label="Capabilities">
       <div class="ticker-track">
-        <span>COMPUTER VISION</span><span>EDGE INTELLIGENCE</span><span>AUTOMATION</span><span>BACKEND SYSTEMS</span><span>EMBEDDED HARDWARE</span>
+        <span aria-hidden="true">COMPUTER VISION</span><span aria-hidden="true">EDGE INTELLIGENCE</span><span aria-hidden="true">AUTOMATION</span><span aria-hidden="true">BACKEND SYSTEMS</span><span aria-hidden="true">EMBEDDED HARDWARE</span>
         <span>COMPUTER VISION</span><span>EDGE INTELLIGENCE</span><span>AUTOMATION</span><span>BACKEND SYSTEMS</span><span>EMBEDDED HARDWARE</span>
       </div>
     </section>
@@ -117,8 +120,8 @@
           <p>Turns live video feeds into spatial awareness, detecting objects while estimating their distance and direction for downstream robotic decisions.</p>
           <div class="tags"><span>SSD MobileNetV2</span><span>FastAPI</span><span>Live video</span></div>
           <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-1">The problem solved <span>+</span></button>
-            <button class="case-study-trigger" type="button" data-case="vision">Open case study <span>↗</span></button>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-1">The Problem Solved <span aria-hidden="true">+</span></button>
+            <button class="case-study-trigger" type="button" data-case="vision">Open Case Study <span aria-hidden="true">↗</span></button>
           </div>
           <p class="project-detail" id="project-detail-1" hidden>Bridges the gap between raw camera input and actionable perception through a lightweight, accessible API.</p>
         </div>
@@ -140,7 +143,7 @@
               <circle cx="175" cy="70" r="3"/><circle cx="120" cy="150" r="3"/>
             </g>
             <rect x="185" y="135" width="30" height="30" class="diagram-line-strong" fill="none"/>
-            <line x1="200" y1="150" x2="200" y2="30" class="diagram-sweep-line diagram-accent" style="transform-origin:200px 150px"/>
+            <g class="diagram-sweep"><circle cx="200" cy="150" r="120" fill="none" stroke="none"/><line x1="200" y1="150" x2="200" y2="30" class="diagram-sweep-line diagram-accent"/></g>
           </svg>
           <span class="work-index">02 / 06</span>
         </div>
@@ -149,8 +152,8 @@
           <p>Gives an edge device environmental context by combining Lidar and depth sensors with PyTorch inference on a Jetson Nano.</p>
           <div class="tags"><span>Jetson Nano</span><span>Lidar</span><span>PyTorch</span></div>
           <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-2">The problem solved <span>+</span></button>
-            <button class="case-study-trigger" type="button" data-case="edge">Open case study <span>↗</span></button>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-2">The Problem Solved <span aria-hidden="true">+</span></button>
+            <button class="case-study-trigger" type="button" data-case="edge">Open Case Study <span aria-hidden="true">↗</span></button>
           </div>
           <p class="project-detail" id="project-detail-2" hidden>Moves spatial reasoning closer to the sensor, reducing dependence on remote compute for responsive robotics.</p>
         </div>
@@ -183,7 +186,7 @@
           <p>Uses machine learning regression to find patterns in weather data and produce informed meteorological predictions.</p>
           <div class="tags"><span>scikit-learn</span><span>Random Forest</span><span>Regression</span></div>
           <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-3">The problem solved <span>+</span></button>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-3">The Problem Solved <span aria-hidden="true">+</span></button>
           </div>
           <p class="project-detail" id="project-detail-3" hidden>Converts historical measurements into a practical forecasting workflow with interpretable model experimentation.</p>
         </div>
@@ -231,7 +234,7 @@
           <p>Transforms workforce data into clearer salary insights through careful data processing and analytical exploration.</p>
           <div class="tags"><span>Pandas</span><span>NumPy</span><span>Matplotlib</span></div>
           <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-4">The problem solved <span>+</span></button>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-4">The Problem Solved <span aria-hidden="true">+</span></button>
           </div>
           <p class="project-detail" id="project-detail-4" hidden>Makes compensation patterns easier to inspect, compare, and use in workforce decision-making.</p>
         </div>
@@ -256,7 +259,7 @@
           <p>Connects hardware and software into a responsive interactive display that makes robotic behavior visible and engaging.</p>
           <div class="tags"><span>Hardware integration</span><span>Linux</span><span>Edge device</span></div>
           <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-5">The problem solved <span>+</span></button>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-5">The Problem Solved <span aria-hidden="true">+</span></button>
           </div>
           <p class="project-detail" id="project-detail-5" hidden>Creates a tangible interface for demonstrating intelligent behavior beyond a screen or simulation.</p>
         </div>
@@ -290,7 +293,7 @@
           <p>An embedded, wireless response system designed to make quiz participation immediate, fair, and easy to operate.</p>
           <div class="tags"><span>Microcontroller</span><span>Embedded systems</span><span>Wireless</span></div>
           <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-6">The problem solved <span>+</span></button>
+            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-6">The Problem Solved <span aria-hidden="true">+</span></button>
           </div>
           <p class="project-detail" id="project-detail-6" hidden>Replaces tangled manual signaling with a reliable hardware workflow for real-time group interaction.</p>
         </div>
@@ -390,20 +393,20 @@
       <div class="shell">
         <div class="section-kicker"><span>07</span><span>OPEN CHANNEL</span></div>
         <h2 id="outro-title" class="kinetic-outro">Have a difficult<br><em>problem?</em></h2>
-        <p class="outro-copy">Let's talk about what you're building, what's stuck, and where intelligent systems could take it next.</p>
+        <p class="outro-copy">Let’s talk about what you’re building, what’s stuck, and where intelligent systems could take it next.</p>
         <a class="email-link" href="mailto:samirsen66@gmail.com">samirsen66@gmail.com</a>
         <div class="social-links">
           <a href="https://github.com/NotAScratch" target="_blank" rel="noopener noreferrer">
             <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" class="diagram-line" fill="none"/><path d="M9 8 6 12l3 4M15 8l3 4-3 4" class="diagram-line-strong" fill="none"/></svg>
-            GitHub <span>↗</span>
+            GitHub <span aria-hidden="true">↗</span>
           </a>
           <a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer">
             <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2" class="diagram-accent-fill"/><line x1="6" y1="11" x2="6" y2="19" class="diagram-line-strong"/><path d="M11 19v-5a3 3 0 0 1 6 0v5" class="diagram-line-strong" fill="none"/><line x1="11" y1="19" x2="11" y2="12" class="diagram-line-strong"/></svg>
-            LinkedIn <span>↗</span>
+            LinkedIn <span aria-hidden="true">↗</span>
           </a>
           <a href="mailto:samirsen66@gmail.com">
             <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5" class="diagram-line-strong" fill="none"/><path d="M3 7l9 6 9-6" class="diagram-line-strong" fill="none"/></svg>
-            Email <span>↗</span>
+            Email <span aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
@@ -428,8 +431,8 @@
 
   <footer class="site-footer shell">
     <span>© 2025 Samir Sen</span>
-    <a href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">DOWNLOAD CV ↓</a>
-    <a href="#top">BACK TO TOP ↑</a>
+    <a href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">DOWNLOAD CV <span aria-hidden="true">↓</span></a>
+    <a href="#top">BACK TO TOP <span aria-hidden="true">↑</span></a>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
