@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0B0A08">
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="description" content="Samir Sen is a junior R&D AI roboticist and backend engineer building intelligent systems for the physical world.">
   <title>Samir Sen | AI Roboticist &amp; Automation Engineer</title>
   <meta property="og:title" content="Samir Sen | AI Roboticist &amp; Automation Engineer">
@@ -12,402 +12,418 @@
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }
+  </script>
   <link rel="stylesheet" href="design/tokens.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#top">Skip to content</a>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="cursor-dot" aria-hidden="true"></div>
-  <div class="cursor-ring" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <div class="corner corner-tl"><a class="wordmark" href="#top" translate="no">Samir Sen<span>.</span></a></div>
-  <div class="corner corner-tr">
-    <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle color theme" title="Toggle color theme">
-      <span class="theme-icon" aria-hidden="true"></span><span class="theme-label">Dark</span>
-    </button>
-    <button class="menu-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="nav-overlay">
-      <span>Menu</span><i></i>
-    </button>
-  </div>
-  <nav class="nav-overlay" id="nav-overlay" aria-label="Main navigation" aria-hidden="true" inert>
-    <ol class="nav-list">
-      <li style="--i:1"><a href="#work"><span>01</span>Selected Work</a></li>
-      <li style="--i:2"><a href="#about"><span>02</span>Profile</a></li>
-      <li style="--i:3"><a href="#experience"><span>03</span>Path</a></li>
-      <li style="--i:4"><a href="#skills"><span>04</span>Stack</a></li>
-      <li style="--i:5"><a href="#notes"><span>05</span>Field Notes</a></li>
-      <li style="--i:6"><a href="#connect"><span>06</span>Connect</a></li>
-    </ol>
-    <div class="nav-foot">
-      <a href="https://github.com/NotAScratch" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-      <a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
-      <a href="mailto:samirsen66@gmail.com">Email <span aria-hidden="true">↗</span></a>
+  <!-- Nav: desktop inline links, mobile menu-toggle + #menu. CSS shows one or the other. -->
+  <header class="site-header">
+    <div class="nav">
+      <a class="wordmark" href="#top" translate="no">Samir Sen</a>
+      <p class="nav-status"><span class="status-dot" aria-hidden="true"></span>Kathmandu · <span class="nav-clock">--:--</span> NPT · Open to collaborations</p>
+      <nav class="nav-links" aria-label="Primary">
+        <ul class="nav-list">
+          <li><a href="#work">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#notes">Notes</a></li>
+          <li><a class="button button-ghost nav-cta" href="#contact">Let's talk <span aria-hidden="true">→</span></a></li>
+        </ul>
+      </nav>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu"><span class="status-dot" aria-hidden="true"></span> <span class="menu-toggle-label">Menu</span></button>
     </div>
-  </nav>
+    <div id="menu" class="menu" hidden>
+      <nav aria-label="Menu">
+        <ul class="menu-list">
+          <li><a class="menu-link" href="#work">Work</a></li>
+          <li><a class="menu-link" href="#about">About</a></li>
+          <li><a class="menu-link" href="#services">Services</a></li>
+          <li><a class="menu-link" href="#notes">Notes</a></li>
+          <li><a class="menu-link menu-link-cta" href="#contact">Let's talk <span aria-hidden="true">→</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-  <main id="top">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-scene-wrap" aria-hidden="true"><canvas id="hero-scene"></canvas></div>
-      <span class="hero-tag hero-tag-bl">R&amp;D AI ROBOTICS</span>
-      <span class="hero-tag hero-tag-br">KATHMANDU, NP</span>
-      <div class="hero-inner shell">
-        <p class="eyebrow"><span class="status-dot"></span> R&amp;D AI Roboticist &amp; Automation Engineer <i>— Baliyo Ventures</i></p>
-        <h1 id="hero-title" class="kinetic">
-          <span class="line"><span>I build</span></span>
-          <span class="line"><span>systems that <em>see,</em></span></span>
-          <span class="line"><span><em>think,</em> and move.</span></span>
-        </h1>
-        <div class="hero-foot">
-          <p class="hero-intro">Turning computer vision research into reliable, physical-world automation — one perception loop at a time.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#work">Selected Work <span aria-hidden="true">↘</span></a>
-            <a class="button button-ghost" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download CV <span aria-hidden="true">↓</span></a>
-          </div>
+  <main id="main">
+    <!-- Hero. Flat grid children (eyebrow, title, robot, intro, actions) so mobile can slot the robot between the H1 and the intro. -->
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-grid shell">
+        <p class="eyebrow reveal" style="--i:0"><span class="status-dot" aria-hidden="true"></span>R&amp;D AI Roboticist &amp; Automation Engineer — Baliyo Ventures</p>
+        <h1 id="hero-title" class="display-hero reveal" style="--i:1">Systems that <br>see, think, <br>and <em>move.</em></h1>
+        <p class="hero-intro reveal" style="--i:2">Turning computer-vision research into reliable, physical-world automation — one perception loop at a time.</p>
+        <ul class="visually-hidden" aria-label="Core capabilities">
+          <li>Perception: OpenCV, PyTorch, SSD</li>
+          <li>Edge compute: Jetson Nano, Lidar</li>
+          <li>Actuation: Embedded control</li>
+        </ul>
+        <div class="hero-actions reveal" style="--i:3">
+          <a class="button button-primary" href="#work">Selected work <span aria-hidden="true">↘</span></a>
+          <a class="button button-ghost" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download CV <span aria-hidden="true">↓</span></a>
         </div>
+        <div class="robot robot--humanoid" data-robot="humanoid" aria-hidden="true">
+          <img class="robot-poster" src="assets/posters/humanoid.webp" alt="" width="604" height="900" fetchpriority="high">
+          <span class="callout" data-anchor="perception" style="--ax:45.28%;--ay:12.25%"><span class="callout-title">01 — Perception</span> <span class="callout-detail">OpenCV · PyTorch · SSD</span></span>
+          <span class="callout" data-anchor="edge" style="--ax:47.97%;--ay:27.88%"><span class="callout-title">02 — Edge compute</span> <span class="callout-detail">Jetson Nano · Lidar</span></span>
+          <span class="callout" data-anchor="actuation" style="--ax:69.48%;--ay:48.78%"><span class="callout-title">03 — Actuation</span> <span class="callout-detail">Embedded control</span></span>
+        </div>
+        <span class="hero-ground" aria-hidden="true"></span>
       </div>
-      <div class="scroll-cue" aria-hidden="true"><span>SCROLL</span><i></i></div>
+      <p class="hero-foot shell">
+        <span class="hero-foot-item" aria-hidden="true">Scroll ↓</span>
+        <span class="hero-foot-item">27.7172° N&nbsp; 85.3240° E</span>
+        <span class="hero-foot-item">Portfolio — Vol. 03 / 2026</span>
+      </p>
     </section>
 
-    <section class="ticker" aria-label="Capabilities">
-      <div class="ticker-track">
-        <span aria-hidden="true">COMPUTER VISION</span><span aria-hidden="true">EDGE INTELLIGENCE</span><span aria-hidden="true">AUTOMATION</span><span aria-hidden="true">BACKEND SYSTEMS</span><span aria-hidden="true">EMBEDDED HARDWARE</span>
-        <span>COMPUTER VISION</span><span>EDGE INTELLIGENCE</span><span>AUTOMATION</span><span>BACKEND SYSTEMS</span><span>EMBEDDED HARDWARE</span>
-      </div>
+    <section class="strip" aria-label="Capabilities">
+      <ul class="strip-list shell">
+        <li>Computer vision</li>
+        <li>Edge intelligence</li>
+        <li>Automation</li>
+        <li>Backend systems</li>
+        <li>Embedded hardware</li>
+      </ul>
     </section>
 
-    <section class="profile shell section reveal-group" id="about" aria-labelledby="profile-title">
-      <div class="section-kicker"><span>02</span><span>PROFILE</span></div>
-      <div class="profile-layout">
-        <h2 id="profile-title" class="display">Curiosity,<br><em>made tangible.</em></h2>
-        <div class="profile-body">
-          <p class="lead">I work at the intersection of intelligent software and the physical world — building systems that are perceptive, connected, and ready for action beyond the notebook.</p>
-          <p>As a junior R&amp;D AI roboticist at <strong>Baliyo Ventures</strong>, I explore computer vision, edge devices, and spatial intelligence. BSc Hons in Computing with AI, Islington College (2025), plus internships at Ants Pvt. Ltd. and Atreya Software Solutions.</p>
-          <p class="mono-note">// build with intent. learn in public. ship what matters.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="work section" id="work" aria-labelledby="work-title">
-      <div class="section-heading shell reveal-group">
-        <div class="section-kicker"><span>03</span><span>SELECTED WORK</span></div>
-        <h2 id="work-title" class="display">From signal to <em>solution.</em></h2>
-      </div>
-
-      <article class="work-block reveal-group">
-        <div class="work-media">
-          <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Detection reticle locking onto an object with a distance readout and scan line">
-            <rect x="24" y="24" width="352" height="252" class="diagram-line" fill="none"/>
-            <g class="diagram-line-strong" fill="none" stroke-linecap="square">
-              <path d="M24 60 V24 H60"/><path d="M340 24 H376 V60"/>
-              <path d="M376 240 V276 H340"/><path d="M60 276 H24 V240"/>
-            </g>
-            <path d="M60 250 L340 250" class="diagram-line"/>
-            <g class="diagram-line">
-              <path d="M90 250 V240"/><path d="M150 250 V236"/><path d="M210 250 V240"/><path d="M270 250 V236"/><path d="M330 250 V240"/>
-            </g>
-            <polygon points="180,100 230,90 250,140 215,175 165,160" class="diagram-line-strong" fill="none"/>
-            <rect x="150" y="72" width="130" height="120" class="diagram-accent" fill="none" stroke-dasharray="6 5"/>
-            <g class="diagram-accent-fill"><circle cx="150" cy="72" r="3"/><circle cx="280" cy="72" r="3"/><circle cx="150" cy="192" r="3"/><circle cx="280" cy="192" r="3"/></g>
-            <line x1="24" y1="0" x2="24" y2="300" class="diagram-scan diagram-accent" />
-          </svg>
-          <span class="work-index">01 / 06</span>
-        </div>
-        <div class="work-copy shell">
-          <h3>Real-Time Object Detection, Distance &amp; Direction Estimation</h3>
-          <p>Turns live video feeds into spatial awareness, detecting objects while estimating their distance and direction for downstream robotic decisions.</p>
-          <div class="tags"><span>SSD MobileNetV2</span><span>FastAPI</span><span>Live video</span></div>
-          <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-1">The Problem Solved <span aria-hidden="true">+</span></button>
-            <button class="case-study-trigger" type="button" data-case="vision">Open Case Study <span aria-hidden="true">↗</span></button>
-          </div>
-          <p class="project-detail" id="project-detail-1" hidden>Bridges the gap between raw camera input and actionable perception through a lightweight, accessible API.</p>
-        </div>
-      </article>
-
-      <article class="work-block work-block-reverse reveal-group">
-        <div class="work-media">
-          <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Radar-style lidar sweep with scattered point-cloud returns around a central edge device">
-            <g class="diagram-line" fill="none">
-              <circle cx="200" cy="150" r="40"/><circle cx="200" cy="150" r="80"/><circle cx="200" cy="150" r="120"/>
-            </g>
-            <g class="diagram-line" stroke-dasharray="2 6">
-              <line x1="200" y1="30" x2="200" y2="270"/><line x1="80" y1="150" x2="320" y2="150"/>
-              <line x1="115" y1="65" x2="285" y2="235"/><line x1="285" y1="65" x2="115" y2="235"/>
-            </g>
-            <g class="diagram-accent-fill">
-              <circle cx="240" cy="95" r="3"/><circle cx="270" cy="160" r="3"/><circle cx="150" cy="110" r="3"/>
-              <circle cx="140" cy="190" r="3"/><circle cx="230" cy="205" r="3"/><circle cx="300" cy="140" r="3"/>
-              <circle cx="175" cy="70" r="3"/><circle cx="120" cy="150" r="3"/>
-            </g>
-            <rect x="185" y="135" width="30" height="30" class="diagram-line-strong" fill="none"/>
-            <g class="diagram-sweep"><circle cx="200" cy="150" r="120" fill="none" stroke="none"/><line x1="200" y1="150" x2="200" y2="30" class="diagram-sweep-line diagram-accent"/></g>
-          </svg>
-          <span class="work-index">02 / 06</span>
-        </div>
-        <div class="work-copy shell">
-          <h3>Orientation &amp; Spatial Edge Intelligence</h3>
-          <p>Gives an edge device environmental context by combining Lidar and depth sensors with PyTorch inference on a Jetson Nano.</p>
-          <div class="tags"><span>Jetson Nano</span><span>Lidar</span><span>PyTorch</span></div>
-          <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-2">The Problem Solved <span aria-hidden="true">+</span></button>
-            <button class="case-study-trigger" type="button" data-case="edge">Open Case Study <span aria-hidden="true">↗</span></button>
-          </div>
-          <p class="project-detail" id="project-detail-2" hidden>Moves spatial reasoning closer to the sensor, reducing dependence on remote compute for responsive robotics.</p>
-        </div>
-      </article>
-
-      <article class="work-block reveal-group">
-        <div class="work-media">
-          <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Scatter plot of weather data with a smooth regression curve fitted through it">
-            <g class="diagram-line" fill="none">
-              <line x1="60" y1="240" x2="60" y2="40"/><line x1="60" y1="240" x2="360" y2="240"/>
-            </g>
-            <g class="diagram-line">
-              <line x1="52" y1="200" x2="60" y2="200"/><line x1="52" y1="160" x2="60" y2="160"/>
-              <line x1="52" y1="120" x2="60" y2="120"/><line x1="52" y1="80" x2="60" y2="80"/>
-              <line x1="120" y1="240" x2="120" y2="248"/><line x1="190" y1="240" x2="190" y2="248"/>
-              <line x1="260" y1="240" x2="260" y2="248"/><line x1="330" y1="240" x2="330" y2="248"/>
-            </g>
-            <g class="diagram-muted-fill">
-              <circle cx="90" cy="190" r="4"/><circle cx="120" cy="150" r="4"/><circle cx="150" cy="175" r="4"/>
-              <circle cx="180" cy="120" r="4"/><circle cx="205" cy="145" r="4"/><circle cx="235" cy="95" r="4"/>
-              <circle cx="265" cy="115" r="4"/><circle cx="290" cy="75" r="4"/><circle cx="320" cy="90" r="4"/>
-              <circle cx="345" cy="60" r="4"/>
-            </g>
-            <path d="M80 205 C 150 190, 190 130, 240 105 S 330 65, 355 55" class="diagram-accent" fill="none"/>
-          </svg>
-          <span class="work-index">03 / 06</span>
-        </div>
-        <div class="work-copy shell">
-          <h3>Predictive Meteorological Modeling</h3>
-          <p>Uses machine learning regression to find patterns in weather data and produce informed meteorological predictions.</p>
-          <div class="tags"><span>scikit-learn</span><span>Random Forest</span><span>Regression</span></div>
-          <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-3">The Problem Solved <span aria-hidden="true">+</span></button>
-          </div>
-          <p class="project-detail" id="project-detail-3" hidden>Converts historical measurements into a practical forecasting workflow with interpretable model experimentation.</p>
-        </div>
-      </article>
-
-      <article class="work-block work-block-reverse reveal-group">
-        <div class="work-media">
-          <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Isometric bar chart with one bar highlighted, representing salary insight analytics">
-            <line x1="40" y1="230" x2="330" y2="230" class="diagram-line-strong"/>
-            <g class="diagram-bar">
-              <polygon class="diagram-bar-side" points="84,230 98,216 98,156 84,170"/>
-              <polygon class="diagram-bar-top" points="50,170 84,170 98,156 64,156"/>
-              <polygon class="diagram-bar-front" points="50,230 84,230 84,170 50,170"/>
-            </g>
-            <g class="diagram-bar">
-              <polygon class="diagram-bar-side" points="128,230 142,216 142,121 128,135"/>
-              <polygon class="diagram-bar-top" points="94,135 128,135 142,121 108,121"/>
-              <polygon class="diagram-bar-front" points="94,230 128,230 128,135 94,135"/>
-            </g>
-            <g class="diagram-bar">
-              <polygon class="diagram-bar-side" points="172,230 186,216 186,141 172,155"/>
-              <polygon class="diagram-bar-top" points="138,155 172,155 186,141 152,141"/>
-              <polygon class="diagram-bar-front" points="138,230 172,230 172,155 138,155"/>
-            </g>
-            <g class="diagram-bar">
-              <polygon class="diagram-bar-side" points="216,230 230,216 230,96 216,110"/>
-              <polygon class="diagram-bar-top" points="182,110 216,110 230,96 196,96"/>
-              <polygon class="diagram-bar-front" points="182,230 216,230 216,110 182,110"/>
-            </g>
-            <g class="diagram-bar">
-              <polygon class="diagram-bar-side" points="260,230 274,216 274,131 260,145"/>
-              <polygon class="diagram-bar-top" points="226,145 260,145 274,131 240,131"/>
-              <polygon class="diagram-bar-front" points="226,230 260,230 260,145 226,145"/>
-            </g>
-            <g class="diagram-bar diagram-bar-accent">
-              <polygon class="diagram-bar-side" points="304,230 318,216 318,76 304,90"/>
-              <polygon class="diagram-bar-top" points="270,90 304,90 318,76 284,76"/>
-              <polygon class="diagram-bar-front" points="270,230 304,230 304,90 270,90"/>
-            </g>
-          </svg>
-          <span class="work-index">04 / 06</span>
-        </div>
-        <div class="work-copy shell">
-          <h3>Salary Insights &amp; Analytics</h3>
-          <p>Transforms workforce data into clearer salary insights through careful data processing and analytical exploration.</p>
-          <div class="tags"><span>Pandas</span><span>NumPy</span><span>Matplotlib</span></div>
-          <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-4">The Problem Solved <span aria-hidden="true">+</span></button>
-          </div>
-          <p class="project-detail" id="project-detail-4" hidden>Makes compensation patterns easier to inspect, compare, and use in workforce decision-making.</p>
-        </div>
-      </article>
-
-      <article class="work-block reveal-group">
-        <div class="work-media">
-          <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Isometric robot display housing with a simple face readout and antenna">
-            <rect x="110" y="215" width="140" height="16" class="diagram-line" fill="none"/>
-            <polygon class="diagram-bar-side" points="230,110 270,70 270,170 230,210"/>
-            <polygon class="diagram-bar-top" points="130,110 230,110 270,70 170,70"/>
-            <polygon class="diagram-bar-front" points="130,110 230,110 230,210 130,210"/>
-            <g class="diagram-accent-fill"><circle cx="163" cy="145" r="5"/><circle cx="197" cy="145" r="5"/></g>
-            <path d="M158 172 Q180 190 202 172" class="diagram-accent" fill="none"/>
-            <line x1="200" y1="90" x2="200" y2="50" class="diagram-line-strong"/>
-            <circle cx="200" cy="46" r="5" class="diagram-accent-fill"/>
-          </svg>
-          <span class="work-index">05 / 06</span>
-        </div>
-        <div class="work-copy shell">
-          <h3>Interactive Robot Display</h3>
-          <p>Connects hardware and software into a responsive interactive display that makes robotic behavior visible and engaging.</p>
-          <div class="tags"><span>Hardware integration</span><span>Linux</span><span>Edge device</span></div>
-          <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-5">The Problem Solved <span aria-hidden="true">+</span></button>
-          </div>
-          <p class="project-detail" id="project-detail-5" hidden>Creates a tangible interface for demonstrating intelligent behavior beyond a screen or simulation.</p>
-        </div>
-      </article>
-
-      <article class="work-block work-block-reverse reveal-group">
-        <div class="work-media">
-          <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Central receiver hexagon linked wirelessly to five buzzer nodes, with one node lit as first response">
-            <g class="diagram-line" fill="none">
-              <circle class="diagram-pulse-ring" cx="200" cy="150" r="40" stroke-dasharray="3 6"/>
-              <circle class="diagram-pulse-ring diagram-pulse-ring-delay" cx="200" cy="150" r="60" stroke-dasharray="3 6"/>
-            </g>
-            <g class="diagram-line" stroke-dasharray="4 5">
-              <line x1="200" y1="150" x2="90" y2="90"/><line x1="200" y1="150" x2="310" y2="90"/>
-              <line x1="200" y1="150" x2="330" y2="210"/><line x1="200" y1="150" x2="200" y2="250"/>
-              <line x1="200" y1="150" x2="70" y2="210"/>
-            </g>
-            <polygon points="200,124 222,137 222,163 200,176 178,163 178,137" class="diagram-line-strong" fill="none"/>
-            <polygon points="90,74 104,82 104,98 90,106 76,98 76,82" class="diagram-accent" fill="none"/>
-            <g class="diagram-line" fill="none">
-              <polygon points="310,74 324,82 324,98 310,106 296,98 296,82"/>
-              <polygon points="330,194 344,202 344,218 330,226 316,218 316,202"/>
-              <polygon points="200,234 214,242 214,258 200,266 186,258 186,242"/>
-              <polygon points="70,194 84,202 84,218 70,226 56,218 56,202"/>
-            </g>
-          </svg>
-          <span class="work-index">06 / 06</span>
-        </div>
-        <div class="work-copy shell">
-          <h3>Wireless Quiz Buzzer System</h3>
-          <p>An embedded, wireless response system designed to make quiz participation immediate, fair, and easy to operate.</p>
-          <div class="tags"><span>Microcontroller</span><span>Embedded systems</span><span>Wireless</span></div>
-          <div class="work-actions">
-            <button class="details-toggle" type="button" aria-expanded="false" aria-controls="project-detail-6">The Problem Solved <span aria-hidden="true">+</span></button>
-          </div>
-          <p class="project-detail" id="project-detail-6" hidden>Replaces tangled manual signaling with a reliable hardware workflow for real-time group interaction.</p>
-        </div>
-      </article>
-    </section>
-
-    <section class="experience shell section reveal-group" id="experience" aria-labelledby="experience-title">
-      <div class="section-kicker"><span>04</span><span>THE PATH SO FAR</span></div>
-      <div class="experience-layout">
-        <div>
-          <h2 id="experience-title" class="display">Learning by <em>shipping.</em></h2>
-          <p class="section-intro">A practical route through software, data, and machines that have to work outside the notebook.</p>
-        </div>
-        <div class="timeline">
-          <article class="timeline-item"><span class="timeline-date">2025 — NOW</span><div><h3>R&amp;D AI Roboticist · Baliyo Ventures</h3><p>Exploring computer vision, edge devices, spatial intelligence, and practical robotic systems.</p></div></article>
-          <article class="timeline-item"><span class="timeline-date">2025</span><div><h3>BSc Hons Computing with AI · Islington College</h3><p>Built a foundation across artificial intelligence, software engineering, data, and systems.</p></div></article>
-          <article class="timeline-item"><span class="timeline-date">EARLIER</span><div><h3>Engineering internships · Ants · Atreya Software Solutions</h3><p>Learned to move from coursework into team workflows, implementation, and delivery.</p></div></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="skills shell section reveal-group" id="skills" aria-labelledby="skills-title">
-      <div class="section-kicker"><span>05</span><span>THE TOOLKIT</span></div>
-      <h2 id="skills-title" class="display">A practical <em>stack.</em></h2>
-      <div class="skills-grid">
-        <div class="skill-card bezel"><div class="bezel-core">
-          <svg class="skill-icon" viewBox="0 0 64 64" role="img" aria-label="Computer vision lens icon">
-            <path d="M8 20 V10 H18" class="diagram-line-strong" fill="none"/><path d="M56 20 V10 H46" class="diagram-line-strong" fill="none"/>
-            <path d="M8 44 V54 H18" class="diagram-line-strong" fill="none"/><path d="M56 44 V54 H46" class="diagram-line-strong" fill="none"/>
-            <circle cx="32" cy="32" r="14" class="diagram-line" fill="none"/>
-            <circle cx="32" cy="32" r="6" class="diagram-accent-fill"/>
-          </svg>
-          <h3>AI &amp; Computer Vision</h3>
-          <div class="skill-tags"><span>PyTorch</span><span>OpenCV</span><span>SSD MobileNetV2</span><span>Edge AI</span><span>Jetson Nano</span><span>Lidar</span></div>
-        </div></div>
-        <div class="skill-card bezel"><div class="bezel-core">
-          <svg class="skill-icon" viewBox="0 0 64 64" role="img" aria-label="Stacked server icon">
-            <g class="diagram-bar">
-              <polygon class="diagram-bar-side" points="46,14 54,10 54,20 46,24"/>
-              <polygon class="diagram-bar-top" points="14,10 46,10 54,10 22,14" fill="none"/>
-              <polygon class="diagram-bar-front" points="14,14 46,14 46,24 14,24"/>
-            </g>
-            <g class="diagram-bar">
-              <polygon class="diagram-bar-side" points="46,30 54,26 54,36 46,40"/>
-              <polygon class="diagram-bar-front" points="14,30 46,30 46,40 14,40"/>
-            </g>
-            <g class="diagram-bar diagram-bar-accent">
-              <polygon class="diagram-bar-side" points="46,46 54,42 54,52 46,56"/>
-              <polygon class="diagram-bar-front" points="14,46 46,46 46,56 14,56"/>
-            </g>
-          </svg>
-          <h3>Backend &amp; Architecture</h3>
-          <div class="skill-tags"><span>Java</span><span>Spring Boot</span><span>Python</span><span>FastAPI</span><span>REST APIs</span><span>Microservices</span><span>Docker</span></div>
-        </div></div>
-        <div class="skill-card bezel"><div class="bezel-core">
-          <svg class="skill-icon" viewBox="0 0 64 64" role="img" aria-label="Ascending analytics chart icon">
-            <line x1="10" y1="52" x2="56" y2="52" class="diagram-line-strong"/>
-            <g class="diagram-line" fill="none"><rect x="16" y="34" width="8" height="18"/><rect x="30" y="24" width="8" height="28"/></g>
-            <rect x="44" y="14" width="8" height="38" class="diagram-accent" fill="none"/>
-            <path d="M14 30 L28 20 L42 24 L54 10" class="diagram-accent" fill="none"/>
-          </svg>
-          <h3>Data &amp; Analytics</h3>
-          <div class="skill-tags"><span>scikit-learn</span><span>NumPy</span><span>Pandas</span><span>Matplotlib</span><span>Seaborn</span><span>Regression</span></div>
-        </div></div>
-        <div class="skill-card bezel"><div class="bezel-core">
-          <svg class="skill-icon" viewBox="0 0 64 64" role="img" aria-label="Embedded chip icon">
-            <rect x="18" y="18" width="28" height="28" class="diagram-line-strong" fill="none"/>
-            <rect x="26" y="26" width="12" height="12" class="diagram-accent" fill="none"/>
-            <g class="diagram-line">
-              <line x1="24" y1="18" x2="24" y2="10"/><line x1="32" y1="18" x2="32" y2="10"/><line x1="40" y1="18" x2="40" y2="10"/>
-              <line x1="24" y1="46" x2="24" y2="54"/><line x1="32" y1="46" x2="32" y2="54"/><line x1="40" y1="46" x2="40" y2="54"/>
-              <line x1="18" y1="24" x2="10" y2="24"/><line x1="18" y1="32" x2="10" y2="32"/><line x1="18" y1="40" x2="10" y2="40"/>
-              <line x1="46" y1="24" x2="54" y2="24"/><line x1="46" y1="32" x2="54" y2="32"/><line x1="46" y1="40" x2="54" y2="40"/>
-            </g>
-          </svg>
-          <h3>Embedded &amp; Operations</h3>
-          <div class="skill-tags"><span>Edge integration</span><span>Linux</span><span>SSH</span><span>AWS</span><span>Azure</span></div>
-        </div></div>
-      </div>
-    </section>
-
-    <section class="field-log shell section reveal-group" id="notes" aria-labelledby="notes-title">
-      <div class="section-kicker"><span>06</span><span>FIELD NOTES</span></div>
-      <div class="field-log-head">
-        <h2 id="notes-title" class="display">Work in <em>progress.</em></h2>
-        <span class="note-status"><i></i> LIVE LOG</span>
-      </div>
-      <div class="note-grid">
-        <article class="bezel"><div class="bezel-core"><span>NOTE / 001</span><h3>Perception is only useful when it changes a decision.</h3><p>The next layer after detection is context: what should the system do with what it sees?</p></div></article>
-        <article class="bezel"><div class="bezel-core"><span>NOTE / 002</span><h3>Edge systems make constraints visible.</h3><p>Latency, power, memory, and deployment shape the model as much as the dataset does.</p></div></article>
-        <article class="bezel"><div class="bezel-core"><span>NOTE / 003</span><h3>Build the smallest loop that can teach you something.</h3><p>Hardware and software become clearer when the first experiment is close to reality.</p></div></article>
-      </div>
-      <p class="community-line">Also: Club Tamer for Leo Club of Temple Peace (2021–2022) — where I learned to turn shared energy into organized action.</p>
-    </section>
-
-    <section class="outro" id="connect" aria-labelledby="outro-title">
+    <!-- 01 Profile. DOM order: heading, viewfinder, copy, facts (desktop grid puts the viewfinder left; mobile stacks in DOM order). -->
+    <section class="profile section" id="about" aria-labelledby="profile-title">
       <div class="shell">
-        <div class="section-kicker"><span>07</span><span>OPEN CHANNEL</span></div>
-        <h2 id="outro-title" class="kinetic-outro">Have a difficult<br><em>problem?</em></h2>
-        <p class="outro-copy">Let’s talk about what you’re building, what’s stuck, and where intelligent systems could take it next.</p>
-        <a class="email-link" href="mailto:samirsen66@gmail.com">samirsen66@gmail.com</a>
-        <div class="social-links">
-          <a href="https://github.com/NotAScratch" target="_blank" rel="noopener noreferrer">
-            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" class="diagram-line" fill="none"/><path d="M9 8 6 12l3 4M15 8l3 4-3 4" class="diagram-line-strong" fill="none"/></svg>
-            GitHub <span aria-hidden="true">↗</span>
-          </a>
-          <a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer">
-            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2" class="diagram-accent-fill"/><line x1="6" y1="11" x2="6" y2="19" class="diagram-line-strong"/><path d="M11 19v-5a3 3 0 0 1 6 0v5" class="diagram-line-strong" fill="none"/><line x1="11" y1="19" x2="11" y2="12" class="diagram-line-strong"/></svg>
-            LinkedIn <span aria-hidden="true">↗</span>
-          </a>
-          <a href="mailto:samirsen66@gmail.com">
-            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5" class="diagram-line-strong" fill="none"/><path d="M3 7l9 6 9-6" class="diagram-line-strong" fill="none"/></svg>
-            Email <span aria-hidden="true">↗</span>
-          </a>
+        <p class="section-label reveal"><span class="section-label-no">01</span> <span class="section-label-name">Profile</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(About)</span></p>
+        <div class="profile-grid">
+          <h2 id="profile-title" class="display reveal" style="--i:0">Curiosity, made <em>tangible.</em></h2>
+          <figure class="viewfinder reveal" style="--i:1">
+            <div class="viewfinder-frame">
+              <span class="tick tick-tl" aria-hidden="true"></span>
+              <span class="tick tick-tr" aria-hidden="true"></span>
+              <span class="tick tick-bl" aria-hidden="true"></span>
+              <span class="tick tick-br" aria-hidden="true"></span>
+              <div class="robot robot--bust" data-robot="bust" aria-hidden="true">
+                <img class="robot-poster" src="assets/posters/bust.webp" alt="" width="536" height="600" loading="lazy">
+              </div>
+            </div>
+            <figcaption class="caption"><span>Fig. 01 — Perception head</span><span>Live render</span></figcaption>
+          </figure>
+          <div class="profile-copy reveal" style="--i:2">
+            <p class="lead">I work at the intersection of intelligent software and the physical world — building systems that are perceptive, connected, and ready for action beyond the notebook.</p>
+            <p class="profile-body">As a junior R&amp;D AI roboticist at Baliyo Ventures, I explore computer vision, edge devices, and spatial intelligence. BSc Hons in Computing with AI, Islington College (2025), plus internships at Ants Pvt. Ltd. and Atreya Software Solutions.</p>
+            <p class="mono-note">// build with intent. learn in public. ship what matters.</p>
+          </div>
+          <ul class="facts reveal" style="--i:3">
+            <li class="fact"><span class="fact-value">06</span> <span class="fact-label">Selected projects</span></li>
+            <li class="fact"><span class="fact-value">2025</span> <span class="fact-label">BSc (Hons) Computing with AI</span></li>
+            <li class="fact"><span class="fact-value">KTM</span> <span class="fact-label">Based in Kathmandu, Nepal</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Selected work: featured 01 (media left), featured 02 (mirrored), interlude, index table 03-06. -->
+    <section class="work section" id="work" aria-labelledby="work-title">
+      <div class="shell">
+        <p class="section-label reveal"><span class="section-label-no">02</span> <span class="section-label-name">Selected work</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(06 projects)</span></p>
+        <div class="section-head">
+          <h2 id="work-title" class="display reveal" style="--i:0">From signal to <em>solution.</em></h2>
+          <p class="section-aside reveal" style="--i:1">Perception, edge compute and embedded systems — each project starts with a physical-world constraint and ends with something that runs.</p>
+        </div>
+
+        <!-- Featured 01: DOM order is visual order (media, then meta). -->
+        <article class="featured reveal" aria-labelledby="project-title-1">
+          <figure class="featured-media">
+            <div class="featured-frame">
+              <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Detection reticle locking onto an object with a distance readout and scan line">
+                <rect x="24" y="24" width="352" height="252" class="diagram-line" fill="none"/>
+                <g class="diagram-line-strong" fill="none" stroke-linecap="square">
+                  <path d="M24 60 V24 H60"/><path d="M340 24 H376 V60"/>
+                  <path d="M376 240 V276 H340"/><path d="M60 276 H24 V240"/>
+                </g>
+                <path d="M60 250 L340 250" class="diagram-line"/>
+                <g class="diagram-line">
+                  <path d="M90 250 V240"/><path d="M150 250 V236"/><path d="M210 250 V240"/><path d="M270 250 V236"/><path d="M330 250 V240"/>
+                </g>
+                <polygon points="180,100 230,90 250,140 215,175 165,160" class="diagram-line-strong" fill="none"/>
+                <rect x="150" y="72" width="130" height="120" class="diagram-accent" fill="none" stroke-dasharray="6 5"/>
+                <g class="diagram-accent-fill"><circle cx="150" cy="72" r="3"/><circle cx="280" cy="72" r="3"/><circle cx="150" cy="192" r="3"/><circle cx="280" cy="192" r="3"/></g>
+                <line x1="24" y1="0" x2="24" y2="300" class="diagram-scan diagram-accent" />
+              </svg>
+              <p class="live-tag"><span class="status-dot" aria-hidden="true"></span>Live · SSD MobileNetV2 · FastAPI stream</p>
+            </div>
+            <figcaption class="caption"><span>Fig. 02 — Detection overlay on live feed</span><span>01 / 06</span></figcaption>
+          </figure>
+          <div class="featured-meta">
+            <p class="kicker">01 — Computer vision</p>
+            <h3 id="project-title-1">Real-time object detection, distance &amp; direction</h3>
+            <p class="project-body">Turns live video feeds into spatial awareness, detecting objects while estimating their distance and direction for downstream robotic decisions.</p>
+            <p class="project-detail" id="project-detail-1">Bridges the gap between raw camera input and actionable perception through a lightweight, accessible API.</p>
+            <dl class="specs">
+              <div class="spec"><dt>Model</dt><dd>SSD MobileNetV2</dd></div>
+              <div class="spec"><dt>Serve</dt><dd>FastAPI · live video</dd></div>
+              <div class="spec"><dt>Output</dt><dd>Class · metres · bearing</dd></div>
+            </dl>
+            <button class="case-study-trigger" type="button" data-case="vision">Read the case study <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+
+        <!-- Featured 02: mirrored (meta, then media). -->
+        <article class="featured featured-reverse reveal" aria-labelledby="project-title-2">
+          <div class="featured-meta">
+            <p class="kicker">02 — Spatial edge AI</p>
+            <h3 id="project-title-2">Orientation &amp; spatial edge intelligence</h3>
+            <p class="project-body">Gives an edge device environmental context by combining Lidar and depth sensors with PyTorch inference on a Jetson Nano.</p>
+            <p class="project-detail" id="project-detail-2">Moves spatial reasoning closer to the sensor, reducing dependence on remote compute for responsive robotics.</p>
+            <dl class="specs">
+              <div class="spec"><dt>Device</dt><dd>Jetson Nano</dd></div>
+              <div class="spec"><dt>Sensors</dt><dd>Lidar · depth</dd></div>
+              <div class="spec"><dt>Inference</dt><dd>PyTorch, on-device</dd></div>
+            </dl>
+            <button class="case-study-trigger" type="button" data-case="edge">Read the case study <span aria-hidden="true">→</span></button>
+          </div>
+          <figure class="featured-media">
+            <div class="featured-frame">
+              <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Radar-style lidar sweep with scattered point-cloud returns around a central edge device">
+                <g class="diagram-line" fill="none">
+                  <circle cx="200" cy="150" r="40"/><circle cx="200" cy="150" r="80"/><circle cx="200" cy="150" r="120"/>
+                </g>
+                <g class="diagram-line" stroke-dasharray="2 6">
+                  <line x1="200" y1="30" x2="200" y2="270"/><line x1="80" y1="150" x2="320" y2="150"/>
+                  <line x1="115" y1="65" x2="285" y2="235"/><line x1="285" y1="65" x2="115" y2="235"/>
+                </g>
+                <g class="diagram-accent-fill">
+                  <circle cx="240" cy="95" r="3"/><circle cx="270" cy="160" r="3"/><circle cx="150" cy="110" r="3"/>
+                  <circle cx="140" cy="190" r="3"/><circle cx="230" cy="205" r="3"/><circle cx="300" cy="140" r="3"/>
+                  <circle cx="175" cy="70" r="3"/><circle cx="120" cy="150" r="3"/>
+                </g>
+                <rect x="185" y="135" width="30" height="30" class="diagram-line-strong" fill="none"/>
+                <g class="diagram-sweep"><circle cx="200" cy="150" r="120" fill="none" stroke="none"/><line x1="200" y1="150" x2="200" y2="30" class="diagram-sweep-line diagram-accent"/></g>
+              </svg>
+            </div>
+            <figcaption class="caption"><span>Fig. 03 — Lidar returns + orientation</span><span>02 / 06</span></figcaption>
+          </figure>
+        </article>
+
+        <!-- Interlude: the quadruped trots on the dashed metre track. -->
+        <div class="interlude reveal">
+          <div class="interlude-stage">
+            <div class="robot robot--quadruped" data-robot="quadruped" aria-hidden="true">
+              <img class="robot-poster" src="assets/posters/quadruped.webp" alt="" width="918" height="617" loading="lazy">
+            </div>
+            <div class="interlude-copy">
+              <p class="interlude-kicker">Interlude — Fig. 04 Gait study</p>
+              <p class="interlude-line">Locomotion is a <em>perception</em> problem first.</p>
+            </div>
+          </div>
+          <svg class="interlude-track" viewBox="0 0 1320 12" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="6" x2="1320" y2="6"/></svg>
+          <div class="interlude-scale" aria-hidden="true">
+            <span>0.0 m</span><span>0.5 m</span><span>1.0 m</span><span>1.5 m</span><span>2.0 m</span><span>2.5 m</span>
+          </div>
+        </div>
+
+        <!-- Index table 03-06: each row is a button that discloses its detail paragraph. -->
+        <div class="index-table reveal">
+          <h3 class="visually-hidden">More projects</h3>
+          <div class="index-head" aria-hidden="true"><span>No.</span><span>Project</span><span>Domain</span><span>Stack</span><span>View</span></div>
+          <ul class="index-list">
+            <li class="index-item">
+              <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-3">
+                <span class="index-no">03</span>
+                <span class="index-title">Predictive meteorological modeling</span>
+                <span class="index-domain">Machine learning</span>
+                <span class="index-stack">scikit-learn · Random Forest</span>
+                <span class="index-arrow" aria-hidden="true">↗</span>
+              </button>
+              <p class="project-detail" id="project-detail-3" hidden>Uses machine learning regression to find patterns in weather data and produce informed meteorological predictions. Converts historical measurements into a practical forecasting workflow with interpretable model experimentation.</p>
+            </li>
+            <li class="index-item">
+              <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-4">
+                <span class="index-no">04</span>
+                <span class="index-title">Salary insights &amp; analytics</span>
+                <span class="index-domain">Data analysis</span>
+                <span class="index-stack">Pandas · NumPy · Matplotlib</span>
+                <span class="index-arrow" aria-hidden="true">↗</span>
+              </button>
+              <p class="project-detail" id="project-detail-4" hidden>Transforms workforce data into clearer salary insights through careful data processing and analytical exploration. Makes compensation patterns easier to inspect, compare, and use in workforce decision-making.</p>
+            </li>
+            <li class="index-item">
+              <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-5">
+                <span class="index-no">05</span>
+                <span class="index-title">Interactive robot display</span>
+                <span class="index-domain">Human–robot interaction</span>
+                <span class="index-stack">Linux · edge hardware</span>
+                <span class="index-arrow" aria-hidden="true">↗</span>
+              </button>
+              <p class="project-detail" id="project-detail-5" hidden>Connects hardware and software into a responsive interactive display that makes robotic behavior visible and engaging. Creates a tangible interface for demonstrating intelligent behavior beyond a screen or simulation.</p>
+            </li>
+            <li class="index-item">
+              <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-6">
+                <span class="index-no">06</span>
+                <span class="index-title">Wireless quiz buzzer system</span>
+                <span class="index-domain">Embedded systems</span>
+                <span class="index-stack">Microcontroller · RF</span>
+                <span class="index-arrow" aria-hidden="true">↗</span>
+              </button>
+              <p class="project-detail" id="project-detail-6" hidden>An embedded, wireless response system designed to make quiz participation immediate, fair, and easy to operate. Replaces tangled manual signaling with a reliable hardware workflow for real-time group interaction.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Services & stack. The arm sits beside the heading. -->
+    <section class="services section" id="services" aria-labelledby="services-title">
+      <div class="shell">
+        <p class="section-label reveal"><span class="section-label-no">03</span> <span class="section-label-name">Services &amp; stack</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(What I do)</span></p>
+        <div class="section-head section-head-robot">
+          <h2 id="services-title" class="display reveal" style="--i:0">A practical <em>stack.</em></h2>
+          <div class="robot robot--arm" data-robot="arm" aria-hidden="true">
+            <img class="robot-poster" src="assets/posters/arm.webp" alt="" width="600" height="700" loading="lazy">
+          </div>
+          <p class="section-aside reveal" style="--i:1">I take a problem from sensor to service: perceive it, model it, ship it to hardware, and expose it through an API someone else can use.</p>
+        </div>
+        <ul class="service-list">
+          <li class="service reveal" style="--i:0">
+            <p class="service-index">(A)</p>
+            <h3 class="service-title">Perception &amp; computer vision</h3>
+            <p class="service-copy">Detection, depth and spatial reasoning that turns pixels into decisions a machine can act on.</p>
+            <ul class="stack-list">
+              <li>PyTorch</li>
+              <li>OpenCV</li>
+              <li>SSD MobileNetV2</li>
+              <li>Lidar fusion</li>
+            </ul>
+          </li>
+          <li class="service reveal" style="--i:1">
+            <p class="service-index">(B)</p>
+            <h3 class="service-title">Edge &amp; embedded systems</h3>
+            <p class="service-copy">Models squeezed onto real hardware, where latency, power and memory shape the design.</p>
+            <ul class="stack-list">
+              <li>Jetson Nano</li>
+              <li>Microcontrollers</li>
+              <li>Linux · SSH</li>
+              <li>Edge integration</li>
+            </ul>
+          </li>
+          <li class="service reveal" style="--i:2">
+            <p class="service-index">(C)</p>
+            <h3 class="service-title">Backend &amp; architecture</h3>
+            <p class="service-copy">Services that expose robotic capability cleanly — typed APIs, containers, and sane boundaries.</p>
+            <ul class="stack-list">
+              <li>Python · FastAPI</li>
+              <li>Java · Spring Boot</li>
+              <li>REST · Microservices</li>
+              <li>Docker · AWS · Azure</li>
+            </ul>
+          </li>
+          <li class="service reveal" style="--i:3">
+            <p class="service-index">(D)</p>
+            <h3 class="service-title">Data &amp; analytics</h3>
+            <p class="service-copy">Turning raw logs and datasets into models and charts that hold up to questions.</p>
+            <ul class="stack-list">
+              <li>scikit-learn</li>
+              <li>Pandas · NumPy</li>
+              <li>Regression</li>
+              <li>Matplotlib · Seaborn</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 04 Experience -->
+    <section class="experience section" id="experience" aria-labelledby="experience-title">
+      <div class="shell">
+        <p class="section-label reveal"><span class="section-label-no">04</span> <span class="section-label-name">Experience</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(2023 — Now)</span></p>
+        <div class="experience-grid">
+          <h2 id="experience-title" class="display reveal" style="--i:0">Learning by <em>shipping.</em></h2>
+          <ol class="timeline">
+            <li class="timeline-item timeline-item-current reveal" style="--i:0">
+              <p class="timeline-date"><span class="status-dot" aria-hidden="true"></span>2025 — Now</p>
+              <div class="timeline-body">
+                <h3 class="timeline-title">R&amp;D AI Roboticist</h3>
+                <p class="timeline-org">Baliyo Ventures</p>
+                <p class="timeline-copy">Exploring computer vision, edge devices, spatial intelligence, and practical robotic systems.</p>
+              </div>
+            </li>
+            <li class="timeline-item reveal" style="--i:1">
+              <p class="timeline-date">2025</p>
+              <div class="timeline-body">
+                <h3 class="timeline-title">BSc (Hons) Computing with AI</h3>
+                <p class="timeline-org">Islington College</p>
+                <p class="timeline-copy">Built a foundation across artificial intelligence, software engineering, data, and systems.</p>
+              </div>
+            </li>
+            <li class="timeline-item reveal" style="--i:2">
+              <p class="timeline-date">Earlier</p>
+              <div class="timeline-body">
+                <h3 class="timeline-title">Engineering internships</h3>
+                <p class="timeline-org">Ants Pvt. Ltd. · Atreya Software Solutions</p>
+                <p class="timeline-copy">Learned to move from coursework into team workflows, implementation, and delivery.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Notes -->
+    <section class="notes section" id="notes" aria-labelledby="notes-title">
+      <div class="shell">
+        <p class="section-label reveal"><span class="section-label-no">05</span> <span class="section-label-name">Field notes</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(Writing)</span></p>
+        <div class="section-head section-head-notes">
+          <h2 id="notes-title" class="display reveal" style="--i:0">Work in <em>progress.</em></h2>
+          <a class="link-arrow reveal" style="--i:1" href="#notes">All notes <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="note-list">
+          <article class="note reveal" style="--i:0">
+            <p class="note-meta"><span>Note / 001</span><span>Draft</span></p>
+            <h3 class="note-title">Perception is only useful when it changes a decision.</h3>
+            <p class="note-copy">The next layer after detection is context: what should the system do with what it sees?</p>
+            <a class="link-arrow" href="#notes">Read note<span class="visually-hidden"> 001</span> <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="note reveal" style="--i:1">
+            <p class="note-meta"><span>Note / 002</span><span>Draft</span></p>
+            <h3 class="note-title">Edge systems make constraints visible.</h3>
+            <p class="note-copy">Latency, power, memory, and deployment shape the model as much as the dataset does.</p>
+            <a class="link-arrow" href="#notes">Read note<span class="visually-hidden"> 002</span> <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="note reveal" style="--i:2">
+            <p class="note-meta"><span>Note / 003</span><span>Draft</span></p>
+            <h3 class="note-title">Build the smallest loop that can teach you something.</h3>
+            <p class="note-copy">Hardware and software become clearer when the first experiment is close to reality.</p>
+            <a class="link-arrow" href="#notes">Read note<span class="visually-hidden"> 003</span> <span aria-hidden="true">→</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Contact. The hand enters from the right and points at the email (data-attends="hand"). -->
+    <section class="contact section" id="contact" aria-labelledby="contact-title">
+      <div class="shell">
+        <p class="section-label reveal"><span class="section-label-no">06</span> <span class="section-label-name">Contact</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(Let's build)</span></p>
+        <div class="contact-grid">
+          <h2 id="contact-title" class="display-hero reveal" style="--i:0">Have a difficult <em>problem?</em></h2>
+          <div class="robot robot--hand" data-robot="hand" aria-hidden="true">
+            <img class="robot-poster" src="assets/posters/hand.webp" alt="" width="1060" height="711" loading="lazy">
+          </div>
+          <div class="contact-main reveal" style="--i:1">
+            <p class="contact-eyebrow">Write to me</p>
+            <a class="email-link" data-attends="hand" href="mailto:samirsen66@gmail.com">samirsen66@gmail.com</a>
+            <div class="contact-actions">
+              <a class="button button-primary" href="mailto:samirsen66@gmail.com">Start a conversation <span aria-hidden="true">→</span></a>
+              <a class="button button-ghost" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download CV <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
+          <dl class="contact-details reveal" style="--i:2">
+            <div class="contact-detail"><dt>GitHub</dt><dd><a href="https://github.com/NotAScratch" target="_blank" rel="noopener noreferrer">NotAScratch <span aria-hidden="true">↗</span></a></dd></div>
+            <div class="contact-detail"><dt>LinkedIn</dt><dd><a href="https://linkedin.com/in/samirsen8/" target="_blank" rel="noopener noreferrer">in/samirsen8 <span aria-hidden="true">↗</span></a></dd></div>
+            <div class="contact-detail"><dt>Location</dt><dd>Kathmandu, NP</dd></div>
+            <div class="contact-detail"><dt>Local time</dt><dd>UTC +5:45</dd></div>
+          </dl>
         </div>
       </div>
     </section>
@@ -427,16 +443,23 @@
     </div>
   </dialog>
 
-  <div class="scroll-progress" aria-hidden="true"><span></span></div>
-
-  <footer class="site-footer shell">
-    <span>© 2025 Samir Sen</span>
-    <a href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">DOWNLOAD CV <span aria-hidden="true">↓</span></a>
-    <a href="#top">BACK TO TOP <span aria-hidden="true">↑</span></a>
+  <footer class="site-footer">
+    <div class="shell">
+      <div class="footer-row">
+        <p class="footer-copy">© 2026 Samir Sen</p>
+        <p class="footer-note">Built with intent — Kathmandu</p>
+        <div class="footer-top">
+          <a class="to-top" data-attends="waver" href="#top">Back to top <span aria-hidden="true">↑</span></a>
+          <div class="robot robot--waver" data-robot="waver" aria-hidden="true">
+            <img class="robot-poster" src="assets/posters/waver.webp" alt="" width="360" height="450" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <p class="footer-credits">3D: Robot Arm by Yali Izzo (CC0) · Animated Robot by Quaternius (CC0)</p>
+      <p class="footer-wordmark" translate="no" aria-hidden="true">Samir Sen</p>
+    </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="script.js"></script>
-  <script type="module" src="hero-scene.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
