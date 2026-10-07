@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>stage tests</title>
+<link rel="stylesheet" href="../../design/tokens.css">
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }</script>
+<style>
+  /* Only what the tests need; the site's own rules live in styles.css. */
+  body { margin: 0; }
+  #out { position: fixed; top: 0; left: 0; z-index: 9; margin: 0; font-size: 11px; pointer-events: none; }
+  .robot { position: relative; width: 400px; height: 400px; margin-bottom: 1100px; }
+  .robot-poster { display: block; width: 100%; height: 100%; }
+  .robot canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+  .robot.is-live canvas { opacity: 1; }
+  .robot.is-live .robot-poster { display: none; }
+  .robot.is-failed canvas { display: none; }
+  .robot [data-anchor] { position: absolute; left: var(--ax); top: var(--ay); }
+</style>
+</head>
+<body>
+<pre id="out">running…</pre>
+<script type="module">
+import { test, assert, assertEqual, run } from './harness.js';
+
+// Loaded dynamically so a missing module fails the tests instead of the page.
+const robots = await import('../../robots/index.js').catch(() => null);
+
+const ALLOWED = { reducedMotion: false, saveData: false, hasWebGL: true };
+const BASE = { base: '../../' }; // model URLs resolve against this page
+const NAMES = ['humanoid', 'bust', 'quadruped', 'arm', 'hand', 'waver'];
+const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+const ratio = Math.min(window.devicePixelRatio || 1, 2);
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const frame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()));
+const until = async (cond, ms, what) => {
+  const end = performance.now() + ms;
+  while (!cond()) {
+    if (performance.now() > end) throw new Error(`timed out waiting for ${what}`);
+    await sleep(25);
+  }
+};
+const requestsFor = (needle) => performance.getEntriesByType('resource').filter((r) => r.name.includes(needle)).length;
+const live = (el) => el.classList.contains('is-live') && el.querySelector('canvas');
+
+// Each test gets its own root and controller, and both are torn down after it.
+const using = async (names, fn, markup = '') => {
+  assert(robots, 'robots/index.js failed to load');
+  const root = document.createElement('div');
+  root.innerHTML = names
+    .map((name) => `<div class="robot" data-robot="${name}"><img class="robot-poster" alt="" src="${PIXEL}">${markup}</div>`)
+    .join('');
+  document.body.append(root);
+  let controller = null;
+  try {
+    await fn({
+      els: [...root.children],
+      start: (env = ALLOWED, opts = BASE) => (controller = robots.initRobots(root, env, opts)),
+    });
+  } finally {
+    controller?.destroy();
+    root.remove();
+    window.scrollTo(0, 0);
+  }
+};
+
+// Counts what the page logs and throws while `fn` runs.
+const watching = async (fn) => {
+  const seen = { warnings: [], errors: [] };
+  const warn = console.warn;
+  const onError = (event) => seen.errors.push(event);
+  console.warn = (...args) => seen.warnings.push(args);
+  window.addEventListener('error', onError);
+  window.addEventListener('unhandledrejection', onError);
+  try {
+    await fn(seen);
+  } finally {
+    console.warn = warn;
+    window.removeEventListener('error', onError);
+    window.removeEventListener('unhandledrejection', onError);
+  }
+};
+
+test('returns null when 3D not allowed', async () => {
+  await using(NAMES, ({ els }) => {
+    const base = { reducedMotion: false, saveData: false, hasWebGL: true };
+    for (const blocked of [{ reducedMotion: true }, { saveData: true }, { hasWebGL: false }]) {
+      assertEqual(robots.initRobots(document, { ...base, ...blocked }, BASE), null, JSON.stringify(blocked));
+    }
+    assertEqual(document.querySelectorAll('canvas').length, 0, 'canvases in the document');
+    assertEqual(requestsFor('three.module.js'), 0, 'three requests before any robot ran');
+    const env = robots.detectEnv();
+    for (const key of ['reducedMotion', 'saveData', 'hasWebGL']) assertEqual(typeof env[key], 'boolean', `detectEnv().${key}`);
+  });
+});
+
+test('first robot goes live', async () => {
+  // A robot far below the fold must not pull in Three.js.
+  await using(['bust'], async ({ els, start }) => {
+    els[0].style.marginTop = '6000px';
+    const controller = start();
+    await sleep(300);
+    assert(controller.entries.get(els[0]).phase !== 'run', 'far robot is in the run phase');
+    assertEqual(requestsFor('three.module.js'), 0, 'three requests for an off-screen robot');
+  });
+  await using(NAMES, async ({ els, start }) => {
+    const controller = start();
+    await until(() => live(els[0]), 5000, 'the first robot to go live');
+    assertEqual(els[0].querySelector('canvas').getAttribute('aria-hidden'), 'true', 'canvas aria-hidden');
+    assertEqual(controller.entries.get(els[0]).phase, 'run', 'phase');
+    assert(controller.liveCount() >= 1, 'liveCount is 0 with a live robot');
+    assert(requestsFor('three.module.js') >= 1, 'three never loaded');
+  });
+});
+
+test('limits live contexts', async () => {
+  await using(NAMES, async ({ els, start }) => {
+    const controller = start();
+    await until(() => live(els[0]), 5000, 'the first robot to go live');
+    let peak = 0;
+    const sample = () => { peak = Math.max(peak, controller.liveCount()); };
+    const bottom = document.documentElement.scrollHeight - window.innerHeight;
+    for (let y = 0; y < bottom; y += 300) {
+      window.scrollTo(0, y);
+      await frame();
+      sample();
+    }
+    window.scrollTo(0, bottom);
+    await until(() => !els[0].querySelector('canvas'), 3000, 'the first robot to lose its canvas');
+    await until(() => live(els[5]), 5000, 'the last robot to go live');
+    for (let i = 0; i < 20; i += 1) { await frame(); sample(); }
+    assert(peak <= 3, `liveCount peaked at ${peak}`);
+    assert(controller.liveCount() <= 3, `liveCount ended at ${controller.liveCount()}`);
+    assert(!els[0].classList.contains('is-live'), 'first robot kept is-live without a canvas');
+  });
+});
+
+test('failed robot keeps poster', async () => {
+  await watching(({ warnings, errors }) => using(['arm'], async ({ els, start }) => {
+    const controller = start(ALLOWED, { base: 'nope/' });
+    await until(() => els[0].classList.contains('is-failed'), 5000, 'is-failed');
+    const poster = els[0].querySelector('.robot-poster');
+    assert(poster.offsetParent !== null, 'poster is hidden');
+    assertEqual(els[0].querySelectorAll('canvas').length, 0, 'canvases left behind');
+    assertEqual(warnings.length, 1, 'console.warn calls');
+    await sleep(300); // resource timing entries land a moment after the response
+    assertEqual(requestsFor('nope/'), 1, 'model requests');
+    window.dispatchEvent(new Event('scroll')); // a failed robot is never retried
+    await frame();
+    await frame();
+    await sleep(300);
+    assertEqual(requestsFor('nope/'), 1, 'model requests after a second look');
+    assertEqual(warnings.length, 1, 'console.warn calls after a second look');
+    assertEqual(errors.length, 0, 'uncaught errors');
+    assertEqual(controller.liveCount(), 0, 'liveCount');
+  }));
+});
+
+test('context loss reverts to poster', async () => {
+  await watching(({ warnings }) => using(['humanoid'], async ({ els, start }) => {
+    const controller = start();
+    await until(() => live(els[0]), 5000, 'the robot to go live');
+    const { stage } = controller.entries.get(els[0]);
+    stage.canvas.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext();
+    await until(() => els[0].classList.contains('is-failed'), 3000, 'is-failed after context loss');
+    assertEqual(stage.lost, true, 'stage.lost');
+    assert(els[0].querySelector('.robot-poster').offsetParent !== null, 'poster is hidden');
+    assert(!els[0].classList.contains('is-live'), 'still marked is-live');
+    assertEqual(els[0].querySelectorAll('canvas').length, 0, 'canvases left behind');
+    assertEqual(warnings.length, 1, 'console.warn calls');
+    assertEqual(controller.liveCount(), 0, 'liveCount');
+  }));
+});
+
+test('resize matches container', async () => {
+  await using(['humanoid'], async ({ els, start }) => {
+    start();
+    await until(() => live(els[0]), 5000, 'the robot to go live');
+    const canvas = els[0].querySelector('canvas');
+    assertEqual(canvas.width, Math.floor(400 * ratio), 'canvas.width before');
+    els[0].style.width = '300px';
+    els[0].style.height = '200px';
+    await until(
+      () => canvas.width === Math.floor(300 * ratio) && canvas.height === Math.floor(200 * ratio),
+      2000,
+      `canvas ${Math.floor(300 * ratio)}x${Math.floor(200 * ratio)} (is ${canvas.width}x${canvas.height})`,
+    );
+  });
+});
+
+test('anchors move callouts', async () => {
+  const spans = ['perception', 'edge', 'actuation'].map((name) => `<span data-anchor="${name}"></span>`).join('');
+  await using(['humanoid'], async ({ els, start }) => {
+    start();
+    await until(() => live(els[0]), 5000, 'the robot to go live');
+    await frame();
+    const at = {};
+    for (const span of els[0].querySelectorAll('[data-anchor]')) {
+      const style = span.style;
+      const x = parseFloat(style.getPropertyValue('--ax'));
+      const y = parseFloat(style.getPropertyValue('--ay'));
+      const name = span.dataset.anchor;
+      assert(Number.isFinite(x) && Number.isFinite(y), `${name}: --ax/--ay not set`);
+      assert(x >= 0 && x <= 400 && y >= 0 && y <= 400, `${name} at ${x},${y} is outside the container`);
+      at[name] = { x, y };
+    }
+    assert(at.perception.y < at.edge.y, `head (${at.perception.y}) is not above chest (${at.edge.y})`);
+  }, spans);
+});
+
+await run();
+</script>
+</body>
+</html>
