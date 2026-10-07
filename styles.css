@@ -249,6 +249,7 @@ button {
   white-space: nowrap;
   transition:
     border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out);
 }
 
@@ -260,6 +261,11 @@ button {
   border-color: var(--ink);
   background: var(--ink);
   color: var(--bg);
+}
+
+.button-primary:hover {
+  border-color: var(--ink-muted);
+  background: var(--ink-muted);
 }
 
 .button-ghost {
@@ -333,6 +339,7 @@ button {
 
 .robot--humanoid {
   aspect-ratio: 1208 / 1800;
+  container-type: inline-size;
 }
 
 .robot--bust {
@@ -668,6 +675,21 @@ body.menu-open #menu {
   grid-row: 2;
 }
 
+/* The threshold mirrors --bp-callout-compact; @container can't read vars. */
+@container (max-width: 28rem) {
+  .callout[data-anchor="actuation"] {
+    display: none;
+  }
+
+  .callout-title {
+    white-space: nowrap;
+  }
+
+  .callout-detail {
+    display: none;
+  }
+}
+
 .hero-foot {
   display: flex;
   justify-content: space-between;
@@ -803,7 +825,7 @@ body.menu-open #menu {
 }
 
 .profile-grid .viewfinder {
-  grid-column: 1 / 4;
+  grid-column: 1 / -1;
   margin-block: var(--space-7);
 }
 
@@ -872,7 +894,7 @@ body.menu-open #menu {
 }
 
 .fact-value {
-  font-size: var(--text-h3);
+  font-size: var(--text-figure);
   font-weight: var(--weight-medium);
   line-height: var(--leading-h3);
   letter-spacing: var(--tracking-h3);
@@ -1127,7 +1149,7 @@ body.menu-open #menu {
 .interlude-line {
   margin-top: var(--space-4);
   text-wrap: balance;
-  font-size: var(--text-h3);
+  font-size: var(--text-figure);
   font-weight: var(--weight-medium);
   line-height: var(--leading-h3);
   letter-spacing: var(--tracking-h3);
@@ -1636,7 +1658,7 @@ body.menu-open #menu {
   max-width: 100%;
   min-height: var(--control-h);
   margin-top: var(--space-3);
-  font-size: var(--text-h3);
+  font-size: var(--text-figure);
   line-height: var(--leading-h3);
   letter-spacing: var(--tracking-h3);
   text-decoration: underline;
@@ -1767,7 +1789,7 @@ body.menu-open #menu {
 }
 
 .footer-credits {
-  color: var(--ink-faint);
+  color: var(--ink-muted);
   font-size: var(--text-small);
 }
 

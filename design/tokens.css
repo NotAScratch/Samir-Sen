@@ -21,6 +21,7 @@
   /* Sizes: desktop value from Figma, mobile value at 390px. */
   --text-hero:     clamp(3.75rem, 10.5vw, 9.5rem);    /* 60 → 152  H1 + contact only */
   --text-h2:       clamp(2.75rem, 6.1vw, 5.5rem);     /* 44 → 88   section heads */
+  --text-figure:   clamp(1.875rem, 3.1vw, 2.75rem);   /* 30 → 44  fact/email/interlude figure */
   --text-h3:       clamp(1.625rem, 2.2vw, 2rem);      /* 26 → 32   project titles */
   --text-h4:       clamp(1.125rem, 1.53vw, 1.375rem); /* 18 → 22   service/role titles */
   --text-lead:     clamp(1.125rem, 1.53vw, 1.375rem); /* 18 → 22   lead paragraphs */
@@ -72,6 +73,7 @@
   --section-gap: clamp(1.75rem, 5.5vw, 5rem);      /* 28 → 80 label → content */
   --measure:     62ch;
   --bp-mobile:   48rem;   /* reference only — media queries can't read vars */
+  --bp-callout-compact: 28rem; /* inline-size threshold; @container can't read vars */
 
   /* ---- Shape ------------------------------------------------------- */
   --radius-none: 0;

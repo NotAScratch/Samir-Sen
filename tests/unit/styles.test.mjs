@@ -85,6 +85,40 @@ test('tokens.css: legacy aliases removed, --dur-gait added', () => {
   }
 });
 
+test('--text-figure token is used for profile facts, contact email and interlude line', () => {
+  assert.match(tokens, /--text-figure\s*:\s*clamp\(1\.875rem,\s*3\.1vw,\s*2\.75rem\)/);
+  for (const selector of ['.fact-value', '.email-link', '.interlude-line']) {
+    const rule = rules.find((r) => r.prelude === selector);
+    assert.ok(rule, `${selector} rule is missing`);
+    assert.match(rule.body, /font-size:\s*var\(--text-figure\)/, `${selector} must use --text-figure`);
+  }
+});
+
+test('humanoid callouts adapt to the robot container and stay on one line when constrained', () => {
+  const humanoid = rules.find((r) => r.prelude === '.robot--humanoid' && /container-type/.test(r.body));
+  assert.ok(humanoid, '.robot--humanoid must establish an inline-size query container');
+  assert.match(humanoid.body, /container-type:\s*inline-size/);
+
+  const constrained = rules.filter((r) => r.parents.some((p) => /^@container\b/.test(p)));
+  assert.match(tokens, /--bp-callout-compact\s*:\s*28rem/);
+  assert.ok(constrained.some((r) => r.parents.includes('@container (max-width: 28rem)')), 'query must use the token threshold');
+  assert.ok(constrained.length > 0, 'no callout adaptation uses a container query');
+  assert.ok(constrained.some((r) => r.prelude === '.callout[data-anchor="actuation"]' && /display:\s*none/.test(r.body)), 'actuation is not hidden in a constrained robot container');
+  assert.ok(constrained.some((r) => r.prelude === '.callout-title' && /white-space:\s*nowrap/.test(r.body)), 'callout titles are not kept on one line');
+  assert.ok(constrained.some((r) => r.prelude === '.callout-detail' && /display:\s*none/.test(r.body)), 'callout details are not hidden in the constrained robot container');
+});
+
+test('approved mobile and hover corrections are present', () => {
+  const viewfinder = rules.find((r) => r.prelude === '.profile-grid .viewfinder' && r.parents.length === 0);
+  assert.ok(viewfinder, 'mobile viewfinder rule is missing');
+  assert.match(viewfinder.body, /grid-column:\s*1\s*\/\s*-1/);
+
+  assert.ok(rules.some((r) => r.prelude === '.button-primary:hover'), 'primary button has no hover state');
+  const credits = rules.find((r) => r.prelude === '.footer-credits');
+  assert.ok(credits);
+  assert.match(credits.body, /color:\s*var\(--ink-muted\)/);
+});
+
 test('--text-hero appears exactly once, in the shared .display-hero rule', () => {
   assert.equal(css.split('--text-hero').length - 1, 1);
   const owners = rules.filter((r) => r.body.includes('--text-hero'));
@@ -136,7 +170,7 @@ test('hero callouts sit on their anchors above the canvas', () => {
   assert.match(callout.body, /left:\s*var\(--ax\)/);
   assert.match(callout.body, /top:\s*var\(--ay\)/);
   assert.match(callout.body, /z-index:\s*[1-9]/);
-  const hidden = rules.find((r) => r.prelude === '.callout[data-anchor="actuation"]' && /display:\s*none/.test(r.body));
+  const hidden = rules.find((r) => r.prelude === '.callout[data-anchor="actuation"]' && /display:\s*none/.test(r.body) && r.parents.some((p) => /\(width < 48rem\)/.test(p)));
   assert.ok(hidden && hidden.parents.some((p) => /\(width < 48rem\)/.test(p)), 'actuation callout not hidden below 48rem');
 });
 
