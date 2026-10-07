@@ -132,8 +132,17 @@ test('only one robot may be live or loading in the viewport', async () => {
       await frame();
       sample();
     }
-    window.scrollTo(0, bottom);
-    await until(() => live(els[5]), 5000, 'the last robot to go live');
+    // The fixture's trailing margin puts the final robot above the viewport
+    // at max scroll. Aim the viewport at the robot itself before awaiting it.
+    const lastTop = els[5].getBoundingClientRect().top + window.scrollY;
+    const targetY = Math.max(0, Math.min(bottom, lastTop - (window.innerHeight - els[5].offsetHeight) / 2));
+    window.scrollTo(0, targetY);
+    await until(() => {
+      const rect = els[5].getBoundingClientRect();
+      assert(rect.bottom > 0 && rect.top < window.innerHeight, `last robot is outside viewport (${rect.top}..${rect.bottom})`);
+      sample();
+      return live(els[5]);
+    }, 5000, 'the last robot to go live while in view');
     for (let i = 0; i < 20; i += 1) { await frame(); sample(); }
     assert(peakLive <= 1, `liveCount peaked at ${peakLive}`);
     assert(peakLoading <= 1, `concurrent robot creations peaked at ${peakLoading}`);
