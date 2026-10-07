@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>cast tests</title>
+<link rel="stylesheet" href="../../design/tokens.css">
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }</script>
+</head>
+<body>
+<pre id="out">running…</pre>
+<script type="module">
+import * as THREE from 'three';
+import { test, assert, assertEqual, run } from './harness.js';
+import { readTokens, createMaterials } from '../../robots/materials.js';
+import { buildHumanoid, buildBust, buildQuadruped, buildHand } from '../../robots/cast.js';
+
+const M = createMaterials(readTokens());
+const opts = { lookMax: 0.7, handNudge: 24 };
+const builders = { humanoid: buildHumanoid, bust: buildBust, quadruped: buildQuadruped, hand: buildHand };
+
+const finiteTransforms = (object) => {
+  let ok = true;
+  object.traverse((o) => {
+    const { position: p, rotation: r, scale: s } = o;
+    ok = ok && [p.x, p.y, p.z, r.x, r.y, r.z, s.x, s.y, s.z].every(Number.isFinite);
+  });
+  return ok;
+};
+
+test('each builder returns a Robot', () => {
+  for (const [name, build] of Object.entries(builders)) {
+    const robot = build(M, opts);
+    assert(robot.object.isObject3D, `${name}: object is not an Object3D`);
+    assertEqual(robot.frame.position.length, 3, `${name}: frame.position`);
+    assertEqual(robot.frame.target.length, 3, `${name}: frame.target`);
+    assertEqual(typeof robot.update, 'function', `${name}: update`);
+  }
+});
+
+test('update runs 300 frames without throwing', () => {
+  for (const [name, build] of Object.entries(builders)) {
+    const robot = build(M, opts);
+    for (let i = 0; i < 300; i += 1) {
+      const sweep = -1 + (2 * i) / 299;
+      robot.update((i / 299) * 10, { pointer: { x: sweep, y: -sweep }, attend: i > 100, motion: true });
+    }
+    assert(finiteTransforms(robot.object), `${name}: non-finite transform after 300 frames`);
+  }
+});
+
+test('head yaw never exceeds lookMax', () => {
+  const robot = buildHumanoid(M, { lookMax: 0.3 });
+  const neck = robot.object.getObjectByName('neck');
+  assert(neck, 'no neck group named "neck"');
+  let peak = 0;
+  for (let i = 0; i < 300; i += 1) {
+    robot.update(i / 30, { pointer: { x: 1, y: 0 }, attend: false, motion: true });
+    peak = Math.max(peak, Math.abs(neck.rotation.y));
+  }
+  assert(peak <= 0.3 + 1e-6, `yaw peaked at ${peak}`);
+  assert(peak > 0.29, `yaw never reached the limit (${peak}); test would be vacuous`);
+});
+
+test('humanoid exposes three anchors', () => {
+  const { anchors } = buildHumanoid(M, opts);
+  assertEqual(Object.keys(anchors).sort().join(), 'actuation,edge,perception');
+  for (const [key, anchor] of Object.entries(anchors)) assert(anchor.isObject3D, `${key} is not an Object3D`);
+});
+
+test('quadruped has no track', () => {
+  // RoundedBoxGeometry reports type 'BoxGeometry', so compare constructors.
+  const isPlainBox = (o) => o.isMesh && o.geometry.constructor === THREE.BoxGeometry;
+  assert(isPlainBox(new THREE.Mesh(new THREE.BoxGeometry())), 'detector cannot see a plain box');
+  const robot = buildQuadruped(M, opts);
+  let meshes = 0;
+  let plainBoxes = 0;
+  robot.object.traverse((o) => {
+    if (o.isMesh) meshes += 1;
+    if (isPlainBox(o)) plainBoxes += 1;
+  });
+  assert(meshes > 0, 'quadruped has no meshes');
+  assertEqual(plainBoxes, 0, 'plain BoxGeometry meshes (track ticks):');
+});
+
+test('materials come from tokens', () => {
+  const el = document.createElement('div');
+  el.style.cssText = '--robot-shell:#F2F2EF;--robot-joint:#102030;--accent:#112233;--robot-shadow:0.25;--look-max:30deg;--hand-nudge:12px';
+  document.body.append(el);
+  const tokens = readTokens(el); // computed styles only resolve while attached
+  el.remove();
+  assertEqual(tokens.shadow, 0.25, 'shadow');
+  assertEqual(tokens.handNudge, 12, 'handNudge');
+  assert(Math.abs(tokens.lookMax - Math.PI / 6) < 1e-9, `lookMax ${tokens.lookMax}`);
+  const mats = createMaterials(tokens);
+  assertEqual(mats.shell.color.getHexString(), 'f2f2ef', 'shell');
+  assertEqual(mats.joint.color.getHexString(), '102030', 'joint');
+  assertEqual(mats.rubber.color.getHexString(), '102030', 'rubber');
+  assertEqual(mats.signal.emissive.getHexString(), '112233', 'signal emissive');
+  assert(Math.abs(mats.visor.color.g - mats.joint.color.g * 0.2) < 1e-9, 'visor is not joint x 0.2');
+});
+
+await run();
+</script>
+</body>
+</html>
