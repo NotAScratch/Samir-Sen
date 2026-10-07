@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>page tests</title>
+</head>
+<body>
+<pre id="out">running…</pre>
+<script type="module">
+import { test, assert, assertEqual, run } from './harness.js';
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const loadPage = async (search = '') => {
+  const frame = document.createElement('iframe');
+  const separator = search ? '&' : '?';
+  frame.src = `/index.html${search}${separator}r=${Date.now()}-${Math.random()}`;
+  document.body.append(frame);
+  await new Promise((resolve, reject) => {
+    frame.addEventListener('load', resolve, { once: true });
+    frame.addEventListener('error', reject, { once: true });
+  });
+  await wait(50);
+  return { frame, page: frame.contentDocument };
+};
+const remove = (frame) => frame.remove();
+
+test('menu opens and Esc closes', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    const toggle = page.querySelector('.menu-toggle');
+    toggle.click();
+    assertEqual(toggle.getAttribute('aria-expanded'), 'true');
+    page.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    assertEqual(toggle.getAttribute('aria-expanded'), 'false');
+    assertEqual(page.activeElement, toggle, 'menu toggle focus');
+  } finally { remove(frame); }
+});
+
+test('index row toggles detail', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    const row = page.querySelector('.index-row');
+    const detail = page.getElementById(row.getAttribute('aria-controls'));
+    row.click();
+    assertEqual(detail.hidden, false, 'detail opened');
+    row.click();
+    assertEqual(detail.hidden, true, 'detail closed');
+  } finally { remove(frame); }
+});
+
+test('case param opens dialog', async () => {
+  const edge = await loadPage('?case=edge');
+  try {
+    const dialog = edge.page.querySelector('dialog');
+    assertEqual(dialog.open, true, 'edge dialog open');
+    assertEqual(edge.page.querySelector('#case-title').textContent, 'Orientation and spatial intelligence');
+  } finally { remove(edge.frame); }
+  const nope = await loadPage('?case=nope');
+  try {
+    assertEqual(nope.page.querySelector('dialog').open, false, 'unknown case closed');
+  } finally { remove(nope.frame); }
+});
+
+test('attend follows focus', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    const email = page.querySelector('.email-link');
+    const hand = page.querySelector('[data-robot="hand"]');
+    email.focus();
+    assertEqual(hand.dataset.attend, 'true', 'hand attends on focus');
+    email.blur();
+    assertEqual(hand.dataset.attend, 'false', 'hand stops attending on blur');
+    const top = page.querySelector('.to-top');
+    const waver = page.querySelector('[data-robot="waver"]');
+    top.focus();
+    assertEqual(waver.dataset.attend, 'true', 'waver attends on focus');
+    top.blur();
+    assertEqual(waver.dataset.attend, 'false', 'waver stops attending on blur');
+  } finally { remove(frame); }
+});
+
+test('clock renders', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    assert(/^\d{2}:\d{2}$/.test(page.querySelector('.nav-clock').textContent), 'clock format');
+  } finally { remove(frame); }
+});
+
+await run();
+</script>
+</body>
+</html>
