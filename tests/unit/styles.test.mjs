@@ -113,7 +113,10 @@ test('approved mobile and hover corrections are present', () => {
   assert.ok(viewfinder, 'mobile viewfinder rule is missing');
   assert.match(viewfinder.body, /grid-column:\s*1\s*\/\s*-1/);
 
-  assert.ok(rules.some((r) => r.prelude === '.button-primary:hover'), 'primary button has no hover state');
+  const hover = rules.find((r) => r.prelude === '.button-primary:hover');
+  assert.ok(hover, 'primary button has no hover state');
+  assert.match(hover.body, /border-color:\s*var\(--ink-muted\)/);
+  assert.match(hover.body, /background:\s*var\(--ink-muted\)/);
   const credits = rules.find((r) => r.prelude === '.footer-credits');
   assert.ok(credits);
   assert.match(credits.body, /color:\s*var\(--ink-muted\)/);
