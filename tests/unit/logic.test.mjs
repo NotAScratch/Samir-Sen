@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-
-// The repo has no package.json, so Node 20 would load robots/logic.js as
-// CommonJS. logic.js has no imports, so load its source as an ES module instead.
-const source = await readFile(new URL('../../robots/logic.js', import.meta.url), 'utf8');
-const { canRun3D, isDarkColor, clampLook, pickClip, phaseFor, cssAngleToRad, cssNumber } =
-  await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+import {
+  canRun3D,
+  isDarkColor,
+  clampLook,
+  pickClip,
+  phaseFor,
+  cssAngleToRad,
+  cssNumber,
+} from '../../robots/logic.js';
 
 test('canRun3D is false when any gate fails', () => {
   assert.equal(canRun3D({ reducedMotion: true, saveData: false, hasWebGL: true }), false);
