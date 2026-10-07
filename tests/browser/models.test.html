@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>models tests</title>
+<link rel="stylesheet" href="../../design/tokens.css">
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }</script>
+</head>
+<body>
+<pre id="out">running…</pre>
+<script type="module">
+import * as THREE from 'three';
+import { test, assert, assertEqual, run } from './harness.js';
+import { readTokens, createMaterials } from '../../robots/materials.js';
+import { ROBOT_NAMES, createRobot } from '../../robots/registry.js';
+
+const tokens = readTokens();
+const M = createMaterials(tokens);
+const base = '../../'; // model URLs resolve against this page, not the repo root
+const make = (name, extra = {}) => createRobot(name, { M, tokens, base, ...extra });
+const still = { pointer: { x: 0, y: 0 }, attend: false, motion: true };
+
+test('arm loads with matte materials only', async () => {
+  const robot = await make('arm');
+  let meshes = 0;
+  robot.object.traverse((o) => {
+    if (!o.isMesh) return;
+    meshes += 1;
+    assert(o.material === M.shell || o.material === M.joint, `mesh "${o.name}" kept its own material`);
+  });
+  assert(meshes > 0, 'arm has no meshes');
+});
+
+test('waver idles then waves on attend', async () => {
+  const robot = await make('waver');
+  const { idle, wave } = robot.actions;
+  robot.update(0.5, still);
+  assert(idle.getClip().name.includes('Idle'), `idle action plays "${idle.getClip().name}"`);
+  assert(idle.getEffectiveWeight() > 0.9, `idle weight ${idle.getEffectiveWeight()}`);
+  assert(wave.getEffectiveWeight() < 0.1, `wave weight before attend ${wave.getEffectiveWeight()}`);
+
+  // 20 updates x 0.05 s = 1 s, longer than the 0.3 s cross-fade.
+  let t = 0.5;
+  for (let i = 0; i < 20; i += 1) robot.update((t += 0.05), { ...still, attend: true });
+  assert(wave.getClip().name.includes('Wave'), `wave action plays "${wave.getClip().name}"`);
+  assert(wave.getEffectiveWeight() > 0.9, `wave weight after attend ${wave.getEffectiveWeight()}`);
+
+  for (let i = 0; i < 20; i += 1) robot.update((t += 0.05), still);
+  assert(idle.getEffectiveWeight() > 0.9, `idle weight after attend clears ${idle.getEffectiveWeight()}`);
+});
+
+test('models stand on the ground', async () => {
+  for (const [name, height] of [['arm', 1.0], ['waver', 1.2]]) {
+    const robot = await make(name);
+    robot.update(0.5, still); // skinned models are measured once the mixer has posed them
+    robot.object.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(robot.object, true);
+    assert(Math.abs(box.min.y) <= 0.01, `${name}: feet at y=${box.min.y}`);
+    const h = box.max.y - box.min.y;
+    assert(Math.abs(h - height) <= 0.02, `${name}: height ${h}, wanted ${height}`);
+  }
+});
+
+test('createRobot builds every name', async () => {
+  assertEqual(ROBOT_NAMES.join(), 'humanoid,bust,quadruped,arm,hand,waver', 'ROBOT_NAMES');
+  for (const name of ROBOT_NAMES) {
+    const robot = await make(name);
+    assert(robot.object.isObject3D, `${name}: object is not an Object3D`);
+    assertEqual(typeof robot.update, 'function', `${name}: update`);
+  }
+});
+
+test('missing model rejects', async () => {
+  let rejected = false;
+  await make('arm', { base: 'nope/' }).catch(() => { rejected = true; });
+  assert(rejected, 'createRobot resolved for a 404 model');
+});
+
+test('model weight within budget', async () => {
+  let total = 0;
+  for (const file of ['robot-arm.glb', 'animated-robot.glb']) {
+    const res = await fetch(`../../assets/models/${file}`, { method: 'HEAD' });
+    assert(res.ok, `${file}: HTTP ${res.status}`);
+    const bytes = Number(res.headers.get('content-length'));
+    assert(bytes > 0, `${file}: no content-length`);
+    total += bytes;
+  }
+  assert(total <= 1572864, `models weigh ${total} bytes`);
+});
+
+await run();
+</script>
+</body>
+</html>
