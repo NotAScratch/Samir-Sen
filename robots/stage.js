@@ -70,7 +70,6 @@ export function createStage(container, robot, { shadowOpacity, preserveDrawingBu
   try {
     renderer.toneMapping = THREE.NeutralToneMapping;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const pmrem = new THREE.PMREMGenerator(renderer);
     const room = new RoomEnvironment();
