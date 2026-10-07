@@ -95,6 +95,37 @@ test('only index rows 03-06 toggle; featured details are visible', () => {
   assert.equal([...html.matchAll(/aria-controls="project-detail-/g)].length, 4);
 });
 
+test('notes section has no links (the notes have no pages yet)', () => {
+  const section = html.match(/<section class="notes[^"]*" id="notes"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section, 'notes section not found');
+  assert.doesNotMatch(section, /<a[\s>]/, 'notes section must not contain links');
+  assert.equal([...section.matchAll(/<article class="note /g)].length, 3);
+  assert.equal([...section.matchAll(/<span>Draft<\/span>/g)].length, 3);
+});
+
+test('restored copy: experience note and contact intro', () => {
+  assert.match(html, /<p class="experience-note[^"]*"[^>]*>Also: Club Tamer for Leo Club of Temple Peace \(2021–2022\) — where I learned to turn shared energy into organized action\.<\/p>/);
+  assert.match(html, /<p class="contact-intro[^"]*"[^>]*>Let’s talk about what you’re building, what’s stuck, and where intelligent systems could take it next\.<\/p>/);
+  // The intro sits before the email block.
+  assert.ok(html.indexOf('class="contact-intro') < html.indexOf('class="email-link"'));
+});
+
+test('case-study buttons are dialog openers with distinct accessible names', () => {
+  const buttons = [...html.matchAll(/<button class="case-study-trigger"([^>]*)>([\s\S]*?)<\/button>/g)];
+  assert.equal(buttons.length, 2);
+  const names = buttons.map(([, attrs, inner]) => {
+    assert.match(attrs, /\baria-haspopup="dialog"/);
+    // Accessible name: text content minus aria-hidden spans, whitespace collapsed.
+    return inner.replace(/<span[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/span>/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  });
+  assert.equal(new Set(names).size, 2, `names must differ: ${names.join(' | ')}`);
+  for (const name of names) assert.match(name, /^Read the case study /);
+});
+
+test('sibling spans are separated by whitespace so names do not run together', () => {
+  assert.doesNotMatch(html, /<\/span><span[\s>]/);
+});
+
 test('aria-controls, aria-labelledby and in-page links resolve', () => {
   for (const [, attr, value] of html.matchAll(/\b(aria-controls|aria-labelledby)="([^"]+)"/g)) {
     for (const id of value.split(/\s+/)) assert.ok(ids.includes(id), `${attr} -> #${id} does not exist`);
