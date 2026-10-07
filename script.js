@@ -127,9 +127,7 @@ if (interlude && quadruped) {
       inView = entry.isIntersecting;
       syncWalking();
     }, { threshold: 0 });
-    interludeObserver.observe(interlude);
-  } else {
-    inView = true;
+    interludeObserver.observe(quadruped);
   }
   new MutationObserver(syncWalking).observe(quadruped, { attributes: true, attributeFilter: ['class'] });
   syncWalking();
@@ -137,7 +135,9 @@ if (interlude && quadruped) {
 
 // Start live robots after the first paint so static page behavior stays usable.
 window.requestAnimationFrame(() => {
-  import('./robots/index.js')
-    .then(({ initRobots }) => initRobots())
-    .catch((error) => console.warn('Robots stay on their poster:', error));
+  window.requestAnimationFrame(() => {
+    import('./robots/index.js')
+      .then(({ initRobots }) => initRobots())
+      .catch((error) => console.warn('Robots stay on their poster:', error));
+  });
 });

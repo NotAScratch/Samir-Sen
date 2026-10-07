@@ -10,6 +10,13 @@
 import { test, assert, assertEqual, run } from './harness.js';
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const waitFor = async (condition, description, timeoutMs = 1500) => {
+  const deadline = performance.now() + timeoutMs;
+  while (!condition()) {
+    if (performance.now() >= deadline) throw new Error(`timed out waiting for ${description}`);
+    await wait(10);
+  }
+};
 const loadPage = async (search = '') => {
   const frame = document.createElement('iframe');
   const separator = search ? '&' : '?';
@@ -23,6 +30,40 @@ const loadPage = async (search = '') => {
   return { frame, page: frame.contentDocument };
 };
 const remove = (frame) => frame.remove();
+
+const loadWithRobotImportFailure = async () => {
+  const [pageResponse, scriptResponse] = await Promise.all([
+    fetch('/index.html'),
+    fetch('/script.js'),
+  ]);
+  assert(pageResponse.ok, `index.html returned ${pageResponse.status}`);
+  assert(scriptResponse.ok, `script.js returned ${scriptResponse.status}`);
+  const [html, source] = await Promise.all([pageResponse.text(), scriptResponse.text()]);
+  const actualScript = source.replace("import('./robots/index.js')", "import('/__missing_robot_module_for_task8_test__.js')");
+  assert(actualScript !== source, 'robot import fixture replacement did not match');
+
+  const frame = document.createElement('iframe');
+  const scriptClose = '</scr' + 'ipt>';
+  const instrument = `<script>
+    const originalWarn=console.warn.bind(console);
+    console.warn=(...args)=>{if(String(args[0]).includes('Robots stay on their poster:'))document.documentElement.dataset.robotImportRejected='true';originalWarn(...args)};
+    window.addEventListener('error',event=>{document.documentElement.dataset.runtimeError=event.error?.stack||event.message});
+  <\/script>`;
+  const fixture = html
+    .replace('<head>', `<head><base href="${location.origin}/">`)
+    .replace('<script type="module" src="script.js">' + scriptClose, `${instrument}<script type="module">${actualScript}<\/script>`);
+  assert(fixture !== html, 'page module script replacement did not match');
+  frame.srcdoc = fixture;
+  document.body.append(frame);
+  await new Promise((resolve, reject) => {
+    frame.addEventListener('load', resolve, { once: true });
+    frame.addEventListener('error', reject, { once: true });
+  });
+  const page = frame.contentDocument;
+  await waitFor(() => page.documentElement.dataset.robotImportRejected === 'true', 'robot import rejection');
+  assert(!page.documentElement.dataset.runtimeError, page.documentElement.dataset.runtimeError || 'unexpected page runtime error');
+  return { frame, page };
+};
 
 test('menu opens and Esc closes', async () => {
   const { frame, page } = await loadPage();
@@ -83,6 +124,44 @@ test('clock renders', async () => {
   const { frame, page } = await loadPage();
   try {
     assert(/^\d{2}:\d{2}$/.test(page.querySelector('.nav-clock').textContent), 'clock format');
+  } finally { remove(frame); }
+});
+
+test('page interactions remain usable after robot initialization fails', async () => {
+  const { frame, page } = await loadWithRobotImportFailure();
+  try {
+    const toggle = page.querySelector('.menu-toggle');
+    toggle.click();
+    assertEqual(toggle.getAttribute('aria-expanded'), 'true', 'menu opens after robot failure');
+    page.querySelector('#menu a').click();
+    assertEqual(toggle.getAttribute('aria-expanded'), 'false', 'menu link closes after robot failure');
+    assertEqual(page.activeElement, toggle, 'focus returns after robot failure');
+
+    const row = page.querySelector('.index-row');
+    const detail = page.getElementById(row.getAttribute('aria-controls'));
+    row.click();
+    assertEqual(detail.hidden, false, 'index detail opens after robot failure');
+    row.click();
+    assertEqual(detail.hidden, true, 'index detail closes after robot failure');
+  } finally { remove(frame); }
+});
+
+test('quadruped walking follows its own visibility and live state', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    const interlude = page.querySelector('.interlude');
+    const quadruped = page.querySelector('.robot[data-robot="quadruped"]');
+    interlude.style.position = 'fixed';
+    interlude.style.top = '-10000px';
+    quadruped.style.position = 'fixed';
+    quadruped.style.top = '-10000px';
+    quadruped.classList.add('is-live');
+    assertEqual(interlude.classList.contains('is-walking'), false, 'offscreen quadruped stays still');
+
+    quadruped.style.top = '0';
+    await waitFor(() => interlude.classList.contains('is-walking'), 'visible live quadruped to walk');
+    quadruped.classList.remove('is-live');
+    await waitFor(() => !interlude.classList.contains('is-walking'), 'non-live quadruped to stop');
   } finally { remove(frame); }
 });
 
