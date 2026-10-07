@@ -1,115 +1,111 @@
-/* design/tokens.css — v2 "Kinetic Lab"
-   Warm near-black canvas, bone text, one molten-amber accent.
-   Huge kinetic display type (Unbounded) over a restrained body/label pair. */
+/* design/tokens.css — v3 "Precision White"
+   Pure white page, ink type, hairline structure, one signal accent.
+   Mirrors the Figma variables + text styles in
+   https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47 (01 — Foundations). */
 
 :root {
-  /* ---- Type -------------------------------------------------------- */
-  --font-display: "Unbounded", "Space Grotesk", system-ui, sans-serif;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  /* ---- Colour, by role (Figma collection "Color") ------------------- */
+  --bg:          #FFFFFF;   /* the only background */
+  --ink:         #0A0A0A;   /* type, primary button, focus ring */
+  --ink-muted:   #5C5C5C;   /* body copy · 6.7:1 on --bg */
+  --ink-faint:   #767676;   /* mono meta + captions only · 4.5:1 */
+  --line:        #EAEAEA;   /* hairline dividers */
+  --line-strong: #CFCFCF;   /* ghost button outline, ground lines */
+  --accent:      #FF4D1A;   /* live/status signals only — never decoration */
 
-  --text-xs:    0.75rem;    /* 12px  labels, meta */
-  --text-sm:    0.875rem;   /* 14px  secondary body, tags */
-  --text-base:  1.0625rem;  /* 17px  body */
-  --text-lg:    1.375rem;   /* 22px  lead paragraph */
-  --text-xl:    1.75rem;    /* 28px  h3 */
-  --text-2xl:   2.5rem;     /* 40px  h2, mobile */
-  --text-3xl:   3.25rem;    /* 52px  section head */
-  --text-hero:  clamp(3.4rem, 9vw, 9.5rem);   /* kinetic hero + outro */
-  --text-display: clamp(2.6rem, 6vw, 5.5rem); /* section display heads */
+  /* ---- Type ------------------------------------------------------- */
+  --font-sans:  "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono:  "Geist Mono", ui-monospace, "SF Mono", monospace;
+  --font-serif: "Instrument Serif", Georgia, serif;   /* one word per headline */
+
+  /* Sizes: desktop value from Figma, mobile value at 390px. */
+  --text-hero:     clamp(3.75rem, 10.5vw, 9.5rem);    /* 60 → 152  H1 + contact only */
+  --text-h2:       clamp(2.75rem, 6.1vw, 5.5rem);     /* 44 → 88   section heads */
+  --text-h3:       clamp(1.625rem, 2.2vw, 2rem);      /* 26 → 32   project titles */
+  --text-h4:       clamp(1.125rem, 1.53vw, 1.375rem); /* 18 → 22   service/role titles */
+  --text-lead:     clamp(1.125rem, 1.53vw, 1.375rem); /* 18 → 22   lead paragraphs */
+  --text-body:     1rem;                              /* 16 */
+  --text-small:    0.875rem;                          /* 14 */
+  --text-label:    0.75rem;                           /* 12  mono, uppercase */
+  --text-wordmark: 21vw;                              /* footer name, fills container */
+  --serif-scale:   1.1em;   /* serif word renders smaller; bump to match host line */
 
   --leading-hero:  0.92;
-  --leading-tight: 1.05;
-  --leading-snug:  1.25;
+  --leading-h2:    0.98;
+  --leading-h3:    1.15;
+  --leading-h4:    1.3;
+  --leading-lead:  1.45;
   --leading-body:  1.6;
+  --leading-label: 1.35;
+  --leading-wordmark: 0.8;
 
-  --tracking-tight: -0.02em;
-  --tracking-body:   0;
-  --tracking-label:  0.14em;   /* uppercase mono labels only */
+  --tracking-hero:     -0.05em;
+  --tracking-h2:       -0.04em;
+  --tracking-h3:       -0.02em;
+  --tracking-h4:       -0.01em;
+  --tracking-serif:    -0.02em;
+  --tracking-label:     0.06em;
+  --tracking-wordmark: -0.06em;
 
-  --weight-body:   400;
-  --weight-medium: 500;
-  --weight-head:   700;
+  --weight-regular: 400;
+  --weight-medium:  500;   /* every heading; there is no bold */
 
-  /* ---- Space ---------------------------------------------------------
-     4px base, 8px rhythm. */
-  --space-1:   0.25rem;
-  --space-2:   0.5rem;
-  --space-3:   0.75rem;
-  --space-4:   1rem;
-  --space-5:   1.5rem;
-  --space-6:   2rem;
-  --space-7:   3rem;
-  --space-8:   4rem;
-  --space-10:  6rem;
-  --space-12:  8rem;
-  --space-16: 11rem;
+  /* ---- Space (Figma "space/N" = N px) --------------------------------- */
+  --space-1:  0.25rem;  /*   4 */
+  --space-2:  0.5rem;   /*   8 */
+  --space-3:  0.75rem;  /*  12 */
+  --space-4:  1rem;     /*  16 */
+  --space-5:  1.5rem;   /*  24 */
+  --space-6:  2rem;     /*  32 */
+  --space-7:  3rem;     /*  48 */
+  --space-8:  4rem;     /*  64 */
+  --space-10: 6rem;     /*  96 */
+  --space-12: 8rem;     /* 128 */
+  --space-16: 10rem;    /* 160 */
 
-  /* ---- Colour, by role ------------------------------------------------ */
-  --bg:               #0B0A08;
-  --surface:          #16140F;
-  --surface-sunken:   #060605;
-  --border:           #3A362B;
-  --border-strong:    #5C5644;
-  --text:             #F3EEE3;
-  --text-muted:       #A79E8C;
-  --text-faint:       #6E6858;
-  --accent:           #FF5A1F;
-  --accent-hover:     #FF7A47;
-  --accent-contrast:  #0B0A08;
-  --focus:            #6FE0FF;
-  --danger:           #FF6B5E;
+  /* ---- Layout ------------------------------------------------------ */
+  --container:   82.5rem;                          /* 1320 */
+  --columns:     12;                               /* 4 below --bp-mobile */
+  --gutter:      clamp(1rem, 1.7vw, 1.5rem);       /* 16 → 24 */
+  --margin:      clamp(1.25rem, 4.2vw, 3.75rem);   /* 20 → 60 */
+  --section-y:   clamp(5rem, 11vw, 10rem);         /* 80 → 160 section padding */
+  --section-gap: clamp(1.75rem, 5.5vw, 5rem);      /* 28 → 80 label → content */
+  --measure:     62ch;
+  --bp-mobile:   48rem;   /* reference only — media queries can't read vars */
 
-  /* ---- Shape ----------------------------------------------------------- */
-  --radius-sm:   3px;
-  --radius-md:   6px;
-  --radius-lg:   14px;
-  --radius-pill: 999px;
-  --radius-xl:   2rem;      /* double-bezel outer shell */
-  --bezel:       6px;       /* gap between bezel shell and core */
-  --radius-core: calc(var(--radius-xl) - var(--bezel)); /* concentric inner curve */
-  --icon-well:   2rem;      /* circular well for button-in-button arrows */
-  --border-hairline: 1px;
+  /* ---- Shape ------------------------------------------------------- */
+  --radius-none: 0;
+  --radius-pill: 999px;   /* buttons, tags, menu trigger — nothing else */
+  --hairline:    1px;
+  --control-h:   3rem;    /* 48 — buttons + minimum hit target */
+  --dot:         6px;     /* live/status dot */
 
-  /* ---- Depth: none. Borders + grain carry the texture shadows would. -- */
-  --shadow-1: none;
-  --shadow-2: none;
+  /* ---- Depth: none. Hairlines carry separation. ---------------------- */
+  --shadow: none;
 
-  /* ---- Motion ----------------------------------------------------------- */
-  --dur-fast:  120ms;
-  --dur-base:  280ms;
-  --dur-slow:  620ms;
+  /* ---- Robots (live 3D) — read by JS via getComputedStyle ------------- */
+  --robot-shell:  #F2F2EF;  /* matte white shell, every robot */
+  --robot-joint:  #2C2C2E;  /* graphite joints, visors, actuators */
+  --robot-shadow: 0.1;      /* contact-shadow opacity */
+  --look-max:     40deg;    /* max head turn toward the cursor */
+
+  /* ---- Focus ------------------------------------------------------- */
+  --focus-ring:   2px solid var(--ink);
+  --focus-offset: 2px;
+
+  /* ---- Motion: driven, not bounced ------------------------------------ */
+  --dur-fast:   120ms;
+  --dur-base:   240ms;
+  --dur-slow:   600ms;
+  --dur-reveal: 800ms;
+  --stagger:    60ms;
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1); /* heavy, mass-like settle */
-  --dur-reveal:  900ms;     /* scroll entry fade-up */
-  --stagger:     60ms;      /* per-item delay in staggered reveals */
-  --blur-reveal: 8px;       /* entry blur, resolves to 0 */
-  --press-scale: 0.98;      /* physical press on buttons */
-  --lift-scale:  1.05;      /* button arrow well on hover */
-  --cursor-grow: 1.88;      /* cursor ring over links: 34px -> ~64px */
-
-  /* ---- Layout ----------------------------------------------------------- */
-  --measure:   62ch;
-  --container: 1320px;
-  --gutter:    var(--space-6);
-}
-
-/* Dark is the default identity; this is the opt-in light variant,
-   toggled manually (see script.js) and remembered per visitor. */
-body.theme-light {
-  --bg:               #F7F4EE;
-  --surface:          #FFFFFF;
-  --surface-sunken:   #ECE8DC;
-  --border:           #DEDACC;
-  --border-strong:    #C2BCA8;
-  --text:             #14120D;
-  --text-muted:       #5C5647;
-  --text-faint:       #8A8471;
-  --accent:           #D84E12;
-  --accent-hover:     #B93E0A;
-  --accent-contrast:  #FFF8F0;
-  --focus:            #0B6FA3;
+  --reveal-distance: 24px;   /* fade-up on scroll entry */
+  --parallax-tilt:   4deg;   /* whole-robot cursor tilt */
+  --walk-distance:   120px;  /* track travel per quadruped gait cycle */
+  --hand-nudge:      24px;   /* contact hand eases toward the email */
+  --press-scale:     0.98;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -120,12 +116,62 @@ body.theme-light {
   }
 }
 
+/* ---- LEGACY ALIASES — delete this block when styles.css is rebuilt ------
+ * The current styles.css was written against the v2 "Kinetic Lab" token
+ * names. These map them onto v3 so the existing page keeps rendering
+ * (now on white) until the new build replaces it. New code must not use
+ * any name from this block.
+ * ------------------------------------------------------------------------ */
+:root {
+  --surface:         var(--bg);
+  --surface-sunken:  var(--bg);
+  --border:          var(--line);
+  --border-strong:   var(--line-strong);
+  --border-hairline: var(--hairline);
+  --text:            var(--ink);
+  --text-muted:      var(--ink-muted);
+  --text-faint:      var(--ink-faint);
+  --accent-hover:    var(--accent);
+  --accent-contrast: var(--bg);
+  --focus:           var(--ink);
+  --font-display:    var(--font-sans);
+
+  --text-xs:      var(--text-label);
+  --text-sm:      var(--text-small);
+  --text-base:    var(--text-body);
+  --text-lg:      var(--text-lead);
+  --text-xl:      var(--text-h3);
+  --text-2xl:     var(--text-h2);
+  --text-3xl:     var(--text-h2);
+  --text-display: var(--text-h2);
+  --leading-tight:  var(--leading-h2);
+  --leading-snug:   var(--leading-h3);
+  --tracking-tight: var(--tracking-h3);
+  --tracking-body:  0;
+  --weight-body:    var(--weight-regular);
+  --weight-head:    var(--weight-medium);
+
+  --radius-sm:   var(--radius-none);
+  --radius-md:   var(--radius-none);
+  --radius-lg:   var(--radius-none);
+  --radius-xl:   var(--radius-none);
+  --radius-core: var(--radius-none);
+  --bezel:       0px;
+  --icon-well:   2rem;
+  --shadow-1:    none;
+  --shadow-2:    none;
+  --ease-spring: var(--ease-out);
+  --blur-reveal: 0px;
+  --lift-scale:  1;
+  --cursor-grow: 1;
+}
+
 /* ---- How to use this file ------------------------------------------------
- * 1. No raw values in styles.css. If a value isn't here, add it here first.
- * 2. --text-hero is used exactly twice: the hero h1 and the closing CTA.
- *    Everywhere else a section head is --text-display.
- * 3. --accent is for actions, the live-status dot, and the gyroscope's
- *    emissive core only. One accent, nowhere else.
- * 4. No shadows. Borders + the grain overlay carry separation/texture.
- * 5. Focus is always visible: 2px solid var(--focus), 2px offset.
+ * 1. No raw values in styles.css. If a value isn't here, add it here first,
+ *    and add it to the Figma variables/styles in the same change.
+ * 2. --text-hero is used exactly twice: the hero H1 and the contact head.
+ * 3. --accent marks live/status signals only. The primary button is ink.
+ * 4. --bg is the only background. No shadows, no gradients, no panels.
+ * 5. Focus is always visible: outline: var(--focus-ring);
+ *    outline-offset: var(--focus-offset).
  * ------------------------------------------------------------------------ */
