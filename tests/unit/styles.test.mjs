@@ -94,6 +94,11 @@ test('--text-figure token is used for profile facts, contact email and interlude
   }
 });
 
+test('robot activation margin is a CSS design token', () => {
+  assert.match(tokens, /--robot-activation-margin\s*:\s*12\.5rem/);
+  assert.doesNotMatch(fs.readFileSync(path.join(root, 'robots/logic.js'), 'utf8'), /margin\s*=\s*200/);
+});
+
 test('humanoid callouts adapt to the robot container and stay on one line when constrained', () => {
   const humanoid = rules.find((r) => r.prelude === '.robot--humanoid' && /container-type/.test(r.body));
   assert.ok(humanoid, '.robot--humanoid must establish an inline-size query container');

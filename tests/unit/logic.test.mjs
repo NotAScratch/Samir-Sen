@@ -6,6 +6,8 @@ import {
   clampLook,
   pickClip,
   phaseFor,
+  selectRobotCandidate,
+  cssLengthToPx,
   cssAngleToRad,
   cssNumber,
 } from '../../robots/logic.js';
@@ -39,11 +41,30 @@ test('pickClip matches case-insensitively or returns null', () => {
 });
 
 test('phaseFor maps viewport position to run / idle / dispose', () => {
-  assert.equal(phaseFor({ top: 100, bottom: 500 }, 900), 'run');
-  assert.equal(phaseFor({ top: 1050, bottom: 1400 }, 900), 'run');
-  assert.equal(phaseFor({ top: 1200, bottom: 1600 }, 900), 'idle');
-  assert.equal(phaseFor({ top: 2800, bottom: 3200 }, 900), 'dispose');
-  assert.equal(phaseFor({ top: -2400, bottom: -1900 }, 900), 'dispose');
+  assert.equal(phaseFor({ top: 100, bottom: 500 }, 900, 200), 'run');
+  assert.equal(phaseFor({ top: 1050, bottom: 1400 }, 900, 200), 'run');
+  assert.equal(phaseFor({ top: 1200, bottom: 1600 }, 900, 200), 'idle');
+  assert.equal(phaseFor({ top: 2800, bottom: 3200 }, 900, 200), 'dispose');
+  assert.equal(phaseFor({ top: -2400, bottom: -1900 }, 900, 200), 'dispose');
+});
+
+test('phaseFor uses the supplied design-token activation margin', () => {
+  assert.equal(phaseFor({ top: 1050, bottom: 1400 }, 900, 200), 'run');
+  assert.equal(phaseFor({ top: 1050, bottom: 1400 }, 900, 100), 'idle');
+});
+
+test('selectRobotCandidate chooses only one robot, preferring a visible robot', () => {
+  const near = { id: 'near', phase: 'run', rect: { top: 920, bottom: 1320 } };
+  const visible = { id: 'visible', phase: 'run', rect: { top: 500, bottom: 900 } };
+  const otherVisible = { id: 'other-visible', phase: 'run', rect: { top: 0, bottom: 400 } };
+  assert.equal(selectRobotCandidate([near, visible, otherVisible], 900), visible);
+  assert.equal(selectRobotCandidate([near], 900), near);
+  assert.equal(selectRobotCandidate([{ ...near, phase: 'idle' }], 900), null);
+});
+
+test('cssLengthToPx converts pixel and rem tokens', () => {
+  assert.equal(cssLengthToPx('200px', 16), 200);
+  assert.equal(cssLengthToPx('12.5rem', 16), 200);
 });
 
 test('cssAngleToRad parses deg and rad', () => {

@@ -77,6 +77,27 @@ test('menu opens and Esc closes', async () => {
   } finally { remove(frame); }
 });
 
+test('mobile menu contains Tab focus in both directions', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    const toggle = page.querySelector('.menu-toggle');
+    const links = [...page.querySelectorAll('#menu a[href]')];
+    toggle.click();
+    assertEqual(page.activeElement, links[0], 'opening focuses the first menu link');
+
+    links.at(-1).focus();
+    links.at(-1).dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+    assertEqual(page.activeElement, links[0], 'Tab from the last link wraps to the first');
+
+    links[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true }));
+    assertEqual(page.activeElement, links.at(-1), 'Shift+Tab from the first link wraps to the last');
+
+    page.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    assertEqual(toggle.getAttribute('aria-expanded'), 'false', 'Escape closes the menu');
+    assertEqual(page.activeElement, toggle, 'Escape returns focus to the toggle');
+  } finally { remove(frame); }
+});
+
 test('index row toggles detail', async () => {
   const { frame, page } = await loadPage();
   try {

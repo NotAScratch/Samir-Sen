@@ -116,24 +116,28 @@ test('first robot goes live', async () => {
   });
 });
 
-test('limits live contexts', async () => {
+test('only one robot may be live or loading in the viewport', async () => {
   await using(NAMES, async ({ els, start }) => {
     const controller = start();
-    await until(() => live(els[0]), 5000, 'the first robot to go live');
-    let peak = 0;
-    const sample = () => { peak = Math.max(peak, controller.liveCount()); };
+    let peakLive = 0;
+    let peakLoading = 0;
     const bottom = document.documentElement.scrollHeight - window.innerHeight;
+    const sample = () => {
+      peakLive = Math.max(peakLive, controller.liveCount());
+      peakLoading = Math.max(peakLoading, [...controller.entries.values()].filter((entry) => entry.loading).length);
+      assert(document.querySelectorAll('.robot canvas').length <= 1, 'more than one robot canvas exists');
+    };
     for (let y = 0; y < bottom; y += 300) {
       window.scrollTo(0, y);
       await frame();
       sample();
     }
     window.scrollTo(0, bottom);
-    await until(() => !els[0].querySelector('canvas'), 3000, 'the first robot to lose its canvas');
     await until(() => live(els[5]), 5000, 'the last robot to go live');
     for (let i = 0; i < 20; i += 1) { await frame(); sample(); }
-    assert(peak <= 3, `liveCount peaked at ${peak}`);
-    assert(controller.liveCount() <= 3, `liveCount ended at ${controller.liveCount()}`);
+    assert(peakLive <= 1, `liveCount peaked at ${peakLive}`);
+    assert(peakLoading <= 1, `concurrent robot creations peaked at ${peakLoading}`);
+    assert(controller.liveCount() <= 1, `liveCount ended at ${controller.liveCount()}`);
     assert(!els[0].classList.contains('is-live'), 'first robot kept is-live without a canvas');
   });
 });

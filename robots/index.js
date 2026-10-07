@@ -6,9 +6,8 @@
    Anything that goes wrong (404 model, CDN down, context lost) leaves that
    robot on its poster: the container gets `is-failed`, one console.warn is
    logged, and it is never retried. A robot that is drawing gets `is-live`. */
-import { canRun3D, phaseFor, clampLook } from './logic.js';
-
-const MAX_LIVE = 3; // WebGL contexts are scarce; browsers drop the oldest past ~16
+import { canRun3D, phaseFor, selectRobotCandidate, clampLook } from './logic.js';
+import { readTokens } from './tokens.js';
 
 export function detectEnv() {
   return {
@@ -37,7 +36,9 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
   const entries = new Map(); // container -> { phase, stage?, robot?, ... }
   const pointer = { x: 0, y: 0 }; // viewport-normalised, y positive downward
   const input = { pointer, attend: false, motion: true };
+  const tokens = readTokens();
   let shared = null;
+  let activeEl = null;
   let raf = 0;
   let dirty = false;
   let destroyed = false;
@@ -48,7 +49,6 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
     const [stage, materials, registry] = await Promise.all([
       import('./stage.js'), import('./materials.js'), import('./registry.js'),
     ]);
-    const tokens = materials.readTokens();
     return { createStage: stage.createStage, createRobot: registry.createRobot, tokens, M: materials.createMaterials(tokens) };
   })());
 
@@ -60,6 +60,7 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
     delete entry.stage;
     delete entry.robot;
     delete entry.callouts;
+    if (activeEl === el && !entry.loading) activeEl = null;
     el.classList.remove('is-live');
     for (const node of el.querySelectorAll('[data-anchor]')) {
       node.style.removeProperty('--ax'); // back to the poster's own callout position
@@ -78,25 +79,13 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
     release(el, entry);
     el.classList.add('is-failed');
     console.warn(`Robot "${el.dataset.robot}" stays on its poster:`, error);
+    recheck();
   };
 
-  const gapToViewport = (el) => {
-    const { top, bottom } = el.getBoundingClientRect();
-    return Math.max(top - window.innerHeight, -bottom, 0);
-  };
-
-  // At most MAX_LIVE contexts: a new robot may take the place of one that is out of range.
-  const outOfRange = () => [...entries].filter(([, entry]) => entry.stage && entry.phase !== 'run');
-  const hasRoom = () => liveCount() < MAX_LIVE || outOfRange().length > 0;
-  const makeRoom = () => {
-    while (liveCount() >= MAX_LIVE) {
-      const spare = outOfRange();
-      if (!spare.length) return false;
-      const [el, entry] = spare.reduce((far, next) => (gapToViewport(next[0]) > gapToViewport(far[0]) ? next : far));
-      release(el, entry);
-    }
-    return true;
-  };
+  const candidate = () => selectRobotCandidate(
+    [...entries].map(([el, entry]) => ({ el, phase: entry.phase, rect: el.getBoundingClientRect() })),
+    window.innerHeight,
+  );
 
   const create = async (el, entry) => {
     entry.loading = true;
@@ -104,7 +93,7 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
       const { createStage, createRobot, tokens, M } = await load();
       const robot = await createRobot(el.dataset.robot, { M, tokens, base });
       // The page may have scrolled on while the model downloaded.
-      if (destroyed || entry.failed || entry.phase !== 'run' || !makeRoom()) return;
+      if (destroyed || entry.failed || candidate()?.el !== el) return;
       const stage = createStage(el, robot, { shadowOpacity: tokens.shadow });
       entry.stage = stage;
       entry.robot = robot;
@@ -115,18 +104,28 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
       if (!destroyed) fail(el, entry, error);
     } finally {
       entry.loading = false;
+      if (!entry.stage && activeEl === el) activeEl = null;
+      if (!destroyed) recheck();
     }
   };
 
   const evaluate = () => {
     const viewportH = window.innerHeight;
     for (const [el, entry] of entries) {
-      entry.phase = phaseFor(el.getBoundingClientRect(), viewportH);
+      entry.phase = phaseFor(el.getBoundingClientRect(), viewportH, tokens.activationMargin);
       if (entry.phase === 'dispose' && entry.stage) release(el, entry);
     }
-    // Starts come second, so contexts freed above count as room.
-    for (const [el, entry] of entries) {
-      if (entry.phase === 'run' && !entry.failed && !entry.stage && !entry.loading && hasRoom()) void create(el, entry);
+    const selected = candidate()?.el;
+    if (activeEl) {
+      const activeEntry = entries.get(activeEl);
+      if (activeEntry?.stage && activeEl !== selected) release(activeEl, activeEntry);
+    }
+    if (!activeEl && selected) {
+      const entry = entries.get(selected);
+      if (!entry.failed && !entry.stage && !entry.loading) {
+        activeEl = selected; // reserve the sole slot before asynchronous work begins
+        void create(selected, entry);
+      }
     }
   };
 
@@ -207,6 +206,7 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
         el.removeEventListener('robot:lost', onLost);
       }
       entries.clear();
+      activeEl = null;
       // The controller made the shared materials, so it frees them.
       shared?.then(({ M }) => { for (const material of Object.values(M)) material.dispose(); }, () => {});
     },

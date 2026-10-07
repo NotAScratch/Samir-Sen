@@ -1,25 +1,9 @@
 /* Shared robot materials. Every colour comes from the CSS tokens, so the
    cast stays matte white and graphite on the page without hex values here. */
 import * as THREE from 'three';
-import { cssAngleToRad, cssNumber } from './logic.js';
+import { readTokens } from './tokens.js';
 
-const read = (style, name) => {
-  const value = style.getPropertyValue(name).trim();
-  if (!value) throw new Error(`Missing CSS token ${name}`);
-  return value;
-};
-
-export function readTokens(el = document.documentElement) {
-  const style = getComputedStyle(el);
-  return {
-    shell: read(style, '--robot-shell'),
-    joint: read(style, '--robot-joint'),
-    accent: read(style, '--accent'),
-    shadow: cssNumber(read(style, '--robot-shadow')),
-    lookMax: cssAngleToRad(read(style, '--look-max')),
-    handNudge: cssNumber(read(style, '--hand-nudge')),
-  };
-}
+export { readTokens };
 
 export function createMaterials(tokens) {
   const joint = new THREE.Color(tokens.joint);

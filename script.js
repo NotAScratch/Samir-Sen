@@ -27,7 +27,25 @@ menuToggle?.addEventListener('click', () => {
 });
 menu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setMenuState(false)));
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && menuToggle?.getAttribute('aria-expanded') === 'true') setMenuState(false);
+  const isOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
+  if (!isOpen) return;
+  if (event.key === 'Escape') {
+    setMenuState(false);
+    return;
+  }
+  if (event.key !== 'Tab' || !menu) return;
+  const links = [...menu.querySelectorAll('a[href]')].filter((link) => !link.hasAttribute('disabled'));
+  if (!links.length) return;
+  const first = links[0];
+  const last = links.at(-1);
+  const outsideMenu = !menu.contains(document.activeElement);
+  if (event.shiftKey && (document.activeElement === first || outsideMenu)) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && (document.activeElement === last || outsideMenu)) {
+    event.preventDefault();
+    first.focus();
+  }
 });
 
 document.querySelectorAll('.index-row').forEach((row) => {

@@ -90,6 +90,7 @@
   --robot-joint:  #2C2C2E;  /* graphite joints, visors, actuators */
   --robot-shadow: 0.1;      /* contact-shadow opacity */
   --look-max:     40deg;    /* max head turn toward the cursor */
+  --robot-activation-margin: 12.5rem; /* preload boundary beyond the viewport */
 
   /* ---- Focus ------------------------------------------------------- */
   --focus-ring:   2px solid var(--ink);

@@ -22,6 +22,10 @@ const base = '../../'; // model URLs resolve against this page, not the repo roo
 const make = (name, extra = {}) => createRobot(name, { M, tokens, base, ...extra });
 const still = { pointer: { x: 0, y: 0 }, attend: false, motion: true };
 
+test('robot activation margin is read and converted from the design token', () => {
+  assertEqual(tokens.activationMargin, 200, 'activation margin in CSS pixels');
+});
+
 test('arm loads with matte materials only', async () => {
   const robot = await make('arm');
   let meshes = 0;

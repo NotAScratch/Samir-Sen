@@ -86,7 +86,7 @@ test('quadruped has no track', () => {
 
 test('materials come from tokens', () => {
   const el = document.createElement('div');
-  el.style.cssText = '--robot-shell:#F2F2EF;--robot-joint:#102030;--accent:#112233;--robot-shadow:0.25;--look-max:30deg;--hand-nudge:12px';
+  el.style.cssText = '--robot-shell:#F2F2EF;--robot-joint:#102030;--accent:#112233;--robot-shadow:0.25;--look-max:30deg;--hand-nudge:12px;--robot-activation-margin:200px';
   document.body.append(el);
   const tokens = readTokens(el); // computed styles only resolve while attached
   el.remove();
