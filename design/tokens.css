@@ -98,6 +98,7 @@
   --dur-base:   240ms;
   --dur-slow:   600ms;
   --dur-reveal: 800ms;
+  --dur-gait:   1140ms;  /* one quadruped trot cycle */
   --stagger:    60ms;
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -114,56 +115,6 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* ---- LEGACY ALIASES — delete this block when styles.css is rebuilt ------
- * The current styles.css was written against the v2 "Kinetic Lab" token
- * names. These map them onto v3 so the existing page keeps rendering
- * (now on white) until the new build replaces it. New code must not use
- * any name from this block.
- * ------------------------------------------------------------------------ */
-:root {
-  --surface:         var(--bg);
-  --surface-sunken:  var(--bg);
-  --border:          var(--line);
-  --border-strong:   var(--line-strong);
-  --border-hairline: var(--hairline);
-  --text:            var(--ink);
-  --text-muted:      var(--ink-muted);
-  --text-faint:      var(--ink-faint);
-  --accent-hover:    var(--accent);
-  --accent-contrast: var(--bg);
-  --focus:           var(--ink);
-  --font-display:    var(--font-sans);
-
-  --text-xs:      var(--text-label);
-  --text-sm:      var(--text-small);
-  --text-base:    var(--text-body);
-  --text-lg:      var(--text-lead);
-  --text-xl:      var(--text-h3);
-  --text-2xl:     var(--text-h2);
-  --text-3xl:     var(--text-h2);
-  --text-display: var(--text-h2);
-  --leading-tight:  var(--leading-h2);
-  --leading-snug:   var(--leading-h3);
-  --tracking-tight: var(--tracking-h3);
-  --tracking-body:  0;
-  --weight-body:    var(--weight-regular);
-  --weight-head:    var(--weight-medium);
-
-  --radius-sm:   var(--radius-none);
-  --radius-md:   var(--radius-none);
-  --radius-lg:   var(--radius-none);
-  --radius-xl:   var(--radius-none);
-  --radius-core: var(--radius-none);
-  --bezel:       0px;
-  --icon-well:   2rem;
-  --shadow-1:    none;
-  --shadow-2:    none;
-  --ease-spring: var(--ease-out);
-  --blur-reveal: 0px;
-  --lift-scale:  1;
-  --cursor-grow: 1;
 }
 
 /* ---- How to use this file ------------------------------------------------
