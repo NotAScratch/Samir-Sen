@@ -125,7 +125,7 @@ export function buildHumanoid(M, opts) {
   const look = lookFollower({ yaw: 0.7, pitch: 0.3, k: 0.06 }, opts.lookMax);
   return {
     object: root,
-    frame: { position: [1.4, 1.35, 3.6], target: [0, 1.0, 0] },
+    frame: { position: [1.82, 1.39, 4.67], target: [0, 0.94, 0] },
     anchors,
     update(t, { pointer }) {
       const sway = Math.sin(t * 0.55);
@@ -169,7 +169,7 @@ export function buildBust(M, opts) {
   const look = lookFollower({ yaw: 0.8, pitch: 0.35, k: 0.05 }, opts.lookMax);
   return {
     object: root,
-    frame: { position: [0.55, 0.62, 1.3], target: [0, 0.46, 0] },
+    frame: { position: [0.66, 0.49, 1.51], target: [0.02, 0.3, -0.01] },
     update(t, { pointer }) {
       const { yaw, pitch } = look(pointer);
       // The idle drift rides on top, so clamp the sum.
@@ -212,7 +212,7 @@ export function buildQuadruped(M) {
 
   return {
     object: root,
-    frame: { position: [0.9, 0.75, 2.2], target: [0, 0.38, 0] },
+    frame: { position: [0.79, 0.63, 1.9], target: [0.01, 0.31, 0] },
     update(t, { motion }) {
       const p = t * (motion ? 5.5 : 0);
       for (const { hip, knee, phase } of legs) {
@@ -272,7 +272,7 @@ export function buildHand(M, opts) {
   return {
     object: root,
     floating: true,
-    frame: { position: [-0.2, 0.4, 0.4], target: [-0.1, 0.3, 0] },
+    frame: { position: [-0.12, 0.39, 0.56], target: [-0.02, 0.29, 0.01] },
     update(t, { attend }) {
       nudge = damp(nudge, attend ? nudgeTo : 0, 0.08);
       wrist.rotation.x = Math.sin(t * 0.9) * 0.05;

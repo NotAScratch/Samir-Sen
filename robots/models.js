@@ -50,7 +50,7 @@ export async function buildArm(M, url) {
   root.add(turntable);
   return {
     object: root,
-    frame: { position: [0.9, 0.75, 1.9], target: [0, 0.5, 0] },
+    frame: { position: [1.05, 0.79, 2.26], target: [-0.01, 0.5, 0] },
     update(t, { motion }) {
       turntable.rotation.y = motion ? 0.436 * Math.sin((t * 2 * Math.PI) / 12) : 0;
     },
@@ -71,7 +71,7 @@ export async function buildWaver(M, url) {
   return {
     object,
     actions: { idle, wave },
-    frame: { position: [0.5, 0.8, 2.4], target: [0, 0.6, 0] },
+    frame: { position: [1.36, 0.79, 2.98], target: [-0.12, 0.55, 0.02] },
     update(t, { attend }) {
       // The mixer's delta comes from successive `t`, so the first frame advances nothing.
       const delta = last === null ? 0 : Math.max(0, t - last);

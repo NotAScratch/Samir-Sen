@@ -37,3 +37,6 @@ next-env.d.ts
 
 # local 3D experiments
 design/3d-lab/
+
+# python bytecode
+__pycache__/

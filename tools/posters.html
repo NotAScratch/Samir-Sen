@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rendering posters…</title>
+  <link rel="stylesheet" href="../design/tokens.css">
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    } }
+  </script>
+  <style>
+    body { margin: 0; padding: var(--space-5); color: var(--ink); background: var(--bg); font: var(--text-body) var(--font-sans); }
+    #out { display: flex; flex-wrap: wrap; gap: var(--space-5); align-items: flex-start; }
+    figure { margin: 0; display: grid; gap: var(--space-2); }
+    img { display: block; height: calc(var(--space-16) * 2); width: auto; max-width: 100%; }
+    figcaption, #status { font: var(--text-label) var(--font-mono); color: var(--ink-faint); }
+    #stages { position: fixed; inset-inline-start: 0; inset-block-start: 0; visibility: hidden; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <p id="status" role="status">Preparing six robot posters…</p>
+  <div id="out"></div>
+  <div id="stages" aria-hidden="true"></div>
+  <script type="module" src="posters.js"></script>
+</body>
+</html>
