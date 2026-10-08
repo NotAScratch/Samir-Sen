@@ -103,6 +103,15 @@ test('materials come from tokens', () => {
   assert(Math.abs(mats.visor.color.g - mats.joint.color.g * 0.2) < 1e-9, 'visor is not joint x 0.2');
 });
 
+test('page robot tokens resolve through their aliases to v4 colours', () => {
+  // tokens.css defines --robot-shell: var(--paper) etc.; Three.js needs the resolved hex.
+  const tokens = readTokens();
+  const mats = createMaterials(tokens);
+  assertEqual(mats.shell.color.getHexString(), new THREE.Color('#F4F5F7').getHexString(), 'shell = --paper');
+  assertEqual(mats.joint.color.getHexString(), new THREE.Color('#141414').getHexString(), 'joint = --ink');
+  assertEqual(mats.signal.emissive.getHexString(), new THREE.Color('#D7261E').getHexString(), 'signal = --red');
+});
+
 await run();
 </script>
 </body>
