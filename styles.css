@@ -1,11 +1,13 @@
-/* styles.css — v3 "Precision White"
-   White paper, ink type, hairline structure, one signal accent.
+/* styles.css — v4 "Bauhaus Kinematics"
+   A robot read as Bauhaus primitives on a cool concrete ground: one shape and
+   one primary colour per skill, ink type, 2px ink rules, colour fields.
    Every value comes from design/tokens.css (read design/TASTE.md first).
 
    One breakpoint: 48rem (= --bp-mobile; media queries can't read custom
    properties, so it is written literally). Shared styles first, then
    "(width >= 48rem)" for the 12-column desktop layout and "(width < 48rem)"
-   for mobile-only changes.
+   for mobile-only changes. Finer adaptation uses container queries whose
+   thresholds mirror --bp-callout-compact, --bp-tiles-2 and --bp-tiles-4.
 
    Runtime custom properties (not tokens): --ax / --ay (hero callout anchors,
    inline % defaults, px from robots/index.js) and --i (reveal stagger index). */
@@ -22,8 +24,8 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
-  /* Anchor jumps clear the sticky bar: control + its block padding. */
-  scroll-padding-top: calc(var(--control-h) + 2 * var(--space-4));
+  /* Anchor jumps clear the sticky bar: control + its block padding + its rule. */
+  scroll-padding-top: calc(var(--control-h) + 2 * var(--space-4) + var(--rule));
 }
 
 body {
@@ -54,10 +56,13 @@ figure {
   margin: 0;
 }
 
+/* Display type: Unbounded, lowercase. */
 h1,
 h2,
 h3 {
-  font-weight: var(--weight-medium);
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  text-transform: lowercase;
 }
 
 ul,
@@ -86,17 +91,26 @@ button {
   font: inherit;
   letter-spacing: inherit;
   text-align: inherit;
+  text-transform: inherit;
   cursor: pointer;
 }
 
 ::selection {
   background: var(--ink);
-  color: var(--bg);
+  color: var(--white);
 }
 
 :focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-offset);
+}
+
+/* On red, blue and ink the ink ring would vanish. */
+.contact :focus-visible,
+.strip :focus-visible,
+.site-footer :focus-visible,
+.viewfinder-frame :focus-visible {
+  outline: var(--focus-ring-inverse);
 }
 
 /* ---- Utilities ---------------------------------------------------------- */
@@ -125,7 +139,7 @@ button {
   padding-inline: var(--space-5);
   border-radius: var(--radius-pill);
   background: var(--ink);
-  color: var(--bg);
+  color: var(--white);
   font-size: var(--text-small);
   font-weight: var(--weight-medium);
   translate: 0 calc(-100% - var(--space-5));
@@ -141,6 +155,54 @@ button {
   max-width: var(--container);
   margin-inline: auto;
   padding-inline: var(--margin);
+}
+
+/* ---- The shape system: one primitive and one colour per skill ------------ */
+
+.shape {
+  display: inline-block;
+  flex: none;
+  width: var(--glyph);
+  height: var(--glyph);
+  vertical-align: -0.04em;
+}
+
+.shape--perception {
+  border-radius: 50%;
+  background: var(--perception);
+}
+
+.shape--compute {
+  border-radius: 0;
+  background: var(--compute);
+}
+
+.shape--actuation {
+  background: var(--actuation);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.shape--data {
+  width: calc(var(--glyph) / 2);
+  border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+  background: var(--data);
+}
+
+/* Coloured headline words: red and blue type; actuation stays ink on a yellow bar. */
+.word--perception {
+  color: var(--perception);
+}
+
+.word--compute {
+  color: var(--compute);
+}
+
+.word--actuation {
+  text-decoration: underline;
+  text-decoration-color: var(--actuation);
+  text-decoration-thickness: var(--underline-bar);
+  text-decoration-skip-ink: none;
+  text-underline-offset: calc(var(--underline-bar) / 2);
 }
 
 /* ---- Type ---------------------------------------------------------------- */
@@ -165,12 +227,14 @@ button {
 .contact-eyebrow,
 .contact-detail dt,
 .footer-row,
+.footer-legend,
 .hero-foot,
-.strip-list,
+.hero-legend-detail,
 .callout,
 .nav-status,
 .mono-note,
 .menu-toggle,
+.button,
 .case-study-head,
 .case-study-grid > div > span {
   font-family: var(--font-mono);
@@ -184,36 +248,23 @@ button {
 /* The single hero-size rule: the hero H1 and the contact H2 share it. */
 .display-hero {
   font-size: var(--text-hero);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   line-height: var(--leading-hero);
   letter-spacing: var(--tracking-hero);
   text-wrap: balance;
 }
 
 .display {
-  /* Narrow enough that every section head breaks onto two lines, as in Figma. */
-  max-width: 6.5em;
   font-size: var(--text-h2);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   line-height: var(--leading-h2);
   letter-spacing: var(--tracking-h2);
   text-wrap: balance;
 }
 
-/* Balancing would split "Learning / by shipping."; Figma keeps "Learning by". */
+/* Balancing would split "learning / by shipping."; keep "learning by". */
 #experience-title {
   text-wrap: wrap;
-}
-
-/* One serif word per headline: the human note in the machine type. */
-.display-hero em,
-.display em,
-.interlude-line em {
-  font-family: var(--font-serif);
-  font-size: var(--serif-scale);
-  font-style: italic;
-  font-weight: var(--weight-regular);
-  letter-spacing: var(--tracking-serif);
 }
 
 .lead {
@@ -221,7 +272,7 @@ button {
   line-height: var(--leading-lead);
 }
 
-/* The only accent on the page: live/status dots. */
+/* Live/status dots: the nav, the eyebrow, the current role, the live feed. */
 .status-dot {
   display: inline-block;
   flex: none;
@@ -229,7 +280,7 @@ button {
   height: var(--dot);
   margin-right: var(--space-2);
   border-radius: var(--radius-pill);
-  background: var(--accent);
+  background: var(--red);
   vertical-align: middle;
 }
 
@@ -242,7 +293,7 @@ button {
   gap: var(--space-3);
   min-height: var(--control-h);
   padding-inline: var(--space-5);
-  border: var(--hairline) solid transparent;
+  border: var(--rule) solid transparent;
   border-radius: var(--radius-pill);
   font-size: var(--text-small);
   font-weight: var(--weight-medium);
@@ -250,6 +301,7 @@ button {
   transition:
     border-color var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out);
 }
 
@@ -260,7 +312,7 @@ button {
 .button-primary {
   border-color: var(--ink);
   background: var(--ink);
-  color: var(--bg);
+  color: var(--white);
 }
 
 .button-primary:hover {
@@ -269,16 +321,17 @@ button {
 }
 
 .button-ghost {
-  border-color: var(--line-strong);
-  background: var(--bg);
+  border-color: var(--ink);
+  background: transparent;
   color: var(--ink);
 }
 
 .button-ghost:hover {
-  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
 }
 
-/* ---- Section label: 01 PROFILE ——— (ABOUT) ------------------------------- */
+/* ---- Section label: 01 profile ——— (ABOUT) ------------------------------- */
 
 .section-label {
   display: flex;
@@ -288,22 +341,34 @@ button {
   color: var(--ink-faint);
 }
 
-.section-label-no {
+.section-label-no,
+.section-label-name {
   color: var(--ink);
-  font-weight: var(--weight-medium);
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  letter-spacing: normal;
+  text-transform: lowercase;
+}
+
+.section-label-no {
+  font-weight: var(--weight-bold);
+}
+
+.section-label-name {
+  font-weight: var(--weight-semibold);
 }
 
 .section-label-rule {
   flex: 1;
   margin-inline: var(--space-3);
-  border-top: var(--hairline) solid var(--line);
+  border-top: var(--rule) solid var(--ink);
 }
 
 .section {
   padding-block: var(--section-y) var(--section-gap);
 }
 
-/* Heading row: H2 left, a 3-column aside right. */
+/* Heading row: H2 left, aside right. */
 .section-head {
   display: grid;
   gap: var(--space-5);
@@ -313,6 +378,8 @@ button {
 .section-aside {
   max-width: var(--measure);
   color: var(--ink-muted);
+  font-size: var(--text-lead);
+  line-height: var(--leading-lead);
 }
 
 /* Fig. NN — caption under every frame. */
@@ -422,6 +489,7 @@ button {
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: var(--rule) solid var(--ink);
   background: var(--bg);
 }
 
@@ -442,10 +510,21 @@ button {
 .wordmark {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
   min-height: var(--control-h);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-h4);
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-h3);
+  text-transform: lowercase;
   white-space: nowrap;
+}
+
+.wordmark-shapes {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-small);
 }
 
 .nav-status {
@@ -466,7 +545,10 @@ button {
   display: inline-flex;
   align-items: center;
   min-height: var(--control-h);
+  font-family: var(--font-display);
   font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  text-transform: lowercase;
 }
 
 .nav-list a:not(.button):hover,
@@ -474,7 +556,7 @@ button {
 .contact-detail a:hover,
 .to-top:hover {
   text-decoration: underline;
-  text-decoration-thickness: var(--hairline);
+  text-decoration-thickness: var(--rule);
   text-underline-offset: var(--space-1);
 }
 
@@ -483,7 +565,7 @@ button {
   align-items: center;
   min-height: var(--control-h);
   padding-inline: var(--space-4);
-  border: var(--hairline) solid var(--line-strong);
+  border: var(--rule) solid var(--ink);
   border-radius: var(--radius-pill);
   color: var(--ink);
   transition: transform var(--dur-fast) var(--ease-out);
@@ -499,7 +581,7 @@ button {
   inset: 0;
   z-index: 0;
   overflow-y: auto;
-  padding: calc(var(--control-h) + 2 * var(--space-4)) var(--margin) var(--margin);
+  padding: calc(var(--control-h) + 2 * var(--space-4) + var(--rule)) var(--margin) var(--margin);
   background: var(--bg);
 }
 
@@ -512,11 +594,11 @@ body.menu-open #menu {
 }
 
 .menu-list {
-  border-top: var(--hairline) solid var(--line);
+  border-top: var(--rule) solid var(--ink);
 }
 
 .menu-list li {
-  border-bottom: var(--hairline) solid var(--line);
+  border-bottom: var(--rule) solid var(--ink);
 }
 
 .menu-link {
@@ -525,22 +607,24 @@ body.menu-open #menu {
   justify-content: space-between;
   min-height: var(--control-h);
   padding-block: var(--space-4);
+  font-family: var(--font-display);
   font-size: var(--text-h2);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   line-height: var(--leading-h2);
   letter-spacing: var(--tracking-h2);
+  text-transform: lowercase;
 }
 
 @media (width >= 48rem) {
   html {
-    scroll-padding-top: calc(var(--control-h) + 2 * var(--space-5));
+    scroll-padding-top: calc(var(--control-h) + 2 * var(--space-5) + var(--rule));
   }
 
   /* Status centred on the page; on narrow desktops it gives way first (ellipsis). */
   .nav {
     display: grid;
     grid-template-columns: 1fr minmax(0, auto) 1fr;
-    padding-block: var(--space-5);
+    padding-block: var(--space-4);
   }
 
   .nav-links {
@@ -568,7 +652,7 @@ body.menu-open #menu {
 /* ---- Hero ---------------------------------------------------------------- */
 
 .hero {
-  padding-top: var(--space-5);
+  padding-top: var(--space-6);
   padding-bottom: var(--space-6);
 }
 
@@ -581,7 +665,8 @@ body.menu-open #menu {
     "robot"
     "ground"
     "intro"
-    "actions";
+    "actions"
+    "legend";
 }
 
 .eyebrow {
@@ -592,6 +677,8 @@ body.menu-open #menu {
 }
 
 .hero-grid h1 {
+  position: relative;
+  z-index: 2;
   grid-area: title;
   margin-top: var(--space-5);
 }
@@ -617,19 +704,146 @@ body.menu-open #menu {
   justify-content: space-between;
 }
 
-.robot--humanoid {
+/* Perception / edge compute / actuation, each with its shape. */
+.hero-legend {
+  grid-area: legend;
+  display: grid;
+  margin-top: var(--space-7);
+  border-top: var(--rule) solid var(--ink);
+}
+
+.hero-legend li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-2);
+  row-gap: var(--space-1);
+  padding-block: var(--space-4);
+  border-bottom: var(--hairline) solid var(--ink);
+}
+
+.hero-legend-name {
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  text-transform: lowercase;
+}
+
+.hero-legend-detail {
+  grid-column: 2;
+  color: var(--ink-faint);
+}
+
+/* The robot and the shapes it stands on share one box. */
+.robot--humanoid,
+.hero-shapes {
   grid-area: robot;
   width: 80%;
-  margin-top: var(--space-5);
+  margin-top: var(--space-7);
+}
+
+.robot--humanoid {
+  z-index: 1;
+}
+
+.hero-shapes {
+  position: relative;
+  aspect-ratio: 1208 / 1800;
+}
+
+/* Placed against the poster's own anchors (head 45% / 12%, chest 48% / 28%,
+   hand 69% / 49%): a circle behind the head, a square behind the body, a
+   triangle at the hand, an orbit round the head. */
+.hero-shapes > * {
+  position: absolute;
+}
+
+.hero-orbit {
+  top: -6%;
+  left: 3%;
+  width: 88%;
+  aspect-ratio: 1;
+  border: var(--rule) dotted var(--ink);
+  border-radius: 50%;
+}
+
+.hero-orbit::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(var(--space-2) / -2);
+  width: var(--space-3);
+  height: var(--space-3);
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.hero-circle {
+  top: 2%;
+  left: 17%;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--perception);
+}
+
+.hero-square {
+  top: 36%;
+  left: 19%;
+  width: 58%;
+  aspect-ratio: 1;
+  background: var(--compute);
+}
+
+.hero-triangle {
+  top: 40%;
+  left: 70%;
+  width: 24%;
+  aspect-ratio: 1 / 1.3;
+  background: var(--actuation);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
 
 .hero-ground {
   grid-area: ground;
-  border-top: var(--hairline) solid var(--line-strong);
+  border-top: var(--rule-heavy) solid var(--ink);
 }
 
-/* Callout: ring on the anchor, ink leader to the right, two-line mono label
-   ending at the robot box's right edge. */
+@media (prefers-reduced-motion: no-preference) {
+  /* The shapes settle into place from a visible start; the orbit turns slowly. */
+  .hero-circle,
+  .hero-square,
+  .hero-triangle {
+    animation: hero-settle var(--dur-settle) var(--ease-out) both;
+  }
+
+  .hero-square {
+    animation-delay: var(--stagger);
+  }
+
+  .hero-triangle {
+    animation-delay: calc(2 * var(--stagger));
+  }
+
+  .hero-orbit {
+    animation: hero-orbit var(--dur-orbit) linear infinite;
+  }
+
+  @keyframes hero-settle {
+    from {
+      translate: 0 calc(-1 * var(--settle-distance));
+    }
+  }
+
+  @keyframes hero-orbit {
+    to {
+      rotate: 1turn;
+    }
+  }
+}
+
+/* Callout: ring on the anchor, ink leader to the right, a bordered tag with
+   the skill's shape ending at the robot box's right edge. */
 .callout {
   position: absolute;
   z-index: 1;
@@ -650,7 +864,7 @@ body.menu-open #menu {
   grid-row: 1 / 3;
   width: var(--space-3);
   height: var(--space-3);
-  border: var(--hairline) solid var(--ink);
+  border: var(--rule) solid var(--ink);
   border-radius: var(--radius-pill);
   background: var(--bg);
 }
@@ -659,20 +873,28 @@ body.menu-open #menu {
   content: "";
   grid-column: 2;
   grid-row: 1 / 3;
-  margin-right: var(--space-3);
-  border-top: var(--hairline) solid var(--ink);
+  border-top: var(--rule) solid var(--ink);
 }
 
 .callout-title {
   grid-column: 3;
   grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: var(--rule) solid var(--ink);
+  background: var(--bg);
   color: var(--ink);
   font-weight: var(--weight-medium);
+  white-space: nowrap;
 }
 
 .callout-detail {
   grid-column: 3;
   grid-row: 2;
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg);
 }
 
 /* The threshold mirrors --bp-callout-compact; @container can't read vars. */
@@ -723,20 +945,34 @@ body.menu-open #menu {
   }
 
   .hero-intro {
-    grid-column: 1 / 5;
+    grid-column: 1 / 6;
     grid-row: 3;
-    margin-top: var(--space-10);
+    margin-top: var(--space-7);
   }
 
   .hero-actions {
-    grid-column: 1 / 9;
+    grid-column: 1 / 8;
     grid-row: 4;
     flex-direction: row;
     align-self: start;
   }
 
-  /* Five columns at the right, standing on the ground line; the H1 may overlap its empty side. */
-  .robot--humanoid {
+  .hero-legend {
+    grid-column: 1 / 8;
+    grid-row: 5;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-self: end;
+    margin-block: var(--space-8) var(--space-7);
+  }
+
+  .hero-legend li {
+    border-bottom: 0;
+  }
+
+  /* Five columns at the right, standing on the ground bar; the H1 may overlap its empty side. */
+  .robot--humanoid,
+  .hero-shapes {
     grid-column: 8 / -1;
     grid-row: 1 / 6;
     align-self: end;
@@ -769,46 +1005,37 @@ body.menu-open #menu {
   }
 }
 
-/* ---- Capabilities strip -------------------------------------------------- */
+/* ---- Capabilities strip (ink band) --------------------------------------- */
 
 .strip {
-  border-block: var(--hairline) solid var(--line);
+  background: var(--ink);
+  color: var(--white);
 }
 
 .strip-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-3);
-  padding-block: var(--space-4);
+  gap: var(--space-3) var(--space-6);
+  padding-block: var(--space-5);
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-h4);
+  letter-spacing: var(--tracking-h4);
+  text-transform: lowercase;
+}
+
+.strip-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 @media (width >= 48rem) {
   .strip-list {
     flex-wrap: nowrap;
-    gap: 0;
-    padding-block: var(--space-5);
-  }
-
-  /* Items spread edge to edge with each "+" centred in its gap. */
-  .strip-list li + li {
-    display: flex;
-    flex: 1 1 auto;
-  }
-
-  .strip-list li + li::before {
-    content: "+";
-    flex: 1;
-    color: var(--ink-faint);
-    text-align: center;
-  }
-}
-
-@media (width < 48rem) {
-  /* Separators trail their item, so a wrapped line never starts with one. */
-  .strip-list li:not(:last-child)::after {
-    content: "+";
-    margin-left: var(--space-3);
-    color: var(--ink-faint);
+    justify-content: space-between;
+    padding-block: var(--space-6);
   }
 }
 
@@ -829,43 +1056,29 @@ body.menu-open #menu {
   margin-block: var(--space-7);
 }
 
+/* The compute field: the perception head stands in a blue square under a red eye. */
 .viewfinder-frame {
   position: relative;
+  overflow: hidden;
+  padding-top: var(--space-8);
+  background: var(--compute);
 }
 
-.tick {
+.viewfinder-frame::after {
+  content: "";
   position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  width: 20%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--perception);
+}
+
+.viewfinder-frame .robot--bust {
   z-index: 1;
-  width: var(--space-5);
-  height: var(--space-5);
-}
-
-.tick-tl {
-  top: 0;
-  left: 0;
-  border-top: var(--hairline) solid var(--ink);
-  border-left: var(--hairline) solid var(--ink);
-}
-
-.tick-tr {
-  top: 0;
-  right: 0;
-  border-top: var(--hairline) solid var(--ink);
-  border-right: var(--hairline) solid var(--ink);
-}
-
-.tick-bl {
-  bottom: 0;
-  left: 0;
-  border-bottom: var(--hairline) solid var(--ink);
-  border-left: var(--hairline) solid var(--ink);
-}
-
-.tick-br {
-  right: 0;
-  bottom: 0;
-  border-right: var(--hairline) solid var(--ink);
-  border-bottom: var(--hairline) solid var(--ink);
+  width: 84%;
+  margin-inline: auto;
 }
 
 .profile-body {
@@ -883,8 +1096,8 @@ body.menu-open #menu {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: var(--gutter);
   margin-top: var(--space-7);
-  padding-top: var(--space-6);
-  border-top: var(--hairline) solid var(--line);
+  padding-top: var(--space-5);
+  border-top: var(--rule) solid var(--ink);
 }
 
 .fact {
@@ -894,10 +1107,11 @@ body.menu-open #menu {
 }
 
 .fact-value {
+  font-family: var(--font-display);
   font-size: var(--text-figure);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   line-height: var(--leading-h3);
-  letter-spacing: var(--tracking-h3);
+  letter-spacing: var(--tracking-h2);
 }
 
 .fact-label {
@@ -926,7 +1140,7 @@ body.menu-open #menu {
   .profile-copy {
     grid-column: 7 / -1;
     grid-row: 2;
-    margin-top: var(--space-7);
+    margin-top: var(--space-6);
   }
 
   .facts {
@@ -942,7 +1156,12 @@ body.menu-open #menu {
   }
 }
 
-/* ---- 02 Selected work ------------------------------------------------------ */
+/* ---- 02 Selected work (paper band) ----------------------------------------- */
+
+.work {
+  border-block: var(--rule) solid var(--ink);
+  background: var(--paper);
+}
 
 /* Featured: media 8 columns, meta 3; 02 mirrors 01. Mobile stacks media first. */
 .featured {
@@ -955,6 +1174,8 @@ body.menu-open #menu {
 
 .featured + .featured {
   margin-top: var(--space-8);
+  padding-top: var(--space-8);
+  border-top: var(--rule) solid var(--ink);
 }
 
 .featured-media {
@@ -967,8 +1188,9 @@ body.menu-open #menu {
 
 .featured-frame {
   position: relative;
-  aspect-ratio: 16 / 10;
-  border: var(--hairline) solid var(--line);
+  aspect-ratio: 4 / 3;
+  border: var(--rule) solid var(--ink);
+  background: var(--bg);
 }
 
 .featured-frame .diagram {
@@ -976,45 +1198,80 @@ body.menu-open #menu {
   height: 100%;
 }
 
-/* Carried-over wireframe SVGs, redrawn in ink hairlines. */
+/* Project diagrams in the shape language (placeholders until real captures). */
 .diagram :is(rect, path, line, circle, polygon) {
   vector-effect: non-scaling-stroke;
 }
 
-.diagram-line {
-  stroke: var(--line-strong);
-  stroke-width: var(--hairline);
+.diagram-field {
+  fill: var(--bg);
 }
 
-.diagram-line-strong {
-  stroke: var(--ink);
-  stroke-width: var(--hairline);
+.diagram-field-compute {
+  fill: var(--compute);
 }
 
-.diagram-accent {
-  stroke: var(--ink);
-  stroke-width: var(--hairline);
-}
-
-.diagram-accent-fill {
+.diagram-ink {
   fill: var(--ink);
 }
 
-/* v2's moving scan line has no place in a still frame. */
-.diagram-scan {
-  display: none;
+.diagram-perception {
+  fill: var(--perception);
+}
+
+.diagram-compute {
+  fill: var(--compute);
+}
+
+.diagram-actuation {
+  fill: var(--actuation);
+}
+
+.diagram-box {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: var(--rule);
+}
+
+.diagram-ring {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: var(--hairline);
+  opacity: 0.5;
+}
+
+.diagram-point {
+  fill: var(--white);
+}
+
+.diagram-heading {
+  fill: none;
+  stroke: var(--actuation);
+  stroke-width: var(--rule-heavy);
+}
+
+.diagram-label {
+  fill: var(--white);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-label);
 }
 
 .live-tag {
   position: absolute;
-  bottom: var(--space-5);
-  left: var(--space-5);
+  top: var(--space-4);
+  left: var(--space-4);
   display: flex;
   align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border: var(--rule) solid var(--ink);
+  background: var(--bg);
   color: var(--ink);
 }
 
 .kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   color: var(--ink);
 }
 
@@ -1039,6 +1296,7 @@ body.menu-open #menu {
 
 .specs {
   margin-top: var(--space-6);
+  border-bottom: var(--hairline) solid var(--ink);
 }
 
 .spec {
@@ -1047,7 +1305,7 @@ body.menu-open #menu {
   justify-content: space-between;
   gap: var(--space-4);
   padding-block: var(--space-3);
-  border-top: var(--hairline) solid var(--line);
+  border-top: var(--hairline) solid var(--ink);
 }
 
 .spec dt {
@@ -1062,11 +1320,13 @@ body.menu-open #menu {
 .case-study-trigger {
   display: inline-block;
   margin-top: var(--space-3);
-  line-height: var(--control-h);
+  font-family: var(--font-display);
   font-size: var(--text-small);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
+  line-height: var(--control-h);
   text-decoration: underline;
-  text-decoration-thickness: var(--hairline);
+  text-decoration-thickness: var(--rule);
+  text-transform: lowercase;
   text-underline-offset: var(--space-1);
 }
 
@@ -1078,11 +1338,11 @@ body.menu-open #menu {
   }
 
   .section-head h2 {
-    grid-column: 1 / 7;
+    grid-column: 1 / 8;
   }
 
   .section-head .section-aside {
-    grid-column: 10 / -1;
+    grid-column: 9 / -1;
   }
 
   .featured {
@@ -1093,6 +1353,7 @@ body.menu-open #menu {
 
   .featured + .featured {
     margin-top: var(--space-10);
+    padding-top: var(--space-10);
   }
 
   .featured-media {
@@ -1117,145 +1378,18 @@ body.menu-open #menu {
   }
 }
 
-/* Interlude: the quadruped trots on a dashed metre track. */
-.interlude {
-  margin-top: var(--space-12);
-}
-
-.interlude-stage {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: var(--gutter);
-  row-gap: var(--space-6);
-}
-
-.robot--quadruped {
-  grid-column: 2 / -1;
-  grid-row: 2;
-  /* Feet on the dashed line: the poster's feet sit ~11% of its height above
-     its bottom edge (7.5% of its width). */
-  margin-bottom: -7.5%;
-}
-
-.interlude-copy {
-  grid-column: 1 / -1;
-  grid-row: 1;
-}
-
-.interlude-kicker {
-  color: var(--ink-faint);
-}
-
-.interlude-line {
-  margin-top: var(--space-4);
-  text-wrap: balance;
-  font-size: var(--text-figure);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-h3);
-  letter-spacing: var(--tracking-h3);
-}
-
-.interlude-track {
-  width: 100%;
-  height: var(--space-3);
-  overflow: visible;
-}
-
-.interlude-track line {
-  stroke: var(--ink-faint);
-  stroke-width: var(--hairline);
-  stroke-dasharray: var(--space-1) calc(var(--space-1) * 1.5);
-  vector-effect: non-scaling-stroke;
-}
-
-.interlude-scale {
-  display: flex;
-  justify-content: space-between;
-  margin-top: calc(var(--space-3) / -2);
-  color: var(--ink-faint);
-}
-
-.interlude-scale span {
-  position: relative;
-  padding-top: var(--space-5);
-}
-
-.interlude-scale span::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: var(--space-3);
-  border-left: var(--hairline) solid var(--ink-faint);
-}
-
-.interlude-scale span:last-child::before {
-  right: 0;
-  left: auto;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  /* The track scrolls one --walk-distance per gait cycle, only while the dog walks. */
-  .interlude-track line {
-    animation: track-walk var(--dur-gait) linear infinite paused;
-  }
-
-  .interlude.is-walking .interlude-track line {
-    animation-play-state: running;
-  }
-
-  @keyframes track-walk {
-    to {
-      stroke-dashoffset: var(--walk-distance);
-    }
-  }
-}
-
-@media (width >= 48rem) {
-  .interlude-stage {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    align-items: start;
-  }
-
-  .robot--quadruped {
-    grid-column: 3 / 7;
-    grid-row: 1;
-    align-self: end;
-  }
-
-  .interlude-copy {
-    grid-column: 9 / -1;
-    grid-row: 1;
-  }
-}
-
 @media (width < 48rem) {
-  .interlude {
-    margin-top: var(--space-8);
-  }
-
   .live-tag {
+    top: var(--space-3);
     right: var(--space-3);
-    bottom: var(--space-3);
     left: var(--space-3);
-  }
-
-  /* Full-bleed track on phones. */
-  .interlude-track {
-    width: calc(100% + 2 * var(--margin));
-    max-width: none;
-    margin-inline: calc(var(--margin) * -1);
-  }
-
-  .interlude-scale {
-    display: none;
   }
 }
 
 /* Index table 03–06: each row is a button disclosing its detail. */
 .index-table {
   margin-top: var(--space-12);
-  border-top: var(--hairline) solid var(--line);
+  border-top: var(--rule) solid var(--ink);
 }
 
 .index-head,
@@ -1264,11 +1398,12 @@ body.menu-open #menu {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: center;
   column-gap: var(--gutter);
+  padding-inline: var(--space-3);
 }
 
 .index-head {
   padding-block: var(--space-4);
-  border-bottom: var(--hairline) solid var(--line);
+  border-bottom: var(--rule) solid var(--ink);
   color: var(--ink-faint);
 }
 
@@ -1299,13 +1434,23 @@ body.menu-open #menu {
 }
 
 .index-item {
-  border-bottom: var(--hairline) solid var(--line);
+  border-bottom: var(--hairline) solid var(--ink);
 }
 
 .index-row {
   width: 100%;
   min-height: var(--control-h);
   padding-block: var(--space-6);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+/* The row lights up actuation yellow: the row "moves" when you point at it. */
+.index-row:hover {
+  background: var(--actuation);
+}
+
+.index-row:hover .index-domain {
+  color: var(--ink);
 }
 
 .index-no {
@@ -1313,13 +1458,18 @@ body.menu-open #menu {
 }
 
 .index-title {
+  font-family: var(--font-display);
   font-size: var(--text-h4);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: var(--leading-h4);
   letter-spacing: var(--tracking-h4);
+  text-transform: lowercase;
 }
 
 .index-domain {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   color: var(--ink-faint);
 }
 
@@ -1346,7 +1496,7 @@ body.menu-open #menu {
 /* Detail text starts under the title (column 2). */
 .index-item > .project-detail {
   max-width: var(--measure);
-  margin: 0 0 0 calc((100% + var(--gutter)) / 12);
+  margin: 0 0 0 calc((100% - 2 * var(--space-3) + var(--gutter)) / 12 + var(--space-3));
   padding-bottom: var(--space-6);
 }
 
@@ -1394,20 +1544,187 @@ body.menu-open #menu {
   }
 
   .index-item > .project-detail {
-    margin-left: 0;
+    margin-left: var(--space-3);
+  }
+}
+
+/* ---- Interlude band (actuation yellow) ---------------------------------- */
+
+/* The quadruped trots on a heavy dashed metre track. Clip, not scroll: the
+   phone track bleeds to the edges. */
+.interlude-band {
+  overflow-x: clip;
+  padding-block: var(--section-y) var(--space-6);
+  border-bottom: var(--rule) solid var(--ink);
+  background: var(--actuation);
+}
+
+.interlude-stage {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: var(--space-6);
+}
+
+.robot--quadruped {
+  grid-column: 2 / -1;
+  grid-row: 2;
+  /* Feet on the track: the poster's feet sit ~11% of its height above
+     its bottom edge (7.5% of its width). */
+  margin-bottom: -7.5%;
+}
+
+.interlude-copy {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.interlude-kicker {
+  color: var(--ink-muted);
+}
+
+.interlude-line {
+  margin-top: var(--space-4);
+  text-wrap: balance;
+  font-family: var(--font-display);
+  font-size: var(--text-figure);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-h3);
+  letter-spacing: var(--tracking-h2);
+  text-transform: lowercase;
+}
+
+.interlude-track {
+  width: 100%;
+  height: var(--space-3);
+  overflow: visible;
+}
+
+.interlude-track line {
+  stroke: var(--ink);
+  stroke-width: var(--rule-heavy);
+  stroke-dasharray: var(--space-6) var(--space-2);
+  vector-effect: non-scaling-stroke;
+}
+
+.interlude-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: calc(var(--space-3) / -2);
+  color: var(--ink);
+}
+
+.interlude-scale span {
+  position: relative;
+  padding-top: var(--space-5);
+}
+
+.interlude-scale span::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: var(--space-3);
+  border-left: var(--rule) solid var(--ink);
+}
+
+.interlude-scale span:last-child::before {
+  right: 0;
+  left: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The track scrolls one --walk-distance per gait cycle, only while the dog walks. */
+  .interlude-track line {
+    animation: track-walk var(--dur-gait) linear infinite paused;
+  }
+
+  .interlude.is-walking .interlude-track line {
+    animation-play-state: running;
+  }
+
+  @keyframes track-walk {
+    to {
+      stroke-dashoffset: var(--walk-distance);
+    }
+  }
+}
+
+@media (width >= 48rem) {
+  .interlude-stage {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .robot--quadruped {
+    grid-column: 1 / 6;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .interlude-copy {
+    grid-column: 7 / -1;
+    grid-row: 1;
+  }
+}
+
+@media (width < 48rem) {
+  /* Full-bleed track on phones. */
+  .interlude-track {
+    width: calc(100% + 2 * var(--margin));
+    max-width: none;
+    margin-inline: calc(var(--margin) * -1);
+  }
+
+  .interlude-scale {
+    display: none;
   }
 }
 
 /* ---- 03 Services & stack --------------------------------------------------- */
 
+/* The tile grid adapts to the container, not the viewport. */
+.services .shell {
+  container-type: inline-size;
+}
+
 .service-list {
   display: grid;
-  gap: var(--space-7) var(--gutter);
+  grid-template-columns: minmax(0, 1fr);
+  border-top: var(--rule) solid var(--ink);
+  border-left: var(--rule) solid var(--ink);
+}
+
+/* Thresholds mirror --bp-tiles-2 and --bp-tiles-4; @container can't read vars. */
+@container (min-width: 36rem) {
+  .service-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 60rem) {
+  .service-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .service {
-  padding-top: var(--space-5);
-  border-top: var(--hairline) solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-right: var(--rule) solid var(--ink);
+  border-bottom: var(--rule) solid var(--ink);
+}
+
+.service-shape {
+  width: var(--shape-lg);
+  height: var(--shape-lg);
+  margin-bottom: var(--space-2);
+}
+
+.service-shape.shape--data {
+  width: calc(var(--shape-lg) / 2);
 }
 
 .service-index {
@@ -1415,38 +1732,48 @@ body.menu-open #menu {
 }
 
 .service-title {
-  margin-top: var(--space-4);
   font-size: var(--text-h4);
   line-height: var(--leading-h4);
   letter-spacing: var(--tracking-h4);
 }
 
 .service-copy {
-  margin-top: var(--space-4);
   color: var(--ink-muted);
   font-size: var(--text-small);
 }
 
 .stack-list {
-  margin-top: var(--space-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .stack-list li {
-  padding-block: var(--space-3);
-  border-bottom: var(--hairline) solid var(--line);
+  padding: var(--space-1) var(--space-3);
+  border: var(--hairline) solid var(--ink);
+  border-radius: var(--radius-pill);
 }
 
-/* The arm stands between heading and aside. */
+/* The arm stands on an actuation triangle between heading and aside. */
 .section-head-robot .robot--arm {
   justify-self: center;
   width: 50%;
 }
 
-@media (width >= 48rem) {
-  .service-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+.services .robot--arm::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: 4%;
+  left: 6%;
+  width: 70%;
+  aspect-ratio: 1 / 1.3;
+  background: var(--actuation);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
 
+@media (width >= 48rem) {
   .section-head-robot h2 {
     grid-column: 1 / 6;
     grid-row: 1;
@@ -1466,56 +1793,38 @@ body.menu-open #menu {
   }
 }
 
-@media (width < 48rem) {
-  .service-list {
-    row-gap: var(--space-6);
-  }
+/* ---- 04 Experience (paper band) -------------------------------------------- */
 
-  .service {
-    padding-top: var(--space-4);
-  }
-
-  .service-title,
-  .service-copy {
-    margin-top: var(--space-2);
-  }
-
-  /* Compact rows: the stack runs inline, "·"-separated. */
-  .stack-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-2);
-    margin-top: var(--space-3);
-  }
-
-  .stack-list li {
-    padding-block: 0;
-    border-bottom: 0;
-  }
-
-  .stack-list li:not(:last-child)::after {
-    content: "·";
-    margin-left: var(--space-2);
-    color: var(--ink-faint);
-  }
+.experience {
+  border-block: var(--rule) solid var(--ink);
+  background: var(--paper);
 }
-
-/* ---- 04 Experience --------------------------------------------------------- */
 
 .experience-grid {
   display: grid;
   gap: var(--space-6) var(--gutter);
 }
 
+/* A heavy ink spine with a tick into each role. */
 .timeline {
-  border-top: var(--hairline) solid var(--line);
+  border-left: var(--rule-heavy) solid var(--ink);
 }
 
 .timeline-item {
+  position: relative;
   display: grid;
   gap: var(--space-3);
-  padding-block: var(--space-6);
-  border-bottom: var(--hairline) solid var(--line);
+  padding: var(--space-6) 0 var(--space-6) var(--space-6);
+  border-bottom: var(--hairline) solid var(--ink);
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--space-6) + var(--space-2));
+  left: 0;
+  width: var(--space-4);
+  border-top: var(--rule-heavy) solid var(--ink);
 }
 
 .timeline-date {
@@ -1579,9 +1888,22 @@ body.menu-open #menu {
   gap: var(--space-7) var(--gutter);
 }
 
+/* Each note sits under the bar of the skill it is about. */
 .note {
   padding-top: var(--space-5);
-  border-top: var(--hairline) solid var(--ink);
+  border-top: var(--bar) solid var(--ink);
+}
+
+.note--perception {
+  border-top-color: var(--perception);
+}
+
+.note--compute {
+  border-top-color: var(--compute);
+}
+
+.note--actuation {
+  border-top-color: var(--actuation);
 }
 
 .note-meta {
@@ -1609,11 +1931,24 @@ body.menu-open #menu {
   }
 }
 
-/* ---- 06 Contact ------------------------------------------------------------ */
+/* ---- 06 Contact (perception red band) -------------------------------------- */
 
 /* The hand bleeds off the right edge; clip it without making a scroll box. */
 .contact {
   overflow-x: clip;
+  padding-bottom: var(--section-y);
+  background: var(--perception);
+  color: var(--white);
+}
+
+.contact .section-label,
+.contact .section-label-no,
+.contact .section-label-name {
+  color: var(--white);
+}
+
+.contact .section-label-rule {
+  border-top-color: var(--white);
 }
 
 .contact-grid {
@@ -1630,7 +1965,6 @@ body.menu-open #menu {
 .contact-intro {
   max-width: var(--measure);
   margin-top: var(--space-6);
-  color: var(--ink-muted);
   font-size: var(--text-lead);
   line-height: var(--leading-lead);
 }
@@ -1643,12 +1977,21 @@ body.menu-open #menu {
   margin-right: calc(var(--margin) * -1);
 }
 
-.contact-main {
-  margin-top: var(--space-7);
+/* A white disc behind the hand (no skill: the hand points, the email answers). */
+.contact-grid .robot--hand::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 4%;
+  left: 30%;
+  height: 92%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--white);
 }
 
-.contact-eyebrow {
-  color: var(--ink-faint);
+.contact-main {
+  margin-top: var(--space-7);
 }
 
 .email-link {
@@ -1658,11 +2001,14 @@ body.menu-open #menu {
   max-width: 100%;
   min-height: var(--control-h);
   margin-top: var(--space-3);
+  font-family: var(--font-display);
   font-size: var(--text-figure);
+  font-weight: var(--weight-semibold);
   line-height: var(--leading-h3);
   letter-spacing: var(--tracking-h3);
   text-decoration: underline;
-  text-decoration-thickness: var(--hairline);
+  text-decoration-color: var(--actuation);
+  text-decoration-thickness: var(--rule-heavy);
   text-underline-offset: var(--space-2);
   overflow-wrap: anywhere;
 }
@@ -1674,22 +2020,43 @@ body.menu-open #menu {
   margin-top: var(--space-7);
 }
 
+.contact .button-primary {
+  border-color: var(--white);
+  background: var(--white);
+  color: var(--ink);
+}
+
+.contact .button-primary:hover {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
+}
+
+.contact .button-ghost {
+  border-color: var(--white);
+  color: var(--white);
+}
+
+.contact .button-ghost:hover {
+  background: var(--white);
+  color: var(--perception);
+}
+
 .contact-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-5) var(--gutter);
   margin-top: var(--space-7);
   padding-top: var(--space-6);
-  border-top: var(--hairline) solid var(--line);
-}
-
-.contact-detail dt {
-  color: var(--ink-faint);
+  border-top: var(--rule) solid var(--white);
 }
 
 .contact-detail dd {
+  font-family: var(--font-display);
   font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
   line-height: var(--control-h);
+  text-transform: lowercase;
 }
 
 .contact-detail a {
@@ -1701,8 +2068,9 @@ body.menu-open #menu {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
+  .contact-grid h2,
   .contact-intro {
-    grid-column: 1 / 7;
+    grid-column: 1 / 8;
   }
 
   .contact-main {
@@ -1750,15 +2118,22 @@ body.menu-open #menu {
     width: 100%;
     justify-content: space-between;
   }
+
+  /* The wide display face would break the address at the dot on phones. */
+  .email-link {
+    font-size: var(--text-h3);
+  }
 }
 
-/* ---- Footer ---------------------------------------------------------------- */
+/* ---- Footer (ink band) ------------------------------------------------------ */
 
 /* Clip, not scroll: the wordmark's tight line-height leaves glyph space that
    would otherwise extend the page below the footer. */
 .site-footer {
   overflow: clip;
-  border-top: var(--hairline) solid var(--line);
+  padding-block: var(--space-6) var(--space-4);
+  background: var(--ink);
+  color: var(--white);
 }
 
 .footer-row {
@@ -1767,7 +2142,7 @@ body.menu-open #menu {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2) var(--space-5);
-  color: var(--ink-faint);
+  color: var(--bg);
 }
 
 /* The waving robot stands beside "Back to top" (row-reverse keeps the link at the edge). */
@@ -1780,7 +2155,7 @@ body.menu-open #menu {
 
 .to-top {
   display: inline-block;
-  color: var(--ink);
+  color: var(--white);
   line-height: var(--control-h);
 }
 
@@ -1788,8 +2163,32 @@ body.menu-open #menu {
   width: var(--space-8);
 }
 
+.footer-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-5);
+  color: var(--bg);
+}
+
+/* Each shape stays with its name when the key wraps. */
+.footer-key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-right: var(--space-3);
+  white-space: nowrap;
+}
+
+/* On ink, the data half-disc inverts like the type does. */
+.site-footer .shape--data {
+  background: var(--white);
+}
+
 .footer-credits {
-  color: var(--ink-muted);
+  margin-top: var(--space-2);
+  color: var(--bg);
   font-size: var(--text-small);
 }
 
@@ -1817,14 +2216,21 @@ body.menu-open #menu {
   }
 }
 
-/* Fills the container: the token is 21vw, capped where the container stops growing. */
+/* Fills the container: the token is in vw, capped where the container stops growing. */
 .footer-wordmark {
-  margin-top: var(--space-5);
-  font-size: min(var(--text-wordmark), calc((var(--container) + 2 * var(--margin)) * 0.21));
-  font-weight: var(--weight-medium);
+  margin-top: var(--space-6);
+  font-family: var(--font-display);
+  font-size: min(var(--text-wordmark), calc((var(--container) + 2 * var(--margin)) * 0.155));
+  font-weight: var(--weight-bold);
   line-height: var(--leading-wordmark);
   letter-spacing: var(--tracking-wordmark);
+  text-transform: lowercase;
   white-space: nowrap;
+}
+
+.footer-wordmark::after {
+  content: ".";
+  color: var(--actuation);
 }
 
 /* ---- Case-study dialog ----------------------------------------------------- */
@@ -1834,17 +2240,16 @@ body.menu-open #menu {
   max-width: calc(var(--container) * 2 / 3);
   max-height: calc(100% - 2 * var(--margin));
   padding: 0;
-  border: var(--hairline) solid var(--ink);
+  border: var(--rule) solid var(--ink);
   border-radius: var(--radius-none);
   background: var(--bg);
   color: var(--ink);
   overscroll-behavior: contain;
 }
 
-/* White on white: the page fades back instead of going dark. */
 .case-study::backdrop {
-  background: var(--bg);
-  opacity: 0.9;
+  background: var(--ink);
+  opacity: 0.7;
 }
 
 .case-study-head {
@@ -1853,7 +2258,7 @@ body.menu-open #menu {
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-3) var(--space-3) var(--space-3) var(--space-6);
-  border-bottom: var(--hairline) solid var(--line);
+  border-bottom: var(--rule) solid var(--ink);
   color: var(--ink-faint);
 }
 
@@ -1867,16 +2272,19 @@ body.menu-open #menu {
   place-items: center;
   width: var(--control-h);
   height: var(--control-h);
-  border: var(--hairline) solid var(--line-strong);
+  border: var(--rule) solid var(--ink);
   border-radius: var(--radius-pill);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: var(--text-lead);
-  transition: border-color var(--dur-fast) var(--ease-out);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 
 .case-close:hover {
-  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
 }
 
 .case-study-body {
@@ -1906,7 +2314,7 @@ body.menu-open #menu {
 
 .case-study-grid > div {
   padding-top: var(--space-4);
-  border-top: var(--hairline) solid var(--ink);
+  border-top: var(--rule) solid var(--ink);
 }
 
 .case-study-grid > div > span {

@@ -161,9 +161,10 @@ test('approved mobile and hover corrections are present', () => {
   assert.ok(hover, 'primary button has no hover state');
   assert.match(hover.body, /border-color:\s*var\(--ink-muted\)/);
   assert.match(hover.body, /background:\s*var\(--ink-muted\)/);
+  // v4: the footer is an ink band, so its credits are set light (ledger ruling).
   const credits = rules.find((r) => r.prelude === '.footer-credits');
   assert.ok(credits);
-  assert.match(credits.body, /color:\s*var\(--ink-muted\)/);
+  assert.match(credits.body, /color:\s*var\(--bg\)/);
 });
 
 test('--text-hero appears exactly once, in the shared .display-hero rule', () => {
@@ -173,15 +174,73 @@ test('--text-hero appears exactly once, in the shared .display-hero rule', () =>
   assert.ok(selectorsOf(owners[0]).includes('.display-hero'), `--text-hero set on "${owners[0].prelude}"`);
 });
 
-test('the accent is only used for status dots', () => {
-  const owners = rules.filter((r) => r.body.includes('var(--accent)'));
-  assert.ok(owners.length > 0, 'no status dot styled');
-  for (const rule of owners) {
-    assert.ok(selectorsOf(rule).every((s) => /\.status-dot$/.test(s)), `accent used on "${rule.prelude}"`);
+const ruleFor = (selector, pattern = /./) => rules.find((r) => selectorsOf(r).includes(selector) && pattern.test(r.body));
+
+test('each skill shape is its own primitive in its own colour', () => {
+  const shapes = { perception: /border-radius:\s*50%/, compute: /border-radius:\s*0/, actuation: /clip-path:\s*polygon\(/, data: /border-radius:\s*var\(--radius-pill\) 0 0 var\(--radius-pill\)/ };
+  for (const [skill, form] of Object.entries(shapes)) {
+    const rule = ruleFor(`.shape--${skill}`, /background/);
+    assert.ok(rule, `.shape--${skill} has no rule`);
+    assert.match(rule.body, new RegExp(`background:\\s*var\\(--${skill}\\)`), `.shape--${skill} colour`);
+    assert.match(rule.body, form, `.shape--${skill} form`);
   }
-  const diagram = rules.filter((r) => /diagram-accent/.test(r.prelude));
-  assert.ok(diagram.length > 0, 'diagram-accent classes not restyled');
-  for (const rule of diagram) assert.match(rule.body, /var\(--ink\)/, `${rule.prelude} must render in ink`);
+  assert.match(ruleFor('.shape', /width/).body, /width:\s*var\(--glyph\)/);
+});
+
+test('coloured headline words: red and blue type, actuation as an ink word on a yellow bar', () => {
+  assert.match(ruleFor('.word--perception').body, /color:\s*var\(--perception\)/);
+  assert.match(ruleFor('.word--compute').body, /color:\s*var\(--compute\)/);
+  const move = ruleFor('.word--actuation').body;
+  assert.doesNotMatch(move, /(?<![-\w])color:\s*var\(--actuation\)/, 'yellow is never text on a light surface');
+  assert.match(move, /text-decoration-color:\s*var\(--actuation\)/);
+  assert.match(move, /text-decoration-thickness:\s*var\(--underline-bar\)/);
+  assert.match(tokens, /--underline-bar\s*:\s*0\.12em/);
+});
+
+test('colour fields: compute profile, actuation interlude, perception contact, ink strip and footer', () => {
+  assert.match(ruleFor('.viewfinder-frame', /background/).body, /background:\s*var\(--compute\)/);
+  assert.match(ruleFor('.interlude-band', /background/).body, /background:\s*var\(--actuation\)/);
+  const contact = ruleFor('.contact', /background/).body;
+  assert.match(contact, /background:\s*var\(--perception\)/);
+  assert.match(contact, /color:\s*var\(--white\)/);
+  for (const band of ['.strip', '.site-footer']) {
+    const body = ruleFor(band, /background/).body;
+    assert.match(body, /background:\s*var\(--ink\)/, `${band} background`);
+    assert.match(body, /color:\s*var\(--white\)/, `${band} colour`);
+  }
+});
+
+test('primary colours appear only on skill shapes, words, fields, diagrams and status dots', () => {
+  const primary = /var\(--(red|blue|yellow|perception|compute|actuation)\)/;
+  const allowed = /shape|word|status-dot|viewfinder|interlude|contact|email|hero-|diagram|note--|index-row|service|wordmark|case-close|button/;
+  const owners = rules.filter((r) => primary.test(r.body));
+  assert.ok(owners.length > 0);
+  for (const rule of owners) assert.match(rule.prelude, allowed, `primary colour used on "${rule.prelude}"`);
+  assert.match(ruleFor('.status-dot', /background/).body, /background:\s*var\(--red\)/);
+});
+
+test('v3-only tokens are gone from tokens.css and styles.css', () => {
+  for (const name of ['--line', '--line-strong', '--accent', '--font-serif', '--serif-scale', '--tracking-serif']) {
+    assert.doesNotMatch(stripComments(tokens), new RegExp(`${name}\\s*:`), `${name} still defined`);
+    assert.doesNotMatch(code, new RegExp(`var\\(${name}\\)`), `${name} still used`);
+  }
+});
+
+test('focus turns white on red, blue and ink bands', () => {
+  const inverse = rules.filter((r) => /outline:\s*var\(--focus-ring-inverse\)/.test(r.body)).flatMap(selectorsOf);
+  for (const band of ['.contact', '.strip', '.site-footer', '.viewfinder-frame']) {
+    assert.ok(inverse.some((s) => s.startsWith(band) && s.includes(':focus-visible')), `${band} has no inverse focus ring`);
+  }
+});
+
+test('service tiles go to four columns in a token-threshold container query', () => {
+  // An element can't match its own container query, so the container is the services shell.
+  const container = rules.find((r) => selectorsOf(r).some((sel) => /services/.test(sel)) && /container-type:\s*inline-size/.test(r.body));
+  assert.ok(container, 'the services section needs an inline-size query container');
+  assert.match(tokens, /--bp-tiles-2\s*:\s*36rem/);
+  assert.ok(rules.some((r) => r.parents.includes('@container (min-width: 36rem)') && /grid-template-columns:\s*repeat\(2,/.test(r.body)), 'no 2-column rule at --bp-tiles-2');
+  const four = rules.find((r) => r.parents.includes('@container (min-width: 60rem)') && /grid-template-columns:\s*repeat\(4,/.test(r.body));
+  assert.ok(four, 'no 4-column rule at the --bp-tiles-4 (60rem) threshold');
 });
 
 test('media queries use the single 48rem breakpoint', () => {

@@ -55,14 +55,54 @@ test('exactly two display-hero headings (hero H1 and contact H2)', () => {
   assert.equal([...html.matchAll(/class="[^"]*\bdisplay-hero\b/g)].length, 2);
 });
 
-test('one h1, and no heading carries more than one <em>', () => {
+test('one h1; headings colour words with .word spans, never <em>', () => {
   assert.equal([...html.matchAll(/<h1[\s>]/g)].length, 1);
   const headings = [...html.matchAll(/<(h[1-3])\b[^>]*>([\s\S]*?)<\/\1>/g)];
   assert.ok(headings.length >= 10, 'expected the page headings to be found');
   for (const [, tag, inner] of headings) {
-    const ems = (inner.match(/<em[\s>]/g) ?? []).length;
-    assert.ok(ems <= 1, `<${tag}> has ${ems} <em>: ${inner.slice(0, 60)}`);
+    assert.doesNotMatch(inner, /<em[\s>]/, `<${tag}> still uses <em>: ${inner.slice(0, 60)}`);
+    const words = (inner.match(/class="word word--/g) ?? []).length;
+    if (tag === 'h1') continue;
+    assert.ok(words <= 1, `<${tag}> colours ${words} words: ${inner.slice(0, 60)}`);
   }
+  const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)[1];
+  for (const skill of ['perception', 'compute', 'actuation']) {
+    assert.equal((h1.match(new RegExp(`class="word word--${skill}"`, 'g')) ?? []).length, 1, `hero H1 needs one ${skill} word`);
+  }
+});
+
+test('shape glyphs are decorative spans with a known skill', () => {
+  const shapes = [...html.matchAll(/<span class="shape shape--([a-z]+)"([^>]*)>/g)];
+  assert.ok(shapes.length >= 20, `expected the shape system across the page, found ${shapes.length}`);
+  for (const [, skill, attrs] of shapes) {
+    assert.ok(['perception', 'compute', 'actuation', 'data'].includes(skill), `unknown shape--${skill}`);
+    assert.match(attrs, /aria-hidden="true"/, `shape--${skill} must be aria-hidden`);
+  }
+});
+
+test('hero shows a visible three-skill legend and its shape composition', () => {
+  const legend = html.match(/<ul class="hero-legend[^"]*"[^>]*>([\s\S]*?)<\/ul>/)?.[1];
+  assert.ok(legend, 'no .hero-legend');
+  const skills = [...legend.matchAll(/class="shape shape--([a-z]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(skills, ['perception', 'compute', 'actuation']);
+  assert.doesNotMatch(html, /class="visually-hidden" aria-label="Core capabilities"/, 'the capabilities list is visible now');
+  const composition = html.match(/<div class="hero-shapes" aria-hidden="true">([\s\S]*?)<\/div>/)?.[1];
+  assert.ok(composition, 'no aria-hidden .hero-shapes');
+  for (const part of ['hero-circle', 'hero-square', 'hero-triangle', 'hero-orbit']) assert.match(composition, new RegExp(`class="${part}"`));
+});
+
+test('interlude is its own band between work and services', () => {
+  const band = html.indexOf('<section class="interlude-band"');
+  assert.ok(band > 0, 'no <section class="interlude-band">');
+  const workEnd = html.indexOf('</section>', html.indexOf('id="work"'));
+  assert.ok(band > workEnd, 'interlude band must follow the work section');
+  assert.ok(band < html.indexOf('id="services"'), 'interlude band must precede services');
+  assert.match(html.slice(band, html.indexOf('</section>', band)), /<div class="interlude[\s"]/);
+});
+
+test('notes carry their skill in order: perception, compute, actuation', () => {
+  const notes = [...html.matchAll(/<article class="note note--([a-z]+)/g)].map((m) => m[1]);
+  assert.deepEqual(notes, ['perception', 'compute', 'actuation']);
 });
 
 test('retired v2 features are gone', () => {
@@ -159,9 +199,10 @@ test('head: import map, fonts, token + page stylesheets, module script', () => {
     },
   });
   assert.ok(html.indexOf('type="importmap"') < html.indexOf('type="module"'), 'import map must precede the module script');
-  assert.match(html, /family=Geist:wght@400;500&family=Geist\+Mono:wght@400;500&family=Instrument\+Serif:ital@1&display=swap/);
+  assert.match(html, /family=Geist:wght@400;500&family=Geist\+Mono:wght@400;500&family=Unbounded:wght@600;800&display=swap/);
+  assert.doesNotMatch(html, /Instrument\+Serif/);
   assert.ok(html.indexOf('href="design/tokens.css"') < html.indexOf('href="styles.css"'));
-  assert.match(html, /<meta name="theme-color" content="#FFFFFF">/);
+  assert.match(html, /<meta name="theme-color" content="#E8EAEE">/);
   assert.match(html, /<script type="module" src="script\.js"><\/script>/);
 });
 

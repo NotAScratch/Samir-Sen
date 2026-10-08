@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#FFFFFF">
+  <meta name="theme-color" content="#E8EAEE">
   <meta name="description" content="Samir Sen is a junior R&D AI roboticist and backend engineer building intelligent systems for the physical world.">
   <title>Samir Sen | AI Roboticist &amp; Automation Engineer</title>
   <meta property="og:title" content="Samir Sen | AI Roboticist &amp; Automation Engineer">
@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
   <script type="importmap">
     { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }
   </script>
@@ -25,7 +25,7 @@
   <!-- Nav: desktop inline links, mobile menu-toggle + #menu. CSS shows one or the other. -->
   <header class="site-header">
     <div class="nav">
-      <a class="wordmark" href="#top" translate="no">Samir Sen</a>
+      <a class="wordmark" href="#top" translate="no"><span class="wordmark-shapes"><span class="shape shape--perception" aria-hidden="true"></span> <span class="shape shape--compute" aria-hidden="true"></span> <span class="shape shape--actuation" aria-hidden="true"></span></span> Samir Sen</a>
       <p class="nav-status"><span class="status-dot" aria-hidden="true"></span>Kathmandu · <span class="nav-clock">--:--</span> NPT · Open to collaborations</p>
       <nav class="nav-links" aria-label="Primary">
         <ul class="nav-list">
@@ -33,7 +33,7 @@
           <li><a href="#about">About</a></li>
           <li><a href="#services">Services</a></li>
           <li><a href="#notes">Notes</a></li>
-          <li><a class="button button-ghost nav-cta" href="#contact">Let's talk <span aria-hidden="true">→</span></a></li>
+          <li><a class="button button-primary nav-cta" href="#contact">Let's talk <span aria-hidden="true">→</span></a></li>
         </ul>
       </nav>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu"><span class="status-dot" aria-hidden="true"></span> <span class="menu-toggle-label">Menu</span></button>
@@ -56,22 +56,23 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-grid shell">
         <p class="eyebrow reveal" style="--i:0"><span class="status-dot" aria-hidden="true"></span>R&amp;D AI Roboticist &amp; Automation Engineer — Baliyo Ventures</p>
-        <h1 id="hero-title" class="display-hero reveal" style="--i:1">Systems that <br>see, think, <br>and <em>move.</em></h1>
+        <h1 id="hero-title" class="display-hero reveal" style="--i:1">Systems that <span class="word word--perception">see,</span> <span class="word word--compute">think</span> and <span class="word word--actuation">move.</span></h1>
         <p class="hero-intro reveal" style="--i:2">Turning computer-vision research into reliable, physical-world automation — one perception loop at a time.</p>
-        <ul class="visually-hidden" aria-label="Core capabilities">
-          <li>Perception: OpenCV, PyTorch, SSD</li>
-          <li>Edge compute: Jetson Nano, Lidar</li>
-          <li>Actuation: Embedded control</li>
-        </ul>
         <div class="hero-actions reveal" style="--i:3">
           <a class="button button-primary" href="#work">Selected work <span aria-hidden="true">↘</span></a>
           <a class="button button-ghost" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download CV <span aria-hidden="true">↓</span></a>
         </div>
+        <ul class="hero-legend reveal" style="--i:4" aria-label="Core capabilities">
+          <li><span class="shape shape--perception" aria-hidden="true"></span> <span class="hero-legend-name">01 Perception</span> <span class="hero-legend-detail">OpenCV · PyTorch · SSD</span></li>
+          <li><span class="shape shape--compute" aria-hidden="true"></span> <span class="hero-legend-name">02 Edge compute</span> <span class="hero-legend-detail">Jetson Nano · Lidar</span></li>
+          <li><span class="shape shape--actuation" aria-hidden="true"></span> <span class="hero-legend-name">03 Actuation</span> <span class="hero-legend-detail">Embedded control</span></li>
+        </ul>
+        <div class="hero-shapes" aria-hidden="true"><span class="hero-orbit"></span> <span class="hero-circle"></span> <span class="hero-square"></span> <span class="hero-triangle"></span></div>
         <div class="robot robot--humanoid" data-robot="humanoid" aria-hidden="true">
           <img class="robot-poster" src="assets/posters/humanoid.webp" alt="" width="604" height="900" fetchpriority="high">
-          <span class="callout" data-anchor="perception" style="--ax:45.28%;--ay:12.25%"><span class="callout-title">01 — Perception</span> <span class="callout-detail">OpenCV · PyTorch · SSD</span></span>
-          <span class="callout" data-anchor="edge" style="--ax:47.97%;--ay:27.88%"><span class="callout-title">02 — Edge compute</span> <span class="callout-detail">Jetson Nano · Lidar</span></span>
-          <span class="callout" data-anchor="actuation" style="--ax:69.48%;--ay:48.78%"><span class="callout-title">03 — Actuation</span> <span class="callout-detail">Embedded control</span></span>
+          <span class="callout" data-anchor="perception" style="--ax:45.28%;--ay:12.25%"><span class="callout-title"><span class="shape shape--perception" aria-hidden="true"></span> 01 — Perception</span> <span class="callout-detail">OpenCV · PyTorch · SSD</span></span>
+          <span class="callout" data-anchor="edge" style="--ax:47.97%;--ay:27.88%"><span class="callout-title"><span class="shape shape--compute" aria-hidden="true"></span> 02 — Edge compute</span> <span class="callout-detail">Jetson Nano · Lidar</span></span>
+          <span class="callout" data-anchor="actuation" style="--ax:69.48%;--ay:48.78%"><span class="callout-title"><span class="shape shape--actuation" aria-hidden="true"></span> 03 — Actuation</span> <span class="callout-detail">Embedded control</span></span>
         </div>
         <span class="hero-ground" aria-hidden="true"></span>
       </div>
@@ -84,11 +85,11 @@
 
     <section class="strip" aria-label="Capabilities">
       <ul class="strip-list shell">
-        <li>Computer vision</li>
-        <li>Edge intelligence</li>
-        <li>Automation</li>
-        <li>Backend systems</li>
-        <li>Embedded hardware</li>
+        <li><span class="shape shape--perception" aria-hidden="true"></span> Computer vision</li>
+        <li><span class="shape shape--compute" aria-hidden="true"></span> Edge intelligence</li>
+        <li><span class="shape shape--actuation" aria-hidden="true"></span> Automation</li>
+        <li><span class="shape shape--compute" aria-hidden="true"></span> Backend systems</li>
+        <li><span class="shape shape--actuation" aria-hidden="true"></span> Embedded hardware</li>
       </ul>
     </section>
 
@@ -97,13 +98,9 @@
       <div class="shell">
         <p class="section-label reveal"><span class="section-label-no">01</span> <span class="section-label-name">Profile</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(About)</span></p>
         <div class="profile-grid">
-          <h2 id="profile-title" class="display reveal" style="--i:0">Curiosity, made <em>tangible.</em></h2>
+          <h2 id="profile-title" class="display reveal" style="--i:0">Curiosity, made <span class="word word--actuation">tangible.</span></h2>
           <figure class="viewfinder reveal" style="--i:1">
             <div class="viewfinder-frame">
-              <span class="tick tick-tl" aria-hidden="true"></span>
-              <span class="tick tick-tr" aria-hidden="true"></span>
-              <span class="tick tick-bl" aria-hidden="true"></span>
-              <span class="tick tick-br" aria-hidden="true"></span>
               <div class="robot robot--bust" data-robot="bust" aria-hidden="true">
                 <img class="robot-poster" src="assets/posters/bust.webp" alt="" width="536" height="600" loading="lazy">
               </div>
@@ -124,12 +121,12 @@
       </div>
     </section>
 
-    <!-- 02 Selected work: featured 01 (media left), featured 02 (mirrored), interlude, index table 03-06. -->
+    <!-- 02 Selected work: featured 01 (media left), featured 02 (mirrored), index table 03-06. The interlude band follows the section. -->
     <section class="work section" id="work" aria-labelledby="work-title">
       <div class="shell">
         <p class="section-label reveal"><span class="section-label-no">02</span> <span class="section-label-name">Selected work</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(06 projects)</span></p>
         <div class="section-head">
-          <h2 id="work-title" class="display reveal" style="--i:0">From signal to <em>solution.</em></h2>
+          <h2 id="work-title" class="display reveal" style="--i:0">From <span class="word word--perception">signal</span> to solution.</h2>
           <p class="section-aside reveal" style="--i:1">Perception, edge compute and embedded systems — each project starts with a physical-world constraint and ends with something that runs.</p>
         </div>
 
@@ -137,27 +134,25 @@
         <article class="featured reveal" aria-labelledby="project-title-1">
           <figure class="featured-media">
             <div class="featured-frame">
-              <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Detection reticle locking onto an object with a distance readout and scan line">
-                <rect x="24" y="24" width="352" height="252" class="diagram-line" fill="none"/>
-                <g class="diagram-line-strong" fill="none" stroke-linecap="square">
-                  <path d="M24 60 V24 H60"/><path d="M340 24 H376 V60"/>
-                  <path d="M376 240 V276 H340"/><path d="M60 276 H24 V240"/>
-                </g>
-                <path d="M60 250 L340 250" class="diagram-line"/>
-                <g class="diagram-line">
-                  <path d="M90 250 V240"/><path d="M150 250 V236"/><path d="M210 250 V240"/><path d="M270 250 V236"/><path d="M330 250 V240"/>
-                </g>
-                <polygon points="180,100 230,90 250,140 215,175 165,160" class="diagram-line-strong" fill="none"/>
-                <rect x="150" y="72" width="130" height="120" class="diagram-accent" fill="none" stroke-dasharray="6 5"/>
-                <g class="diagram-accent-fill"><circle cx="150" cy="72" r="3"/><circle cx="280" cy="72" r="3"/><circle cx="150" cy="192" r="3"/><circle cx="280" cy="192" r="3"/></g>
-                <line x1="24" y1="0" x2="24" y2="300" class="diagram-scan diagram-accent" />
+              <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Detection overlay: a circle and a square object each framed by a labelled detection box, on a floor line">
+                <rect width="400" height="300" class="diagram-field"/>
+                <rect y="244" width="400" height="56" class="diagram-ink"/>
+                <circle cx="128" cy="176" r="56" class="diagram-perception"/>
+                <rect x="244" y="124" width="76" height="120" class="diagram-compute"/>
+                <polygon points="338,196 382,220 338,244" class="diagram-actuation"/>
+                <rect x="64" y="112" width="128" height="128" class="diagram-box"/>
+                <rect x="236" y="116" width="92" height="132" class="diagram-box"/>
+                <rect x="64" y="94" width="128" height="18" class="diagram-ink"/>
+                <text x="70" y="107" font-size="10" class="diagram-label">CLASS · M · BRG</text>
+                <rect x="236" y="98" width="128" height="18" class="diagram-ink"/>
+                <text x="242" y="111" font-size="10" class="diagram-label">CLASS · M · BRG</text>
               </svg>
               <p class="live-tag"><span class="status-dot" aria-hidden="true"></span>Live · SSD MobileNetV2 · FastAPI stream</p>
             </div>
             <figcaption class="caption"><span>Fig. 02 — Detection overlay on live feed</span> <span>01 / 06</span></figcaption>
           </figure>
           <div class="featured-meta">
-            <p class="kicker">01 — Computer vision</p>
+            <p class="kicker"><span class="shape shape--perception" aria-hidden="true"></span> 01 — Computer vision</p>
             <h3 id="project-title-1">Real-time object detection, distance &amp; direction</h3>
             <p class="project-body">Turns live video feeds into spatial awareness, detecting objects while estimating their distance and direction for downstream robotic decisions.</p>
             <p class="project-detail" id="project-detail-1">Bridges the gap between raw camera input and actionable perception through a lightweight, accessible API.</p>
@@ -173,7 +168,7 @@
         <!-- Featured 02: mirrored (meta, then media). -->
         <article class="featured featured-reverse reveal" aria-labelledby="project-title-2">
           <div class="featured-meta">
-            <p class="kicker">02 — Spatial edge AI</p>
+            <p class="kicker"><span class="shape shape--compute" aria-hidden="true"></span> 02 — Spatial edge AI</p>
             <h3 id="project-title-2">Orientation &amp; spatial edge intelligence</h3>
             <p class="project-body">Gives an edge device environmental context by combining Lidar and depth sensors with PyTorch inference on a Jetson Nano.</p>
             <p class="project-detail" id="project-detail-2">Moves spatial reasoning closer to the sensor, reducing dependence on remote compute for responsive robotics.</p>
@@ -186,43 +181,20 @@
           </div>
           <figure class="featured-media">
             <div class="featured-frame">
-              <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Radar-style lidar sweep with scattered point-cloud returns around a central edge device">
-                <g class="diagram-line" fill="none">
-                  <circle cx="200" cy="150" r="40"/><circle cx="200" cy="150" r="80"/><circle cx="200" cy="150" r="120"/>
-                </g>
-                <g class="diagram-line" stroke-dasharray="2 6">
-                  <line x1="200" y1="30" x2="200" y2="270"/><line x1="80" y1="150" x2="320" y2="150"/>
-                  <line x1="115" y1="65" x2="285" y2="235"/><line x1="285" y1="65" x2="115" y2="235"/>
-                </g>
-                <g class="diagram-accent-fill">
-                  <circle cx="240" cy="95" r="3"/><circle cx="270" cy="160" r="3"/><circle cx="150" cy="110" r="3"/>
-                  <circle cx="140" cy="190" r="3"/><circle cx="230" cy="205" r="3"/><circle cx="300" cy="140" r="3"/>
-                  <circle cx="175" cy="70" r="3"/><circle cx="120" cy="150" r="3"/>
-                </g>
-                <rect x="185" y="135" width="30" height="30" class="diagram-line-strong" fill="none"/>
-                <g class="diagram-sweep"><circle cx="200" cy="150" r="120" fill="none" stroke="none"/><line x1="200" y1="150" x2="200" y2="30" class="diagram-sweep-line diagram-accent"/></g>
+              <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Lidar returns: a ring of point returns around an edge device on a blue field, with a heading arrow">
+                <rect width="400" height="300" class="diagram-field-compute"/>
+                <g class="diagram-ring"><circle cx="200" cy="150" r="40"/><circle cx="200" cy="150" r="80"/><circle cx="200" cy="150" r="120"/><path d="M200 20 V280 M60 150 H340"/></g>
+                <g class="diagram-point"><circle cx="282.5" cy="150.0" r="2.2"/><circle cx="287.7" cy="156.7" r="2.2"/><circle cx="285.9" cy="163.3" r="2.2"/><circle cx="286.0" cy="170.3" r="2.2"/><circle cx="286.9" cy="178.1" r="2.2"/><circle cx="288.9" cy="187.1" r="2.2"/><circle cx="282.7" cy="193.1" r="2.2"/><circle cx="279.3" cy="200.8" r="2.2"/><circle cx="276.1" cy="209.4" r="2.2"/><circle cx="267.0" cy="213.7" r="2.2"/><circle cx="260.1" cy="220.2" r="2.2"/><circle cx="251.8" cy="225.6" r="2.2"/><circle cx="242.2" cy="229.4" r="2.2"/><circle cx="230.8" cy="229.2" r="2.2"/><circle cx="220.1" cy="228.8" r="2.2"/><circle cx="210.0" cy="229.2" r="2.2"/><circle cx="200.0" cy="227.6" r="2.2"/><circle cx="190.4" cy="225.7" r="2.2"/><circle cx="182.0" cy="220.4" r="2.2"/><circle cx="173.2" cy="219.0" r="2.2"/><circle cx="167.9" cy="210.5" r="2.2"/><circle cx="160.1" cy="208.3" r="2.2"/><circle cx="155.1" cy="202.4" r="2.2"/><circle cx="145.1" cy="202.2" r="2.2"/><circle cx="135.6" cy="200.2" r="2.2"/><circle cx="126.4" cy="197.1" r="2.2"/><circle cx="118.0" cy="192.8" r="2.2"/><circle cx="110.2" cy="187.4" r="2.2"/><circle cx="103.2" cy="181.3" r="2.2"/><circle cx="100.4" cy="173.6" r="2.2"/><circle cx="93.3" cy="166.5" r="2.2"/><circle cx="96.5" cy="157.9" r="2.2"/><circle cx="95.6" cy="150.0" r="2.2"/><circle cx="93.9" cy="141.9" r="2.2"/><circle cx="93.1" cy="133.4" r="2.2"/><circle cx="102.3" cy="126.9" r="2.2"/><circle cx="102.9" cy="118.6" r="2.2"/><circle cx="110.3" cy="112.6" r="2.2"/><circle cx="116.5" cy="106.5" r="2.2"/><circle cx="127.4" cy="103.5" r="2.2"/><circle cx="134.0" cy="98.5" r="2.2"/><circle cx="143.0" cy="95.8" r="2.2"/><circle cx="152.9" cy="95.0" r="2.2"/><circle cx="160.4" cy="92.2" r="2.2"/><circle cx="167.4" cy="88.6" r="2.2"/><circle cx="173.0" cy="80.6" r="2.2"/><circle cx="181.3" cy="76.8" r="2.2"/><circle cx="190.3" cy="73.0" r="2.2"/><circle cx="200.0" cy="71.3" r="2.2"/><circle cx="210.0" cy="70.7" r="2.2"/><circle cx="220.7" cy="68.8" r="2.2"/><circle cx="230.3" cy="72.1" r="2.2"/><circle cx="240.2" cy="74.4" r="2.2"/><circle cx="250.7" cy="76.1" r="2.2"/><circle cx="258.6" cy="81.6" r="2.2"/><circle cx="267.2" cy="86.2" r="2.2"/><circle cx="274.7" cy="91.8" r="2.2"/><circle cx="282.3" cy="97.3" r="2.2"/><circle cx="284.0" cy="106.2" r="2.2"/><circle cx="285.3" cy="114.4" r="2.2"/><circle cx="289.8" cy="121.0" r="2.2"/><circle cx="290.1" cy="128.7" r="2.2"/><circle cx="290.3" cy="136.0" r="2.2"/><circle cx="281.7" cy="143.7" r="2.2"/></g>
+                <path d="M200 150 L276 92" class="diagram-heading"/>
+                <polygon points="290,81 262,86 276,104" class="diagram-actuation"/>
+                <rect x="188" y="138" width="24" height="24" class="diagram-ink"/>
+                <circle cx="200" cy="150" r="5" class="diagram-perception"/>
+                <text x="16" y="26" font-size="10" class="diagram-label">LIDAR RETURNS + ORIENTATION</text>
               </svg>
             </div>
             <figcaption class="caption"><span>Fig. 03 — Lidar returns + orientation</span> <span>02 / 06</span></figcaption>
           </figure>
         </article>
-
-        <!-- Interlude: the quadruped trots on the dashed metre track. -->
-        <div class="interlude reveal">
-          <div class="interlude-stage">
-            <div class="robot robot--quadruped" data-robot="quadruped" aria-hidden="true">
-              <img class="robot-poster" src="assets/posters/quadruped.webp" alt="" width="918" height="617" loading="lazy">
-            </div>
-            <div class="interlude-copy">
-              <p class="interlude-kicker">Interlude — Fig. 04 Gait study</p>
-              <p class="interlude-line">Locomotion is a <em>perception</em> problem first.</p>
-            </div>
-          </div>
-          <svg class="interlude-track" viewBox="0 0 1320 12" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="6" x2="1320" y2="6"/></svg>
-          <div class="interlude-scale" aria-hidden="true">
-            <span>0.0 m</span> <span>0.5 m</span> <span>1.0 m</span> <span>1.5 m</span> <span>2.0 m</span> <span>2.5 m</span>
-          </div>
-        </div>
 
         <!-- Index table 03-06: each row is a button that discloses its detail paragraph. -->
         <div class="index-table reveal">
@@ -233,7 +205,7 @@
               <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-3">
                 <span class="index-no">03</span>
                 <span class="index-title">Predictive meteorological modeling</span>
-                <span class="index-domain">Machine learning</span>
+                <span class="index-domain"><span class="shape shape--data" aria-hidden="true"></span> Machine learning</span>
                 <span class="index-stack">scikit-learn · Random Forest</span>
                 <span class="index-arrow" aria-hidden="true">↗</span>
               </button>
@@ -243,7 +215,7 @@
               <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-4">
                 <span class="index-no">04</span>
                 <span class="index-title">Salary insights &amp; analytics</span>
-                <span class="index-domain">Data analysis</span>
+                <span class="index-domain"><span class="shape shape--data" aria-hidden="true"></span> Data analysis</span>
                 <span class="index-stack">Pandas · NumPy · Matplotlib</span>
                 <span class="index-arrow" aria-hidden="true">↗</span>
               </button>
@@ -253,7 +225,7 @@
               <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-5">
                 <span class="index-no">05</span>
                 <span class="index-title">Interactive robot display</span>
-                <span class="index-domain">Human–robot interaction</span>
+                <span class="index-domain"><span class="shape shape--actuation" aria-hidden="true"></span> Human–robot interaction</span>
                 <span class="index-stack">Linux · edge hardware</span>
                 <span class="index-arrow" aria-hidden="true">↗</span>
               </button>
@@ -263,7 +235,7 @@
               <button class="index-row" type="button" aria-expanded="false" aria-controls="project-detail-6">
                 <span class="index-no">06</span>
                 <span class="index-title">Wireless quiz buzzer system</span>
-                <span class="index-domain">Embedded systems</span>
+                <span class="index-domain"><span class="shape shape--actuation" aria-hidden="true"></span> Embedded systems</span>
                 <span class="index-stack">Microcontroller · RF</span>
                 <span class="index-arrow" aria-hidden="true">↗</span>
               </button>
@@ -274,12 +246,33 @@
       </div>
     </section>
 
+    <!-- Interlude band (actuation yellow): the quadruped trots on the metre track. -->
+    <section class="interlude-band" aria-label="Interlude: gait study">
+      <div class="shell">
+        <div class="interlude reveal">
+          <div class="interlude-stage">
+            <div class="robot robot--quadruped" data-robot="quadruped" aria-hidden="true">
+              <img class="robot-poster" src="assets/posters/quadruped.webp" alt="" width="918" height="617" loading="lazy">
+            </div>
+            <div class="interlude-copy">
+              <p class="interlude-kicker">Interlude — Fig. 04 Gait study</p>
+              <p class="interlude-line">Locomotion is a perception problem first.</p>
+            </div>
+          </div>
+          <svg class="interlude-track" viewBox="0 0 1320 12" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="6" x2="1320" y2="6"/></svg>
+          <div class="interlude-scale" aria-hidden="true">
+            <span>0.0 m</span> <span>0.5 m</span> <span>1.0 m</span> <span>1.5 m</span> <span>2.0 m</span> <span>2.5 m</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 03 Services & stack. The arm sits beside the heading. -->
     <section class="services section" id="services" aria-labelledby="services-title">
       <div class="shell">
         <p class="section-label reveal"><span class="section-label-no">03</span> <span class="section-label-name">Services &amp; stack</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(What I do)</span></p>
         <div class="section-head section-head-robot">
-          <h2 id="services-title" class="display reveal" style="--i:0">A practical <em>stack.</em></h2>
+          <h2 id="services-title" class="display reveal" style="--i:0">A practical <span class="word word--compute">stack.</span></h2>
           <div class="robot robot--arm" data-robot="arm" aria-hidden="true">
             <img class="robot-poster" src="assets/posters/arm.webp" alt="" width="600" height="700" loading="lazy">
           </div>
@@ -287,6 +280,7 @@
         </div>
         <ul class="service-list">
           <li class="service reveal" style="--i:0">
+            <span class="shape shape--perception service-shape" aria-hidden="true"></span>
             <p class="service-index">(A)</p>
             <h3 class="service-title">Perception &amp; computer vision</h3>
             <p class="service-copy">Detection, depth and spatial reasoning that turns pixels into decisions a machine can act on.</p>
@@ -298,6 +292,7 @@
             </ul>
           </li>
           <li class="service reveal" style="--i:1">
+            <span class="shape shape--actuation service-shape" aria-hidden="true"></span>
             <p class="service-index">(B)</p>
             <h3 class="service-title">Edge &amp; embedded systems</h3>
             <p class="service-copy">Models squeezed onto real hardware, where latency, power and memory shape the design.</p>
@@ -309,6 +304,7 @@
             </ul>
           </li>
           <li class="service reveal" style="--i:2">
+            <span class="shape shape--compute service-shape" aria-hidden="true"></span>
             <p class="service-index">(C)</p>
             <h3 class="service-title">Backend &amp; architecture</h3>
             <p class="service-copy">Services that expose robotic capability cleanly — typed APIs, containers, and sane boundaries.</p>
@@ -320,6 +316,7 @@
             </ul>
           </li>
           <li class="service reveal" style="--i:3">
+            <span class="shape shape--data service-shape" aria-hidden="true"></span>
             <p class="service-index">(D)</p>
             <h3 class="service-title">Data &amp; analytics</h3>
             <p class="service-copy">Turning raw logs and datasets into models and charts that hold up to questions.</p>
@@ -339,7 +336,7 @@
       <div class="shell">
         <p class="section-label reveal"><span class="section-label-no">04</span> <span class="section-label-name">Experience</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(Path)</span></p>
         <div class="experience-grid">
-          <h2 id="experience-title" class="display reveal" style="--i:0">Learning by <em>shipping.</em></h2>
+          <h2 id="experience-title" class="display reveal" style="--i:0">Learning by <span class="word word--actuation">shipping.</span></h2>
           <ol class="timeline">
             <li class="timeline-item timeline-item-current reveal" style="--i:0">
               <p class="timeline-date"><span class="status-dot" aria-hidden="true"></span>2025 — Now</p>
@@ -376,20 +373,20 @@
       <div class="shell">
         <p class="section-label reveal"><span class="section-label-no">05</span> <span class="section-label-name">Field notes</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(Writing)</span></p>
         <div class="section-head">
-          <h2 id="notes-title" class="display reveal" style="--i:0">Work in <em>progress.</em></h2>
+          <h2 id="notes-title" class="display reveal" style="--i:0">Work in <span class="word word--compute">progress.</span></h2>
         </div>
         <div class="note-list">
-          <article class="note reveal" style="--i:0">
+          <article class="note note--perception reveal" style="--i:0">
             <p class="note-meta"><span>Note / 001</span> <span>Draft</span></p>
             <h3 class="note-title">Perception is only useful when it changes a decision.</h3>
             <p class="note-copy">The next layer after detection is context: what should the system do with what it sees?</p>
           </article>
-          <article class="note reveal" style="--i:1">
+          <article class="note note--compute reveal" style="--i:1">
             <p class="note-meta"><span>Note / 002</span> <span>Draft</span></p>
             <h3 class="note-title">Edge systems make constraints visible.</h3>
             <p class="note-copy">Latency, power, memory, and deployment shape the model as much as the dataset does.</p>
           </article>
-          <article class="note reveal" style="--i:2">
+          <article class="note note--actuation reveal" style="--i:2">
             <p class="note-meta"><span>Note / 003</span> <span>Draft</span></p>
             <h3 class="note-title">Build the smallest loop that can teach you something.</h3>
             <p class="note-copy">Hardware and software become clearer when the first experiment is close to reality.</p>
@@ -403,7 +400,7 @@
       <div class="shell">
         <p class="section-label reveal"><span class="section-label-no">06</span> <span class="section-label-name">Contact</span> <span class="section-label-rule" aria-hidden="true"></span> <span class="section-label-meta">(Let's build)</span></p>
         <div class="contact-grid">
-          <h2 id="contact-title" class="display-hero reveal" style="--i:0">Have a difficult <em>problem?</em></h2>
+          <h2 id="contact-title" class="display-hero reveal" style="--i:0">Have a difficult problem?</h2>
           <p class="contact-intro reveal" style="--i:1">Let’s talk about what you’re building, what’s stuck, and where intelligent systems could take it next.</p>
           <div class="robot robot--hand" data-robot="hand" aria-hidden="true">
             <img class="robot-poster" src="assets/posters/hand.webp" alt="" width="1060" height="711" loading="lazy">
@@ -453,6 +450,7 @@
           </div>
         </div>
       </div>
+      <p class="footer-legend"><span class="footer-key"><span class="shape shape--perception" aria-hidden="true"></span> Perception</span> <span class="footer-key"><span class="shape shape--compute" aria-hidden="true"></span> Compute</span> <span class="footer-key"><span class="shape shape--actuation" aria-hidden="true"></span> Actuation</span> <span class="footer-key"><span class="shape shape--data" aria-hidden="true"></span> Data</span></p>
       <p class="footer-credits">3D: Robot Arm by Yali Izzo (CC0) · Animated Robot by Quaternius (CC0)</p>
       <p class="footer-wordmark" translate="no" aria-hidden="true">Samir Sen</p>
     </div>

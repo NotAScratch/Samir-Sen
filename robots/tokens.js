@@ -15,7 +15,7 @@ export function readTokens(el = document.documentElement) {
   return {
     shell: read(style, '--robot-shell'),
     joint: read(style, '--robot-joint'),
-    accent: read(style, '--accent'),
+    signal: read(style, '--robot-signal'),
     shadow: cssNumber(read(style, '--robot-shadow')),
     lookMax: cssAngleToRad(read(style, '--look-max')),
     handNudge: cssNumber(read(style, '--hand-nudge')),

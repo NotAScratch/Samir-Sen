@@ -1,5 +1,6 @@
-/* Shared robot materials. Every colour comes from the CSS tokens, so the
-   cast stays matte white and graphite on the page without hex values here. */
+/* Shared robot materials. Every colour comes from the CSS tokens
+   (--robot-shell, --robot-joint, --robot-signal), so the cast follows the
+   design system without hex values here. */
 import * as THREE from 'three';
 import { readTokens } from './tokens.js';
 
@@ -17,7 +18,7 @@ export function createMaterials(tokens) {
     }),
     rubber: new THREE.MeshStandardMaterial({ color: joint, roughness: 0.92, metalness: 0 }),
     signal: new THREE.MeshStandardMaterial({
-      color: tokens.accent, emissive: tokens.accent, emissiveIntensity: 2.2,
+      color: tokens.signal, emissive: tokens.signal, emissiveIntensity: 2.2,
     }),
   };
 }

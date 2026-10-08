@@ -86,7 +86,7 @@ test('quadruped has no track', () => {
 
 test('materials come from tokens', () => {
   const el = document.createElement('div');
-  el.style.cssText = '--robot-shell:#F2F2EF;--robot-joint:#102030;--accent:#112233;--robot-shadow:0.25;--look-max:30deg;--hand-nudge:12px;--robot-activation-margin:200px';
+  el.style.cssText = '--robot-shell:#F2F2EF;--robot-joint:#102030;--robot-signal:#112233;--accent:#445566;--robot-shadow:0.25;--look-max:30deg;--hand-nudge:12px;--robot-activation-margin:200px';
   document.body.append(el);
   const tokens = readTokens(el); // computed styles only resolve while attached
   el.remove();
@@ -97,7 +97,9 @@ test('materials come from tokens', () => {
   assertEqual(mats.shell.color.getHexString(), 'f2f2ef', 'shell');
   assertEqual(mats.joint.color.getHexString(), '102030', 'joint');
   assertEqual(mats.rubber.color.getHexString(), '102030', 'rubber');
+  // The status light reads --robot-signal; the retired v3 --accent (a decoy here) is ignored.
   assertEqual(mats.signal.emissive.getHexString(), '112233', 'signal emissive');
+  assertEqual(mats.signal.color.getHexString(), '112233', 'signal colour');
   assert(Math.abs(mats.visor.color.g - mats.joint.color.g * 0.2) < 1e-9, 'visor is not joint x 0.2');
 });
 

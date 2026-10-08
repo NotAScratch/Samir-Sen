@@ -83,6 +83,7 @@
   --measure:     62ch;
   --bp-mobile:   48rem;   /* reference only — media queries can't read vars */
   --bp-callout-compact: 28rem; /* inline-size threshold; @container can't read vars */
+  --bp-tiles-2:  36rem;   /* service tiles go 1 → 2 columns; @container can't read vars */
   --bp-tiles-4:  60rem;   /* service tiles go 2 → 4 columns; @container can't read vars */
 
   /* ---- Shape ------------------------------------------------------------- */
@@ -96,6 +97,7 @@
   --dot:         8px;     /* live/status dot */
   --glyph:       0.72em;  /* inline shape glyph: scales with its text */
   --shape-lg:    4.5rem;  /* service tile shape (72) */
+  --underline-bar: 0.12em; /* yellow bar under an actuation word; scales with the type */
 
   /* ---- Depth: none. Rules and colour fields carry separation. ------------ */
   --shadow: none;
@@ -130,14 +132,6 @@
   --walk-distance:   120px;  /* track travel per quadruped gait cycle */
   --hand-nudge:      24px;   /* contact hand eases toward the email */
   --press-scale:     0.98;
-
-  /* ---- v3 names still read by styles.css; removed when the restyle lands --- */
-  --line:          var(--ink);
-  --line-strong:   var(--ink);
-  --accent:        var(--red);
-  --font-serif:    "Instrument Serif", Georgia, serif;
-  --serif-scale:   1.1em;
-  --tracking-serif: -0.02em;
 }
 
 @media (prefers-reduced-motion: reduce) {
