@@ -243,6 +243,30 @@ test('service tiles go to four columns in a token-threshold container query', ()
   assert.ok(four, 'no 4-column rule at the --bp-tiles-4 (60rem) threshold');
 });
 
+test('capabilities strip may wrap at every width (no sideways scroll on tablets)', () => {
+  // Five Unbounded items need ~800px on one line; a 768px tablet has ~700px.
+  const strip = rules.filter((r) => selectorsOf(r).includes('.strip-list'));
+  assert.ok(strip.length > 0);
+  for (const rule of strip) assert.doesNotMatch(rule.body, /flex-wrap:\s*nowrap/, `.strip-list forbids wrapping in ${rule.parents.join(' ') || 'base'}`);
+});
+
+test('every label on a yellow hover row turns ink (ink-faint on yellow is 3.45:1)', () => {
+  assert.ok(contrast('#5E6068', '#F2B705') < 4.5, 'premise: --ink-faint fails on --yellow');
+  for (const part of ['.index-domain', '.index-stack']) {
+    const rule = rules.find((r) => selectorsOf(r).includes(`.index-row:hover ${part}`) && r.parents.length === 0);
+    assert.ok(rule, `no top-level .index-row:hover ${part} rule`);
+    assert.match(rule.body, /color:\s*var\(--ink\)/, `${part} must be ink on the yellow row`);
+  }
+});
+
+test('compact callouts shed the shape, padding and long leader so tags fit narrow robot columns', () => {
+  // At 768-800px the desktop robot column is ~265px wide; the full tag ran 11px past the viewport.
+  const compact = rules.filter((r) => r.parents.includes('@container (max-width: 28rem)'));
+  assert.ok(compact.some((r) => r.prelude === '.callout-title .shape' && /display:\s*none/.test(r.body)), 'shape still shown in compact tags');
+  assert.ok(compact.some((r) => r.prelude === '.callout-title' && /padding-inline:\s*var\(--space-1\)/.test(r.body)), 'compact tag padding not reduced');
+  assert.ok(compact.some((r) => r.prelude === '.callout' && /minmax\(var\(--space-2\),\s*1fr\)/.test(r.body)), 'compact leader minimum not reduced');
+});
+
 test('media queries use the single 48rem breakpoint', () => {
   const sized = rules.filter((r) => r.prelude.startsWith('@media') && /width/.test(r.prelude));
   assert.ok(sized.length > 0);

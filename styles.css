@@ -903,8 +903,18 @@ body.menu-open #menu {
     display: none;
   }
 
+  /* Narrow robot columns (phones, 768-800px desktops): a tighter tag and a shorter leader. */
+  .callout {
+    grid-template-columns: auto minmax(var(--space-2), 1fr) minmax(0, max-content);
+  }
+
   .callout-title {
+    padding-inline: var(--space-1);
     white-space: nowrap;
+  }
+
+  .callout-title .shape {
+    display: none;
   }
 
   .callout-detail {
@@ -1032,8 +1042,8 @@ body.menu-open #menu {
 }
 
 @media (width >= 48rem) {
+  /* Still wraps: five display-size items need ~800px on one line. */
   .strip-list {
-    flex-wrap: nowrap;
     justify-content: space-between;
     padding-block: var(--space-6);
   }
@@ -1449,7 +1459,8 @@ body.menu-open #menu {
   background: var(--actuation);
 }
 
-.index-row:hover .index-domain {
+.index-row:hover .index-domain,
+.index-row:hover .index-stack {
   color: var(--ink);
 }
 
