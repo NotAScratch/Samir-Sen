@@ -1,157 +1,145 @@
-# Taste — v3, "Precision White"
+# Taste — v4, "Bauhaus Kinematics"
 
 ## Read this before writing any UI
 
 1. Read `design/tokens.css`. Every value in `styles.css` comes from it.
-2. The Figma file is the visual source of truth:
-   https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47
-   - `01 — Foundations`: components (Button, Tag, Section Label, Callout),
-     robot stills (posters of the live 3D robots), colour/space
-     variables and text styles.
-   - `02 — Desktop · 1440` and `03 — Mobile · 390`: the full homepage.
-   If code and Figma disagree, Figma wins — then fix the token, not the
-   component.
+2. The spec is `docs/superpowers/specs/2026-10-08-v4-bauhaus-kinematics-design.md`.
+   The Figma file (https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47) still
+   shows v3 until it is synced; until then the repo is the source of truth.
+   If code and this file disagree, fix the token, not the component.
 3. This is the personal site of an R&D AI roboticist & automation engineer.
-   It should read like a precision instrument's spec sheet laid out by an
-   editorial designer: white paper, black ink, hairlines, and robots drawn
-   as annotated figures. Not a SaaS landing page, not a dark "tech" site.
+   It reads as a robot taken apart into Bauhaus primitives: shapes for what
+   each part does, primaries for which skill it is, ink for structure. Playful
+   in form, strict in rules. Not a SaaS landing page, not a dark "tech" site,
+   not a beige poster.
 
-## What this project looks like (v3)
+## The system: one shape and one colour per skill
 
-- **White is the material.** `#FFFFFF` from the first pixel to the last.
-  No tinted sections, no grey panels, no dark mode, no theme toggle.
-- **Ink does the structure.** Type and 1px hairlines (`--line`) carry all
-  separation. Rows, timelines, specs and section openers are divided by
-  hairlines, never by boxes or shadows.
-- **One accent, for signals only.** `--accent` (signal orange) marks live
-  state: the status dot in the nav, the "current role" dot, a live-feed
-  indicator, a sensor heading vector. It is never a button, a link, a
-  background or decoration. The primary button is ink.
-- **Type.** Geist for everything structural, Geist Mono (uppercase,
-  tracked) for technical labels, and Instrument Serif Italic for exactly
-  **one word per headline** — the human note in a machine-precise system
-  (*move.*, *tangible.*, *solution.*, *problem?*). Never two serif words in
-  one heading, never serif in body copy.
-- **Big type is the personality.** `--text-hero` is used exactly twice:
-  the hero H1 and the contact headline. Every other section head is
-  `--text-h2`. The footer ends on the name set to the full container width
-  (`--text-wordmark`).
+| Skill | Shape | Token | Colour |
+|---|---|---|---|
+| Perception — sensing, vision, detection | circle ● | `--perception` | red |
+| Edge compute — processing, backend, embedded logic | square ■ | `--compute` | blue |
+| Actuation — hardware, motion, physical output | triangle ▲ | `--actuation` | yellow |
+| Data — analysis, ML on datasets | half-disc ◖ | `--data` | ink |
+
+- The mapping never bends. A red circle always means perception; if a block
+  isn't about perception it doesn't get red. Pick the shape from what the
+  thing *does*, not from which colour would look nice there.
+- Shapes are the page's only icons: in the wordmark, hero callouts, the hero
+  legend, the capabilities strip, facts, project kickers, the index table,
+  service tiles, timeline nodes and the footer legend. Always `aria-hidden`;
+  the text beside them carries the meaning.
+- The hero H1 colours exactly three words, one per skill: *see* (red),
+  *think* (blue), *move* (ink with a yellow bar). Every other heading colours
+  at most one word, with `<span class="word word--{skill}">`, never `<em>`.
+
+## Colour
+
+- **Ground** `--bg` is the page. `--paper` marks alternating bands (work,
+  experience). Ink carries type and structure.
+- **Colour fields** — one per skill, used once each: the profile's blue square
+  (compute: the head that thinks), the interlude's yellow band (actuation:
+  the walking dog), the contact's red band (perception: "have a difficult
+  problem?"). Ink bands for the capabilities strip and footer.
+- **Status dots** are red (the nav live dot, the current role).
+- **Contrast**: body copy is `--ink-muted` on ground/paper/yellow. Red text
+  only at `--text-h3` and up. Yellow is never a text colour on a light
+  surface; an actuation word is ink with a yellow underline bar. On red,
+  blue and ink, type is `--white` and focus uses `--focus-ring-inverse`.
+
+## Type
+
+- **Unbounded**, lowercase, tight tracking for display: H1, H2, H3, the
+  wordmark, nav links, section-label names, project titles. 800 for hero/H2,
+  600 for smaller display.
+- **Geist** for body; **Geist Mono** (uppercase, tracked) for technical
+  labels, captions, specs and meta.
+- `--text-hero` is used exactly twice: the hero H1 and the contact headline.
+  Section heads are `--text-h2`. The footer ends on the lowercase name with a
+  yellow full stop.
+- No serif anywhere.
 
 ## Layout
 
-- Desktop: 12 columns inside a 1320px container, 24px gutters, 60px
-  margins. Mobile: 4 columns, 16px gutters, 20px margins.
-- Every section opens the same way: the **Section Label** (index, title,
-  a hairline rule that fills the row, meta on the right — `01 PROFILE ——
-  (ABOUT)`), then a heading row with the H2 on the left and a 3-column
-  aside on the right, then content.
-- Featured work is **asymmetric and alternating**: media spans 8 columns,
-  meta spans 3 (index, title, description, spec rows, "Read the case
-  study →"). The next project mirrors it. Secondary projects go in an
-  **index table** (No. / Project / Domain / Stack / ↗), not a card grid.
-- Navigation is a quiet top bar: wordmark left, live status centre, links
-  and a ghost "Let's talk" pill right. On mobile it collapses to the
-  wordmark and a "● Menu" pill.
-- Square corners everywhere. Only buttons, tags and the menu trigger are
-  pills.
+- Desktop: 12 columns inside a 1320px container, 24px gutters, 60px margins.
+  Mobile: 4 columns, 16px gutters, 20px margins. One media breakpoint
+  (48rem); finer adaptation uses container queries with token thresholds.
+- Every section opens the same way: the **section label** (number, name, a
+  2px ink rule that fills the row, meta on the right — `01 profile ——
+  (ABOUT)`), then a heading row (H2 left, aside right), then content.
+- Structure is drawn with **2px ink rules** (`--rule`). Hairlines only
+  separate table rows. Heavy rules (`--rule-heavy`) for the gait track, the
+  timeline spine and underline bars.
+- Square corners everywhere. Only buttons, tags, chips and the menu trigger
+  are pills.
+- Featured work stays **asymmetric and alternating** (media 8, meta 3), and
+  secondary projects stay an **index table**, not a card grid.
 
 ## Robots (live 3D)
 
-The robots are real-time Three.js components, not images. Two sources,
-combined: robots **built in code** (owned outright, every joint
-animatable) for the main cast, and **free CC0 models** where hand-building
-would cost more than it's worth. Prototypes live in `design/3d-lab/`
-(`procedural.js` for the code-built robots, `models/` for the downloads).
+Unchanged cast and behaviour (see v3 table in git history and
+`robots/`): humanoid in the hero, perception head in 01, quadruped in the
+interlude, arm in 03, hand in 06, waving robot in the footer.
 
-| Robot | Source | Section | Behaviour |
-|---|---|---|---|
-| Unit-01 humanoid | Code | Hero | Idles and shifts weight; head turns toward the cursor |
-| Profile head | Code | 01 Profile | Inside the viewfinder; tracks the cursor; status light blinks |
-| Unit-K9 quadruped | Code | Interlude | Trots along the dashed distance track while in view |
-| Robot Arm | Free · Yali Izzo · CC0 | 03 Services | Slow turntable beside the heading |
-| Contact hand | Code | 06 Contact | Points at the email; eases `--hand-nudge` toward it on hover/focus |
-| Animated Robot | Free · Quaternius · CC0 | Footer | Waves (its built-in clip) when "Back to top" is hovered |
-
-Rules:
-
-1. **One robot per section, never two in a viewport.** They are accents
-   to the work, not the work.
-2. **One material language.** Every robot, including downloaded ones,
-   renders in `--robot-shell` (matte white) and `--robot-joint` (graphite)
-   with the shared studio light: room environment, one soft key light,
-   and a contact shadow at `--robot-shadow` opacity. Downloaded models get
-   their materials replaced on load and never keep their own colours.
-3. **No boxes.** The canvas is transparent and sits directly on `--bg`.
-   No cards, borders or panels behind a robot.
-4. **Annotate, don't decorate.** The hero callouts map robot parts to real
-   skills (head → Perception · OpenCV/PyTorch, chest → Edge compute ·
-   Jetson Nano/Lidar, hand → Actuation · embedded control). Callouts are
-   real HTML text, never drawn in the canvas. Never invent specs for the
-   robot itself.
-5. **Posters first.** Every robot has a transparent PNG still (rendered
-   from the same scene — `design/3d-lab/stills.html`) that shows before
-   the 3D loads, and stays put for `prefers-reduced-motion`, no WebGL, or
-   a failed load. The Figma file uses these same stills.
-6. **Performance.** One WebGL renderer for the whole page (scissor per
-   section) or lazy-initialised per section; render only what's on
-   screen; pixel ratio capped at 2. Total model weight under 1.5 MB.
-7. Robots are decorative: the canvas is `aria-hidden="true"` and the
-   callout text carries the meaning.
-8. CC0 models need no credit, but list them on a credits line anyway.
+1. **One robot per section, never two in a viewport.**
+2. **One material language**: `--robot-shell` (paper white), `--robot-joint`
+   (ink), `--robot-signal` (red status light), shared studio light, contact
+   shadow at `--robot-shadow`. Downloaded models get their materials replaced.
+3. **Robots stand on shapes, never in boxes.** The canvas is transparent; the
+   composition behind it (circle, square, triangle, disc, ground bar) is plain
+   HTML/CSS, never drawn in the canvas.
+4. **Annotate, don't decorate.** Hero callouts map parts to real skills and
+   carry the skill's shape. Never invent specs for the robot itself.
+5. **Posters first.** Every robot has a transparent PNG/WebP still rendered
+   from the same scene (`tools/posters.html`). Re-render them whenever robot
+   tokens change.
+6. **Performance** and **accessibility** rules from v3 still apply: lazy
+   per-section renderers, pixel ratio ≤ 2, `aria-hidden` canvases, posters
+   for reduced motion / no WebGL / failures.
 
 ## Project media
 
-- Real captures (live feed, sensor output, hardware photos) replace the
-  wireframe placeholders as soon as they exist.
-- Until then, placeholders are hand-authored SVG in the same line
-  language as the Figma frames: detection boxes with ink label chips,
-  lidar range rings with point returns. Every frame gets a mono
-  `Fig. NN — …` caption below it.
-- Any numbers inside a placeholder (confidence, distance, heading) are
-  illustrative and must be replaced by real output before launch.
+- Real captures replace the diagrams as soon as they exist.
+- Until then, diagrams are SVG in the Bauhaus language: detection boxes over
+  primitive shapes, lidar rings on a blue field. Labels name what the system
+  outputs (class, distance, bearing) without made-up numbers. Every frame
+  has a mono `Fig. NN — …` caption.
 
 ## Motion
 
-Quiet and mechanical — things move like they are driven, not bounced.
+Quiet and mechanical — driven, not bounced.
 
 - Section content fades up `--reveal-distance` over `--dur-reveal`,
   staggered by `--stagger`.
-- Robot heads turn toward the cursor, damped, never more than
-  `--look-max`. Whole-robot parallax tilt is capped at `--parallax-tilt`.
-- Quadruped: trots only while its section is in view; the track scrolls
-  under it at `--walk-distance` per cycle.
-- Contact hand: eases `--hand-nudge` toward the email on hover/focus of
-  the email link.
-- Buttons press to `--press-scale`.
-- Everything respects `prefers-reduced-motion`: reveals become instant,
-  and every robot shows its poster still instead of animating.
+- Hero shapes settle `--settle-distance` into place over `--dur-settle` on
+  load, from a visible state; the orbit turns once per `--dur-orbit`.
+- Robot behaviour, gait track, hand nudge and press scale as in v3.
+- Everything respects `prefers-reduced-motion`.
 
 ## Accessibility
 
-- `--ink-muted` (6.7:1) is the minimum for body copy. `--ink-faint`
-  (4.5:1) is only for mono meta labels and captions.
-- Focus is always visible: `--focus-ring` with `--focus-offset`.
+- Contrast floors are tested in `tests/unit/styles.test.mjs`.
+- Focus is always visible: `--focus-ring` on light surfaces,
+  `--focus-ring-inverse` on red, blue and ink.
 - Hit targets are at least `--control-h` tall.
 
 ## Banned
 
-- Any background other than `--bg`; dark sections; dark mode
-- Shadows, gradients (text, backgrounds, buttons), glassmorphism, blur
-  panels
-- Cards and rounded containers around content or robots
-- The accent used for anything other than live/status signals
-- More than one serif word per headline
+- Shadows, gradients, glassmorphism, blur panels, grain, custom cursors
+- Dark mode or a theme toggle (the ink bands are part of the page, not a theme)
+- A primary colour used where it doesn't mean its skill
+- Red or yellow body text; yellow text on a light surface
+- Serif type; `<em>` styling in headings
+- Rounded containers or cards around content or robots
 - Card grids for work — featured blocks + index table instead
 - Stock photography and AI-generated robot images
-- Robots outside the approved lineup — new ones go through
-  `design/3d-lab/` first, in the shared materials and light
-- Downloaded models in their original colours
-- Custom cursors, grain overlays, decorative particles — the robots and
-  the type carry the page
+- Robots outside the approved lineup, or in their original colours
+- Marquees and decorative particles
+- Invented numbers in diagrams
 - Motion that ignores `prefers-reduced-motion`
 
 ## Rule of thumb
 
-If an element doesn't help someone understand the work faster, delete it.
-If it stays, it should feel measured: aligned to the grid, labelled like
-an instrument, and set in ink on white.
+If a shape or colour doesn't tell someone which skill they're looking at,
+remove it. What stays should feel assembled: aligned to the grid, labelled
+like an instrument, and built from four shapes.

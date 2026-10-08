@@ -1,57 +1,66 @@
-/* design/tokens.css — v3 "Precision White"
-   Pure white page, ink type, hairline structure, one signal accent.
-   Mirrors the Figma variables + text styles in
-   https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47 (01 — Foundations). */
+/* design/tokens.css — v4 "Bauhaus Kinematics"
+   A robot read as Bauhaus primitives: every skill has one shape and one
+   primary colour, on a cool concrete ground with ink type and heavy rules.
+   Read design/TASTE.md first. Mirrored in Figma
+   https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47 when the file is synced. */
 
 :root {
-  /* ---- Colour, by role (Figma collection "Color") ------------------- */
-  --bg:          #FFFFFF;   /* the only background */
-  --ink:         #0A0A0A;   /* type, primary button, focus ring */
-  --ink-muted:   #5C5C5C;   /* body copy · 6.7:1 on --bg */
-  --ink-faint:   #767676;   /* mono meta + captions only · 4.5:1 */
-  --line:        #EAEAEA;   /* hairline dividers */
-  --line-strong: #CFCFCF;   /* ghost button outline, ground lines */
-  --accent:      #FF4D1A;   /* live/status signals only — never decoration */
+  /* ---- Colour, by role ------------------------------------------------- */
+  --bg:        #E8EAEE;   /* ground: the page background (cool concrete) */
+  --paper:     #F4F5F7;   /* alternating bands (work, experience); robot shell */
+  --ink:       #141414;   /* type, rules, buttons, ink bands */
+  --ink-muted: #4A4C52;   /* body copy · 7.1:1 on --bg, 7.9:1 on --paper, 4.7:1 on --yellow */
+  --ink-faint: #5E6068;   /* mono labels + captions only · 5.2:1 on --bg */
+  --red:       #D7261E;   /* 4.2:1 on --bg: display sizes and shapes only, never small text */
+  --blue:      #1F45B5;
+  --yellow:    #F2B705;   /* never a text colour on light surfaces */
+  --white:     #FFFFFF;   /* type on red, blue and ink · 5.0:1 on --red */
 
-  /* ---- Type ------------------------------------------------------- */
-  --font-sans:  "Geist", system-ui, -apple-system, sans-serif;
-  --font-mono:  "Geist Mono", ui-monospace, "SF Mono", monospace;
-  --font-serif: "Instrument Serif", Georgia, serif;   /* one word per headline */
+  /* ---- Skills: one shape, one colour each (TASTE.md § The system) ------- */
+  --perception: var(--red);     /* circle */
+  --compute:    var(--blue);    /* square */
+  --actuation:  var(--yellow);  /* triangle */
+  --data:       var(--ink);     /* half-disc */
 
-  /* Sizes: desktop value from Figma, mobile value at 390px. */
-  --text-hero:     clamp(3.75rem, 10.5vw, 9.5rem);    /* 60 → 152  H1 + contact only */
-  --text-h2:       clamp(2.75rem, 6.1vw, 5.5rem);     /* 44 → 88   section heads */
-  --text-figure:   clamp(1.875rem, 3.1vw, 2.75rem);   /* 30 → 44  fact/email/interlude figure */
-  --text-h3:       clamp(1.625rem, 2.2vw, 2rem);      /* 26 → 32   project titles */
-  --text-h4:       clamp(1.125rem, 1.53vw, 1.375rem); /* 18 → 22   service/role titles */
-  --text-lead:     clamp(1.125rem, 1.53vw, 1.375rem); /* 18 → 22   lead paragraphs */
-  --text-body:     1rem;                              /* 16 */
-  --text-small:    0.875rem;                          /* 14 */
-  --text-label:    0.75rem;                           /* 12  mono, uppercase */
-  --text-wordmark: 21vw;                              /* footer name, fills container */
-  --serif-scale:   1.1em;   /* serif word renders smaller; bump to match host line */
+  /* ---- Type ------------------------------------------------------------ */
+  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;  /* lowercase, heavy */
+  --font-sans:    "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono:    "Geist Mono", ui-monospace, "SF Mono", monospace;
 
-  --leading-hero:  0.92;
-  --leading-h2:    0.98;
+  /* Sizes: mobile value at 390px → desktop value from the mockup. */
+  --text-hero:     clamp(2.625rem, 7.4vw, 7rem);       /* 42 → 112  H1 + contact only */
+  --text-h2:       clamp(2rem, 4.6vw, 4.25rem);        /* 32 → 68   section heads */
+  --text-figure:   clamp(1.75rem, 3.2vw, 3rem);        /* 28 → 48   facts, email, interlude line */
+  --text-h3:       clamp(1.25rem, 1.9vw, 1.75rem);     /* 20 → 28   project titles */
+  --text-h4:       clamp(1.0625rem, 1.4vw, 1.3125rem); /* 17 → 21   service/role/note titles */
+  --text-lead:     clamp(1.0625rem, 1.45vw, 1.3125rem);/* 17 → 21   lead paragraphs */
+  --text-body:     1rem;                               /* 16 */
+  --text-small:    0.875rem;                           /* 14 */
+  --text-label:    0.75rem;                            /* 12  mono, uppercase */
+  --text-wordmark: 15.5vw;                             /* footer name, fills the container */
+
+  --leading-hero:  0.95;
+  --leading-h2:    1;
   --leading-h3:    1.15;
-  --leading-h4:    1.3;
+  --leading-h4:    1.25;
   --leading-lead:  1.45;
   --leading-body:  1.6;
   --leading-label: 1.35;
-  --leading-wordmark: 0.8;
+  --leading-wordmark: 0.82;
 
-  --tracking-hero:     -0.05em;
-  --tracking-h2:       -0.04em;
+  --tracking-hero:     -0.04em;
+  --tracking-h2:       -0.035em;
   --tracking-h3:       -0.02em;
   --tracking-h4:       -0.01em;
-  --tracking-serif:    -0.02em;
   --tracking-label:     0.06em;
   --tracking-wordmark: -0.06em;
 
-  --weight-regular: 400;
-  --weight-medium:  500;   /* every heading; there is no bold */
+  --weight-regular:  400;
+  --weight-medium:   500;   /* Geist emphasis */
+  --weight-semibold: 600;   /* Unbounded: h3/h4, nav, labels */
+  --weight-bold:     800;   /* Unbounded: hero, h2, wordmark */
 
-  /* ---- Space (Figma "space/N" = N px) --------------------------------- */
+  /* ---- Space (N = px) ------------------------------------------------------ */
   --space-1:  0.25rem;  /*   4 */
   --space-2:  0.5rem;   /*   8 */
   --space-3:  0.75rem;  /*  12 */
@@ -64,52 +73,71 @@
   --space-12: 8rem;     /* 128 */
   --space-16: 10rem;    /* 160 */
 
-  /* ---- Layout ------------------------------------------------------ */
+  /* ---- Layout ------------------------------------------------------------ */
   --container:   82.5rem;                          /* 1320 */
   --columns:     12;                               /* 4 below --bp-mobile */
   --gutter:      clamp(1rem, 1.7vw, 1.5rem);       /* 16 → 24 */
   --margin:      clamp(1.25rem, 4.2vw, 3.75rem);   /* 20 → 60 */
-  --section-y:   clamp(5rem, 11vw, 10rem);         /* 80 → 160 section padding */
-  --section-gap: clamp(1.75rem, 5.5vw, 5rem);      /* 28 → 80 label → content */
+  --section-y:   clamp(4.5rem, 10vw, 9rem);        /* 72 → 144 section padding */
+  --section-gap: clamp(1.75rem, 4.5vw, 4rem);      /* 28 → 64 label → content */
   --measure:     62ch;
   --bp-mobile:   48rem;   /* reference only — media queries can't read vars */
   --bp-callout-compact: 28rem; /* inline-size threshold; @container can't read vars */
+  --bp-tiles-4:  60rem;   /* service tiles go 2 → 4 columns; @container can't read vars */
 
-  /* ---- Shape ------------------------------------------------------- */
+  /* ---- Shape ------------------------------------------------------------- */
   --radius-none: 0;
-  --radius-pill: 999px;   /* buttons, tags, menu trigger — nothing else */
-  --hairline:    1px;
+  --radius-pill: 999px;   /* buttons, tags, chips, menu trigger — nothing else */
+  --hairline:    1px;     /* table row dividers only */
+  --rule:        2px;     /* the structural line: borders, section rules, frames */
+  --rule-heavy:  6px;     /* the gait track, underline bars, timeline spine */
+  --bar:         10px;    /* note colour bars */
   --control-h:   3rem;    /* 48 — buttons + minimum hit target */
-  --dot:         6px;     /* live/status dot */
+  --dot:         8px;     /* live/status dot */
+  --glyph:       0.72em;  /* inline shape glyph: scales with its text */
+  --shape-lg:    4.5rem;  /* service tile shape (72) */
 
-  /* ---- Depth: none. Hairlines carry separation. ---------------------- */
+  /* ---- Depth: none. Rules and colour fields carry separation. ------------ */
   --shadow: none;
 
-  /* ---- Robots (live 3D) — read by JS via getComputedStyle ------------- */
-  --robot-shell:  #F2F2EF;  /* matte white shell, every robot */
-  --robot-joint:  #2C2C2E;  /* graphite joints, visors, actuators */
-  --robot-shadow: 0.1;      /* contact-shadow opacity */
-  --look-max:     40deg;    /* max head turn toward the cursor */
+  /* ---- Robots (live 3D) — read by JS via getComputedStyle ---------------- */
+  --robot-shell:  var(--paper);  /* cool matte white shell, every robot */
+  --robot-joint:  var(--ink);    /* ink joints, visors, actuators */
+  --robot-signal: var(--red);    /* status light (perception red) */
+  --robot-shadow: 0.12;          /* contact-shadow opacity */
+  --look-max:     40deg;         /* max head turn toward the cursor */
   --robot-activation-margin: 12.5rem; /* preload boundary beyond the viewport */
 
-  /* ---- Focus ------------------------------------------------------- */
-  --focus-ring:   2px solid var(--ink);
-  --focus-offset: 2px;
+  /* ---- Focus ------------------------------------------------------------- */
+  --focus-ring:         2px solid var(--ink);
+  --focus-ring-inverse: 2px solid var(--white);  /* on red, blue and ink bands */
+  --focus-offset: 3px;
 
-  /* ---- Motion: driven, not bounced ------------------------------------ */
+  /* ---- Motion: driven, not bounced -------------------------------------- */
   --dur-fast:   120ms;
   --dur-base:   240ms;
   --dur-slow:   600ms;
   --dur-reveal: 800ms;
+  --dur-settle: 900ms;   /* hero shapes settle into place on load */
+  --dur-orbit:  30s;     /* one turn of the hero orbit */
   --dur-gait:   1140ms;  /* one quadruped trot cycle */
   --stagger:    60ms;
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --reveal-distance: 24px;   /* fade-up on scroll entry */
+  --settle-distance: 28px;   /* hero shapes drop this far into place */
   --parallax-tilt:   4deg;   /* whole-robot cursor tilt */
   --walk-distance:   120px;  /* track travel per quadruped gait cycle */
   --hand-nudge:      24px;   /* contact hand eases toward the email */
   --press-scale:     0.98;
+
+  /* ---- v3 names still read by styles.css; removed when the restyle lands --- */
+  --line:          var(--ink);
+  --line-strong:   var(--ink);
+  --accent:        var(--red);
+  --font-serif:    "Instrument Serif", Georgia, serif;
+  --serif-scale:   1.1em;
+  --tracking-serif: -0.02em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -121,11 +149,11 @@
 }
 
 /* ---- How to use this file ------------------------------------------------
- * 1. No raw values in styles.css. If a value isn't here, add it here first,
- *    and add it to the Figma variables/styles in the same change.
+ * 1. No raw values in styles.css. If a value isn't here, add it here first.
  * 2. --text-hero is used exactly twice: the hero H1 and the contact head.
- * 3. --accent marks live/status signals only. The primary button is ink.
- * 4. --bg is the only background. No shadows, no gradients, no panels.
- * 5. Focus is always visible: outline: var(--focus-ring);
- *    outline-offset: var(--focus-offset).
+ * 3. A primary colour appears only where it means its skill (shapes, the
+ *    coloured headline word, the skill's colour field) or as a status dot.
+ * 4. Red text only at display sizes; yellow is never text on a light ground.
+ * 5. Focus is always visible: var(--focus-ring), or --focus-ring-inverse on
+ *    red, blue and ink bands, with outline-offset: var(--focus-offset).
  * ------------------------------------------------------------------------ */

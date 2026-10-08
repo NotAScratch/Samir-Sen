@@ -76,17 +76,56 @@ test('every var(--name) in styles.css is defined in design/tokens.css', () => {
   assert.deepEqual(missing, [], `undefined tokens: ${missing.join(', ')}`);
 });
 
+// WCAG 2 relative luminance / contrast ratio for #RRGGBB.
+const luminance = (hex) => {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+const contrast = (a, b) => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+const tokenValue = (name) => stripComments(tokens).match(new RegExp(`${name}\\s*:\\s*([^;]+);`))?.[1].trim();
+
+test('tokens.css: v4 palette, skill aliases and contrast floors', () => {
+  const palette = {
+    '--bg': '#E8EAEE', '--paper': '#F4F5F7', '--ink': '#141414', '--ink-muted': '#4A4C52', '--ink-faint': '#5E6068',
+    '--red': '#D7261E', '--blue': '#1F45B5', '--yellow': '#F2B705', '--white': '#FFFFFF',
+  };
+  for (const [name, hex] of Object.entries(palette)) assert.equal(tokenValue(name), hex, name);
+  const aliases = { '--perception': 'var(--red)', '--compute': 'var(--blue)', '--actuation': 'var(--yellow)', '--data': 'var(--ink)' };
+  for (const [name, value] of Object.entries(aliases)) assert.equal(tokenValue(name), value, name);
+  assert.match(tokenValue('--font-display'), /^"Unbounded"/);
+
+  const c = (fg, bg) => contrast(palette[fg], palette[bg]);
+  assert.ok(c('--ink-muted', '--bg') >= 4.5, 'body copy on ground');
+  assert.ok(c('--ink-muted', '--paper') >= 4.5, 'body copy on paper');
+  assert.ok(c('--ink-faint', '--bg') >= 4.5, 'labels on ground');
+  assert.ok(c('--white', '--red') >= 4.5, 'white on the contact band');
+  assert.ok(c('--ink', '--yellow') >= 4.5, 'ink on the interlude band');
+  assert.ok(c('--red', '--bg') >= 3, 'red display type on ground');
+});
+
+test('tokens.css: robot tokens follow the v4 materials, tile threshold token exists', () => {
+  assert.equal(tokenValue('--robot-shell'), 'var(--paper)');
+  assert.equal(tokenValue('--robot-joint'), 'var(--ink)');
+  assert.equal(tokenValue('--robot-signal'), 'var(--red)');
+  assert.equal(tokenValue('--bp-tiles-4'), '60rem');
+});
+
 test('tokens.css: legacy aliases removed, --dur-gait added', () => {
   assert.doesNotMatch(tokens, /LEGACY ALIASES/);
   assert.match(tokens, /--dur-gait\s*:\s*1140ms/);
-  for (const legacy of ['--surface', '--text-muted', '--text-xs', '--radius-sm', '--shadow-1', '--ease-spring', '--font-display']) {
+  // --font-display is a v2 name that v4 deliberately reuses for Unbounded (ledger ruling).
+  for (const legacy of ['--surface', '--text-muted', '--text-xs', '--radius-sm', '--shadow-1', '--ease-spring']) {
     assert.doesNotMatch(tokens, new RegExp(`${legacy}\\s*:`), `${legacy} still defined`);
     assert.doesNotMatch(code, new RegExp(`var\\(${legacy}\\)`), `${legacy} still used`);
   }
 });
 
 test('--text-figure token is used for profile facts, contact email and interlude line', () => {
-  assert.match(tokens, /--text-figure\s*:\s*clamp\(1\.875rem,\s*3\.1vw,\s*2\.75rem\)/);
+  assert.match(tokens, /--text-figure\s*:\s*clamp\(1\.75rem,\s*3\.2vw,\s*3rem\)/);
   for (const selector of ['.fact-value', '.email-link', '.interlude-line']) {
     const rule = rules.find((r) => r.prelude === selector);
     assert.ok(rule, `${selector} rule is missing`);
