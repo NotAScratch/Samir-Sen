@@ -100,6 +100,26 @@ test('interlude is its own band between work and services', () => {
   assert.match(html.slice(band, html.indexOf('</section>', band)), /<div class="interlude[\s"]/);
 });
 
+test('hero has no eyebrow label above the H1; the role opens the intro instead', () => {
+  const hero = html.match(/<section class="hero"[\s\S]*?<\/section>/)[0];
+  const beforeH1 = hero.slice(0, hero.indexOf('<h1'));
+  assert.doesNotMatch(beforeH1, /class="eyebrow/, 'eyebrow above the hero heading (impeccable craft-floor ban)');
+  assert.match(hero, /<p class="hero-intro[^"]*"[^>]*>R&amp;D AI roboticist and automation engineer at Baliyo Ventures\./);
+});
+
+test('each featured frame carries a decorative detection lock naming its project number', () => {
+  const locks = [...html.matchAll(/<span class="lock" aria-hidden="true"><span class="lock-tag">Locked on (\d\d) \/ 06<\/span><\/span>/g)].map((m) => m[1]);
+  assert.deepEqual(locks, ['01', '02']);
+  const frames = html.split('<div class="featured-frame">').slice(1);
+  assert.equal(frames.length, 2);
+  frames.forEach((chunk, i) => assert.ok(chunk.slice(0, chunk.indexOf('<figcaption')).includes('class="lock"'), `lock ${i + 1} is outside its frame`));
+});
+
+test('the header carries one decorative scroll actuator', () => {
+  const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
+  assert.equal((header.match(/<span class="actuator" aria-hidden="true"><\/span>/g) ?? []).length, 1);
+});
+
 test('notes carry their skill in order: perception, compute, actuation', () => {
   const notes = [...html.matchAll(/<article class="note note--([a-z]+)/g)].map((m) => m[1]);
   assert.deepEqual(notes, ['perception', 'compute', 'actuation']);
@@ -199,8 +219,9 @@ test('head: import map, fonts, token + page stylesheets, module script', () => {
     },
   });
   assert.ok(html.indexOf('type="importmap"') < html.indexOf('type="module"'), 'import map must precede the module script');
-  assert.match(html, /family=Geist:wght@400;500&family=Geist\+Mono:wght@400;500&family=Unbounded:wght@600;800&display=swap/);
-  assert.doesNotMatch(html, /Instrument\+Serif/);
+  // Jost (Futura lineage) for text, Martian Mono at a semi-condensed width for data; Geist was flagged as overused.
+  assert.match(html, /family=Jost:wght@400;500;600&family=Martian\+Mono:wdth,wght@87\.5,400;87\.5,500&family=Unbounded:wght@600;800&display=swap/);
+  assert.doesNotMatch(html, /Instrument\+Serif|family=Geist/);
   assert.ok(html.indexOf('href="design/tokens.css"') < html.indexOf('href="styles.css"'));
   assert.match(html, /<meta name="theme-color" content="#E8EAEE">/);
   assert.match(html, /<script type="module" src="script\.js"><\/script>/);

@@ -52,8 +52,15 @@
 - **Unbounded**, lowercase, tight tracking for display: H1, H2, H3, the
   wordmark, nav links, section-label names, project titles. 800 for hero/H2,
   600 for smaller display.
-- **Geist** for body; **Geist Mono** (uppercase, tracked) for technical
-  labels, captions, specs and meta.
+- **Jost** for body copy and controls: Futura lineage, so its geometric
+  circles belong to the same world as the shapes. Buttons and the menu trigger
+  speak in Jost, not mono.
+- **Martian Mono** (semi-condensed, uppercase, tracked) only for data and
+  measurement: specs, captions, dates, coordinates, the clock, metre scales,
+  index numbers. Never mono as a "technical" costume. (Geist and Geist Mono
+  were retired as overused.)
+- No eyebrow labels above headings: the heading carries its own weight. The
+  hero's role line lives in the intro sentence.
 - `--text-hero` is used exactly twice: the hero H1 and the contact headline.
   Section heads are `--text-h2`. The footer ends on the lowercase name with a
   yellow full stop.
@@ -111,8 +118,24 @@ Quiet and mechanical — driven, not bounced.
 
 - Section content fades up `--reveal-distance` over `--dur-reveal`,
   staggered by `--stagger`.
-- Hero shapes settle `--settle-distance` into place over `--dur-settle` on
-  load, from a visible state; the orbit turns once per `--dur-orbit`.
+The page behaves like one of the machines it describes: it assembles itself,
+senses the visitor, and reports its state.
+
+- **Assembly line (the one authored moment).** On load the hero is put
+  together like parts on a jig: the circle rolls in from the left, the square
+  drops, the triangle slides in from the right (each `--assembly-distance`
+  over `--dur-assembly`, staggered), the orbit draws itself, then the robot
+  powers on. As the hero scrolls away the parts come apart again (scroll-driven,
+  only where `animation-timeline: view()` exists).
+- **Detection lock.** Pointing at or focusing a featured project snaps four
+  ink corner brackets round its frame with a `LOCKED ON 0N / 06` tag. Real
+  project numbers, never confidence scores.
+- **Servo strip.** The strip's shapes track a mouse pointer: triangles and
+  squares tilt (capped at `--look-max`), the perception circle turns a pupil.
+  Fine pointers only, only while the strip is on screen.
+- **Scroll actuator.** A yellow triangle rides the header rule left to right
+  as the page scrolls, like a linear actuator reporting its stroke.
+- The orbit turns once per `--dur-orbit`.
 - Robot behaviour, gait track, hand nudge and press scale as in v3.
 - Everything respects `prefers-reduced-motion`.
 
@@ -135,6 +158,7 @@ Quiet and mechanical — driven, not bounced.
 - Stock photography and AI-generated robot images
 - Robots outside the approved lineup, or in their original colours
 - Marquees and decorative particles
+- Eyebrow or kicker labels added above headings
 - Invented numbers in diagrams
 - Motion that ignores `prefers-reduced-motion`
 

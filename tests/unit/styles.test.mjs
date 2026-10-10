@@ -15,7 +15,7 @@ const stripComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '');
 const code = stripComments(css);
 
 // Custom properties written at runtime (inline style / robots/index.js), not tokens. Ruling D.
-const RUNTIME_VARS = new Set(['--ax', '--ay', '--i']);
+const RUNTIME_VARS = new Set(['--ax', '--ay', '--i', '--servo-tilt', '--servo-x', '--servo-y']);
 
 // Minimal CSS reader: every block with its prelude, own declarations and enclosing preludes.
 function parseRules(src) {
@@ -212,7 +212,7 @@ test('colour fields: compute profile, actuation interlude, perception contact, i
 
 test('primary colours appear only on skill shapes, words, fields, diagrams and status dots', () => {
   const primary = /var\(--(red|blue|yellow|perception|compute|actuation)\)/;
-  const allowed = /shape|word|status-dot|viewfinder|interlude|contact|email|hero-|diagram|note--|index-row|service|wordmark|case-close|button/;
+  const allowed = /shape|word|status-dot|viewfinder|interlude|contact|email|hero-|diagram|note--|index-row|service|wordmark|case-close|button|actuator/;
   const owners = rules.filter((r) => primary.test(r.body));
   assert.ok(owners.length > 0);
   for (const rule of owners) assert.match(rule.prelude, allowed, `primary colour used on "${rule.prelude}"`);
@@ -265,6 +265,61 @@ test('compact callouts shed the shape, padding and long leader so tags fit narro
   assert.ok(compact.some((r) => r.prelude === '.callout-title .shape' && /display:\s*none/.test(r.body)), 'shape still shown in compact tags');
   assert.ok(compact.some((r) => r.prelude === '.callout-title' && /padding-inline:\s*var\(--space-1\)/.test(r.body)), 'compact tag padding not reduced');
   assert.ok(compact.some((r) => r.prelude === '.callout' && /minmax\(var\(--space-2\),\s*1fr\)/.test(r.body)), 'compact leader minimum not reduced');
+});
+
+const NO_PREF = '@media (prefers-reduced-motion: no-preference)';
+const animated = (selector, name) => rules.some((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes(selector) && new RegExp(`animation(-name)?:[^;]*\\b${name}\\b`).test(r.body));
+const hasKeyframes = (name) => rules.some((r) => r.parents.some((p) => p === `@keyframes ${name}`));
+
+test('type: Jost for text, Martian Mono for data, and buttons speak in the text face', () => {
+  assert.match(tokenValue('--font-sans'), /^"Jost"/);
+  assert.match(tokenValue('--font-mono'), /^"Martian Mono"/);
+  const monoList = rules.find((r) => /font-family:\s*var\(--font-mono\)/.test(r.body) && selectorsOf(r).length > 10);
+  assert.ok(monoList, 'shared mono label rule not found');
+  for (const control of ['.button', '.menu-toggle']) assert.ok(!selectorsOf(monoList).includes(control), `${control} still wears the mono costume`);
+  assert.match(ruleFor('.button', /font-family/).body, /font-family:\s*var\(--font-sans\)/);
+});
+
+test('hero assembles on load: circle rolls in, square drops, triangle slides, orbit draws, robot powers on', () => {
+  for (const [selector, name] of [['.hero-circle', 'hero-roll'], ['.hero-square', 'hero-drop'], ['.hero-triangle', 'hero-slide'], ['.hero-orbit', 'hero-draw'], ['.robot--humanoid', 'hero-power']]) {
+    assert.ok(animated(selector, name), `${selector} does not run ${name} under no-preference`);
+    assert.ok(hasKeyframes(name), `@keyframes ${name} missing`);
+  }
+  assert.match(tokenValue('--dur-assembly'), /^(\d+)ms$/);
+  assert.ok(parseInt(tokenValue('--dur-assembly'), 10) <= 800, 'focal entrance longer than 800ms');
+  assert.ok(!rules.some((r) => r.parents.length === 0 && /hero-(roll|drop|slide|draw|power)/.test(r.body)), 'assembly runs outside the motion gate');
+});
+
+test('hero disassembles as it scrolls away, only where scroll timelines exist', () => {
+  const gate = '@supports (animation-timeline: view())';
+  const apart = rules.filter((r) => r.parents.includes(NO_PREF) && r.parents.includes(gate) && /animation-timeline:\s*auto,\s*view\(\)/.test(r.body));
+  assert.ok(apart.length > 0, 'no view()-driven disassembly inside the motion + support gates');
+});
+
+test('featured projects lock on: four corner brackets snap in on hover or keyboard focus', () => {
+  const lock = ruleFor('.lock', /opacity/);
+  assert.match(lock.body, /opacity:\s*0/);
+  const on = rules.find((r) => selectorsOf(r).includes('.featured:hover .lock') && selectorsOf(r).includes('.featured:focus-within .lock'));
+  assert.ok(on && /opacity:\s*1/.test(on.body), 'lock does not appear on hover and focus-within');
+  for (const corner of ['.lock::before', '.lock::after']) assert.match(ruleFor(corner, /clip-path/).body, /clip-path:\s*polygon\(/, `${corner} is not a pair of clipped brackets`);
+});
+
+test('servo strip: shapes tilt toward the pointer and the perception circle grows a tracking pupil', () => {
+  const tilt = rules.find((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes('.strip .shape') && /rotate:\s*var\(--servo-tilt,\s*0deg\)/.test(r.body));
+  assert.ok(tilt && /transition:[^;]*rotate/.test(tilt.body), 'strip shapes do not tilt with --servo-tilt');
+  const pupil = rules.find((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes('.strip .shape--perception::after') && /var\(--servo-x/.test(r.body) && /var\(--servo-y/.test(r.body));
+  assert.ok(pupil, 'perception pupil does not follow --servo-x/--servo-y');
+});
+
+test('scroll actuator: a yellow carriage rides the header rule on the root scroll timeline', () => {
+  const gate = '@supports (animation-timeline: scroll())';
+  const carriage = rules.find((r) => r.parents.includes(NO_PREF) && r.parents.includes(gate) && selectorsOf(r).includes('.actuator') && /animation-timeline:\s*scroll\(root\)/.test(r.body));
+  assert.ok(carriage, 'no scroll(root) actuator inside the motion + support gates');
+  assert.match(ruleFor('.actuator', /background/).body, /background:\s*var\(--actuation\)/);
+});
+
+test('browser surfaces are themed: scrollbar from the palette', () => {
+  assert.match(ruleFor('html', /scrollbar-color/).body, /scrollbar-color:\s*var\(--ink\) var\(--bg\)/);
 });
 
 test('media queries use the single 48rem breakpoint', () => {

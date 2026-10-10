@@ -24,8 +24,8 @@
 
   /* ---- Type ------------------------------------------------------------ */
   --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;  /* lowercase, heavy */
-  --font-sans:    "Geist", system-ui, -apple-system, sans-serif;
-  --font-mono:    "Geist Mono", ui-monospace, "SF Mono", monospace;
+  --font-sans:    "Jost", "Futura", system-ui, -apple-system, sans-serif;    /* Futura lineage; text + controls */
+  --font-mono:    "Martian Mono", ui-monospace, "SF Mono", monospace;       /* data and measurement only; loaded at wdth 87.5 */
 
   /* Sizes: mobile value at 390px → desktop value from the mockup. */
   --text-hero:     clamp(2.625rem, 7.4vw, 7rem);       /* 42 → 112  H1 + contact only */
@@ -34,8 +34,8 @@
   --text-h3:       clamp(1.25rem, 1.9vw, 1.75rem);     /* 20 → 28   project titles */
   --text-h4:       clamp(1.0625rem, 1.4vw, 1.3125rem); /* 17 → 21   service/role/note titles */
   --text-lead:     clamp(1.0625rem, 1.45vw, 1.3125rem);/* 17 → 21   lead paragraphs */
-  --text-body:     1rem;                               /* 16 */
-  --text-small:    0.875rem;                           /* 14 */
+  --text-body:     1.0625rem;                          /* 17  Jost runs a small x-height */
+  --text-small:    0.9375rem;                          /* 15 */
   --text-label:    0.75rem;                            /* 12  mono, uppercase */
   --text-wordmark: 15.5vw;                             /* footer name, fills the container */
 
@@ -120,14 +120,14 @@
   --dur-base:   240ms;
   --dur-slow:   600ms;
   --dur-reveal: 800ms;
-  --dur-settle: 900ms;   /* hero shapes settle into place on load */
+  --dur-assembly: 800ms; /* hero parts arrive on load: the page's one authored entrance */
   --dur-orbit:  30s;     /* one turn of the hero orbit */
   --dur-gait:   1140ms;  /* one quadruped trot cycle */
   --stagger:    60ms;
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --reveal-distance: 24px;   /* fade-up on scroll entry */
-  --settle-distance: 28px;   /* hero shapes drop this far into place */
+  --assembly-distance: 10rem; /* how far each hero part travels into place */
   --parallax-tilt:   4deg;   /* whole-robot cursor tilt */
   --walk-distance:   120px;  /* track travel per quadruped gait cycle */
   --hand-nudge:      24px;   /* contact hand eases toward the email */

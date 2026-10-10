@@ -1,4 +1,5 @@
 import { formatNpt } from './lib/clock.js';
+import { servoPose } from './lib/servo.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -149,6 +150,37 @@ if (interlude && quadruped) {
   }
   new MutationObserver(syncWalking).observe(quadruped, { attributes: true, attributeFilter: ['class'] });
   syncWalking();
+}
+
+// Servo strip: the strip's shapes track the pointer like a row of sensors and
+// servos. Mouse/trackpad only, never under reduced motion, and only while the
+// strip is on screen; one write per frame.
+const strip = document.querySelector('.strip');
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (strip && finePointer && !reducedMotion && 'IntersectionObserver' in window) {
+  const servos = [...strip.querySelectorAll('.shape')];
+  const lookMax = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--look-max')) || 40;
+  let stripInView = false;
+  let pointer = null;
+  let frame = 0;
+  const aim = () => {
+    frame = 0;
+    servos.forEach((servo) => {
+      const box = servo.getBoundingClientRect();
+      const pose = servoPose(pointer.x - (box.left + box.width / 2), pointer.y - (box.top + box.height / 2), lookMax);
+      servo.style.setProperty('--servo-tilt', `${pose.tilt.toFixed(1)}deg`);
+      servo.style.setProperty('--servo-x', pose.ux.toFixed(3));
+      servo.style.setProperty('--servo-y', pose.uy.toFixed(3));
+    });
+  };
+  new IntersectionObserver(([entry]) => {
+    stripInView = entry.isIntersecting;
+  }).observe(strip);
+  window.addEventListener('pointermove', (event) => {
+    if (!stripInView || event.pointerType === 'touch') return;
+    pointer = { x: event.clientX, y: event.clientY };
+    if (!frame) frame = window.requestAnimationFrame(aim);
+  }, { passive: true });
 }
 
 // Start live robots after the first paint so static page behavior stays usable.

@@ -186,6 +186,26 @@ test('quadruped walking follows its own visibility and live state', async () => 
   } finally { remove(frame); }
 });
 
+test('servo strip shapes turn toward the pointer while the strip is in view', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    frame.style.width = '1200px';
+    frame.style.height = '800px';
+    const strip = page.querySelector('.strip');
+    // The page scrolls smoothly; jump instead so the strip is really in view and its box is final.
+    strip.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const triangle = strip.querySelector('.shape--actuation');
+    const eye = strip.querySelector('.shape--perception');
+    await wait(200); // let the strip's IntersectionObserver report it in view
+    const box = triangle.getBoundingClientRect();
+    const win = page.defaultView;
+    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: box.right + 100, clientY: box.top - 100, pointerType: 'mouse', bubbles: true }));
+    await waitFor(() => triangle.style.getPropertyValue('--servo-tilt') !== '', 'triangle to receive a tilt');
+    assert(parseFloat(triangle.style.getPropertyValue('--servo-tilt')) < 0, `pointer above should tilt up, got ${triangle.style.getPropertyValue('--servo-tilt')}`);
+    assert(eye.style.getPropertyValue('--servo-y') !== '' && parseFloat(eye.style.getPropertyValue('--servo-y')) < 0, 'pupil does not look up');
+  } finally { remove(frame); }
+});
+
 await run();
 </script>
 </body>

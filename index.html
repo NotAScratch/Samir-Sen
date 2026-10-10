@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Martian+Mono:wdth,wght@87.5,400;87.5,500&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
   <script type="importmap">
     { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }
   </script>
@@ -24,6 +24,7 @@
 
   <!-- Nav: desktop inline links, mobile menu-toggle + #menu. CSS shows one or the other. -->
   <header class="site-header">
+    <span class="actuator" aria-hidden="true"></span>
     <div class="nav">
       <a class="wordmark" href="#top" translate="no"><span class="wordmark-shapes"><span class="shape shape--perception" aria-hidden="true"></span> <span class="shape shape--compute" aria-hidden="true"></span> <span class="shape shape--actuation" aria-hidden="true"></span></span> Samir Sen</a>
       <p class="nav-status"><span class="status-dot" aria-hidden="true"></span>Kathmandu · <span class="nav-clock">--:--</span> NPT · Open to collaborations</p>
@@ -52,12 +53,11 @@
   </header>
 
   <main id="main">
-    <!-- Hero. Flat grid children (eyebrow, title, robot, intro, actions) so mobile can slot the robot between the H1 and the intro. -->
+    <!-- Hero. Flat grid children (title, robot, intro, actions, legend) so mobile can slot the robot between the H1 and the intro. -->
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-grid shell">
-        <p class="eyebrow reveal" style="--i:0"><span class="status-dot" aria-hidden="true"></span>R&amp;D AI Roboticist &amp; Automation Engineer — Baliyo Ventures</p>
         <h1 id="hero-title" class="display-hero reveal" style="--i:1">Systems that <span class="word word--perception">see,</span> <span class="word word--compute">think</span> and <span class="word word--actuation">move.</span></h1>
-        <p class="hero-intro reveal" style="--i:2">Turning computer-vision research into reliable, physical-world automation — one perception loop at a time.</p>
+        <p class="hero-intro reveal" style="--i:2">R&amp;D AI roboticist and automation engineer at Baliyo Ventures. I turn computer-vision research into reliable, physical-world automation, one perception loop at a time.</p>
         <div class="hero-actions reveal" style="--i:3">
           <a class="button button-primary" href="#work">Selected work <span aria-hidden="true">↘</span></a>
           <a class="button button-ghost" href="Samir%20Sen%20CV.pdf" download="Samir-Sen-CV.pdf">Download CV <span aria-hidden="true">↓</span></a>
@@ -134,6 +134,7 @@
         <article class="featured reveal" aria-labelledby="project-title-1">
           <figure class="featured-media">
             <div class="featured-frame">
+              <span class="lock" aria-hidden="true"><span class="lock-tag">Locked on 01 / 06</span></span>
               <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Detection overlay: a circle and a square object each framed by a labelled detection box, on a floor line">
                 <rect width="400" height="300" class="diagram-field"/>
                 <rect y="244" width="400" height="56" class="diagram-ink"/>
@@ -181,6 +182,7 @@
           </div>
           <figure class="featured-media">
             <div class="featured-frame">
+              <span class="lock" aria-hidden="true"><span class="lock-tag">Locked on 02 / 06</span></span>
               <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Lidar returns: a ring of point returns around an edge device on a blue field, with a heading arrow">
                 <rect width="400" height="300" class="diagram-field-compute"/>
                 <g class="diagram-ring"><circle cx="200" cy="150" r="40"/><circle cx="200" cy="150" r="80"/><circle cx="200" cy="150" r="120"/><path d="M200 20 V280 M60 150 H340"/></g>
