@@ -5,7 +5,9 @@
 
    One breakpoint: 48rem (= --bp-mobile; media queries can't read custom
    properties, so it is written literally). Shared and phone styles first,
-   then "(width >= 48rem)" for the wider layout. Shared by index.html and the
+   then "(width >= 48rem)" for the wider layout. Two container queries adapt
+   parts to their own width: the hero labels (mirrors --bp-callout-full) and
+   the skill rows (mirrors --bp-skill-columns). Shared by index.html and the
    legal pages (privacy.html, terms.html).
 
    Runtime custom properties (not tokens): --ax / --ay (hero callout anchors,
@@ -520,13 +522,21 @@ button {
 
 /* The figure reserves room on the right for the labels; the robot fills the
    rest, capped by --hero-robot-h. cqi is the figure's content box. */
+/* The stage holds the robot and the caption sits under it; the rest of the
+   figure is the room for the callout labels. A narrow figure (phones, tablets) keeps the
+   robot large and shows titles only; a wide one shows the details too.
+   cqi is the figure's width. */
 .hero-figure {
   container-type: inline-size;
-  padding-right: var(--callout-room-compact);
+}
+
+.hero-stage,
+.hero-caption {
+  width: calc(100cqi - var(--callout-room-compact));
 }
 
 .robot--humanoid {
-  height: min(var(--hero-robot-h), calc(100cqi * 1800 / 1208));
+  height: min(var(--hero-robot-h), calc((100cqi - var(--callout-room-compact)) * 1800 / 1208));
   margin-inline: auto;
 }
 
@@ -588,6 +598,30 @@ button {
 
 .callout[data-anchor="actuation"] {
   display: none;
+}
+
+/* Wide figure: full labels (mirrors --bp-callout-full). */
+@container (width >= 30rem) {
+  .hero-stage,
+  .hero-caption {
+    width: calc(100cqi - var(--callout-room));
+  }
+
+  .robot--humanoid {
+    height: min(var(--hero-robot-h), calc((100cqi - var(--callout-room)) * 1800 / 1208));
+  }
+
+  .callout {
+    right: calc(-1 * var(--callout-room));
+  }
+
+  .callout-detail {
+    display: block;
+  }
+
+  .callout[data-anchor="actuation"] {
+    display: grid;
+  }
 }
 
 /* ---- Now: the current role as a spec sheet ------------------------------- */
@@ -1010,6 +1044,7 @@ button {
 }
 
 .skill-list {
+  container-type: inline-size;
   border-top: var(--hairline) solid var(--line-strong);
 }
 
@@ -1036,6 +1071,14 @@ button {
 
 .skill dd {
   color: var(--ink);
+}
+
+/* Name beside tools only when the list is wide enough (mirrors --bp-skill-columns). */
+@container (width >= 32rem) {
+  .skill {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--gutter);
+  }
 }
 
 /* Keep "RGB-D cameras" and "scikit-learn" whole when the list wraps. */
@@ -1263,6 +1306,8 @@ textarea.field-input {
 .case-study {
   width: min(100% - 2 * var(--margin), 52rem);
   max-height: calc(100svh - 2 * var(--space-5));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0;
   border: 0;
   border-radius: var(--radius-none);
@@ -1488,19 +1533,6 @@ textarea.field-input {
 
   .hero-figure {
     grid-column: 7 / -1;
-    padding-right: var(--callout-room);
-  }
-
-  .callout {
-    right: calc(-1 * var(--callout-room));
-  }
-
-  .callout-detail {
-    display: block;
-  }
-
-  .callout[data-anchor="actuation"] {
-    display: grid;
   }
 
   .section-head {
@@ -1629,11 +1661,6 @@ textarea.field-input {
 
   .skill-list {
     grid-column: 7 / -1;
-  }
-
-  .skill {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: var(--gutter);
   }
 
   .experience-grid,

@@ -65,11 +65,13 @@
           </div>
         </div>
         <figure class="hero-figure reveal" style="--i:1">
-          <div class="robot robot--humanoid" data-robot="humanoid" aria-hidden="true">
-            <img class="robot-poster" src="assets/posters/humanoid.webp" alt="" width="604" height="900" fetchpriority="high">
-            <span class="callout" data-anchor="perception" style="--ax:45.28%;--ay:12.25%"><span class="callout-title">Perception</span> <span class="callout-detail">LiDAR, RGB-D, OpenCV</span></span>
-            <span class="callout" data-anchor="edge" style="--ax:47.97%;--ay:27.88%"><span class="callout-title">Edge compute</span> <span class="callout-detail">Jetson Orin NX, ROS 2</span></span>
-            <span class="callout" data-anchor="actuation" style="--ax:69.48%;--ay:48.78%"><span class="callout-title">Actuation</span> <span class="callout-detail">ESP32, Arduino</span></span>
+          <div class="hero-stage">
+            <div class="robot robot--humanoid" data-robot="humanoid" aria-hidden="true">
+              <img class="robot-poster" src="assets/posters/humanoid.webp" alt="" width="604" height="900" fetchpriority="high">
+              <span class="callout" data-anchor="perception" style="--ax:45.28%;--ay:12.25%"><span class="callout-title">Perception</span> <span class="callout-detail">LiDAR, RGB-D, OpenCV</span></span>
+              <span class="callout" data-anchor="edge" style="--ax:47.97%;--ay:27.88%"><span class="callout-title">Edge compute</span> <span class="callout-detail">Jetson Orin NX, ROS 2</span></span>
+              <span class="callout" data-anchor="actuation" style="--ax:69.48%;--ay:48.78%"><span class="callout-title">Actuation</span> <span class="callout-detail">ESP32, Arduino</span></span>
+            </div>
           </div>
           <figcaption class="caption hero-caption"><span class="when-live">Live 3D, rendered in your browser. Labels map parts to skills.</span> <span class="when-still">Still render of the 3D robot. Labels map parts to skills.</span></figcaption>
         </figure>
@@ -313,7 +315,7 @@
           </div>
           <div class="skill reveal">
             <dt><span class="skill-name">Edge and embedded</span> <span class="skill-note">Models and drivers on real hardware, where latency, power and memory shape the design.</span></dt>
-            <dd><span class="tool">NVIDIA Jetson (Orin NX, Nano)</span>, <span class="tool">ESP32</span>, <span class="tool">Arduino</span>, <span class="tool">serial protocols</span></dd>
+            <dd><span class="tool">NVIDIA Jetson</span> <span class="tool">(Orin NX, Nano)</span>, <span class="tool">ESP32</span>, <span class="tool">Arduino</span>, <span class="tool">serial protocols</span></dd>
           </div>
           <div class="skill reveal">
             <dt><span class="skill-name">Backend and cloud</span> <span class="skill-note">Services that expose robotic capability cleanly: typed APIs, containers and sensible boundaries.</span></dt>

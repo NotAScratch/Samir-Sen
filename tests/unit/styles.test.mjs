@@ -198,6 +198,15 @@ test('media queries use the single 48rem breakpoint', () => {
   for (const rule of sized) assert.match(rule.prelude, /\b48rem\b/, rule.prelude);
 });
 
+test('container queries mirror their tokens: hero labels and skill rows adapt to their own width', () => {
+  const queries = [...new Set(rules.filter((r) => r.prelude.startsWith('@container')).map((r) => r.prelude))].sort();
+  assert.deepEqual(queries, [`@container (width >= ${tokenValue('--bp-callout-full')})`, `@container (width >= ${tokenValue('--bp-skill-columns')})`].sort());
+  assert.match(ruleFor('.skill-list', /container-type/).body, /container-type:\s*inline-size/);
+  const split = rules.find((r) => r.parents.includes(`@container (width >= ${tokenValue('--bp-skill-columns')})`) && r.prelude === '.skill');
+  assert.ok(split && /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/.test(split.body));
+  assert.match(ruleFor('.tool').body, /white-space:\s*nowrap/);
+});
+
 test('hit targets: controls are at least --control-h tall', () => {
   for (const selector of ['.button', '.menu-toggle', '.nav-list a', '.footer-links a', '.field-input', '.to-top', '.wordmark', '.skip-link']) {
     const rule = ruleFor(selector, /min-height/);
@@ -252,8 +261,8 @@ test('captions say whether a robot is live or a still', () => {
   }
 });
 
-test('hero callouts sit on their anchors above the canvas; phones show titles only', () => {
-  const callout = rules.find((r) => r.prelude === '.callout');
+test('hero callouts sit on their anchors above the canvas; narrow figures show titles only', () => {
+  const callout = rules.find((r) => r.prelude === '.callout' && r.parents.length === 0);
   assert.match(callout.body, /position:\s*absolute/);
   assert.match(callout.body, /left:\s*var\(--ax\)/);
   assert.match(callout.body, /top:\s*var\(--ay\)/);
@@ -261,15 +270,20 @@ test('hero callouts sit on their anchors above the canvas; phones show titles on
   assert.match(callout.body, /right:\s*calc\(-1 \* var\(--callout-room-compact\)\)/);
   assert.match(ruleFor('.callout-detail', /display/).body, /display:\s*none/);
   assert.match(rules.find((r) => r.prelude === '.callout[data-anchor="actuation"]' && r.parents.length === 0).body, /display:\s*none/);
-  const wide = (sel, pattern) => rules.some((r) => r.parents.includes(DESKTOP) && r.prelude === sel && pattern.test(r.body));
-  assert.ok(wide('.callout-detail', /display:\s*block/), 'details return on wide screens');
-  assert.ok(wide('.callout[data-anchor="actuation"]', /display:\s*grid/), 'the actuation callout returns on wide screens');
-  assert.ok(wide('.hero-figure', /padding-right:\s*var\(--callout-room\)/), 'the figure reserves room for the labels');
+  const full = `@container (width >= ${tokenValue('--bp-callout-full')})`;
+  const wide = (sel, pattern) => rules.some((r) => r.parents.includes(full) && r.prelude === sel && pattern.test(r.body));
+  assert.ok(wide('.callout', /right:\s*calc\(-1 \* var\(--callout-room\)\)/), 'wide figures give the labels the full room');
+  assert.ok(wide('.callout-detail', /display:\s*block/), 'details return in a wide figure');
+  assert.ok(wide('.callout[data-anchor="actuation"]', /display:\s*grid/), 'the actuation callout returns in a wide figure');
 });
 
-test('the hero robot fills its figure, capped by a token, and bands never widen the page', () => {
+test('the hero robot fills its stage, capped by a token, and bands never widen the page', () => {
   assert.match(ruleFor('.hero-figure', /container-type/).body, /container-type:\s*inline-size/);
-  assert.match(ruleFor('.robot--humanoid', /height/).body, /height:\s*min\(var\(--hero-robot-h\), calc\(100cqi \* 1800 \/ 1208\)\)/);
+  const stage = rules.find((r) => r.parents.length === 0 && selectorsOf(r).includes('.hero-stage') && selectorsOf(r).includes('.hero-caption'));
+  assert.ok(stage && /width:\s*calc\(100cqi - var\(--callout-room-compact\)\)/.test(stage.body), 'stage and caption leave the compact label room');
+  assert.match(ruleFor('.robot--humanoid', /height/).body, /height:\s*min\(var\(--hero-robot-h\), calc\(\(100cqi - var\(--callout-room-compact\)\) \* 1800 \/ 1208\)\)/);
+  const full = rules.find((r) => r.parents.includes(`@container (width >= ${tokenValue('--bp-callout-full')})`) && r.prelude === '.robot--humanoid');
+  assert.ok(full && /calc\(\(100cqi - var\(--callout-room\)\) \* 1800 \/ 1208\)/.test(full.body), 'wide figures size the robot around the full label room');
   for (const band of ['.hero', '.interlude', '.contact']) assert.match(ruleFor(band, /overflow-x/).body, /overflow-x:\s*clip/, `${band} must clip its bleed`);
 });
 

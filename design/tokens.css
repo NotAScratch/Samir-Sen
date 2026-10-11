@@ -77,8 +77,10 @@
   --header-h:    3.5rem;                          /* 56 sticky header */
   --hero-robot-h: min(72svh, 46rem);              /* hero robot height, before the column limits it */
   --callout-room: 9rem;                           /* space right of the hero robot for its labels */
-  --callout-room-compact: 6rem;                   /* the same on phones, titles only */
+  --callout-room-compact: 6rem;                   /* the same in a narrow figure, titles only */
+  --bp-callout-full: 30rem;                       /* hero figure width that fits full labels; @container can't read vars */
   --bp-mobile:   48rem;   /* reference only: media queries can't read custom properties */
+  --bp-skill-columns: 32rem; /* skill rows split name | tools once the list is this wide; @container can't read vars */
 
   /* ---- Shape ----------------------------------------------------------- */
   --radius-none: 0;
