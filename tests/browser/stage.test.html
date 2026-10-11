@@ -172,6 +172,23 @@ test('failed robot keeps poster', async () => {
   }));
 });
 
+test('a robot that falls back to its poster puts its callouts back on the poster positions', async () => {
+  // Real markup carries each callout's poster position inline; a failure must restore it, not erase it.
+  const markup = '<span data-anchor="perception" style="--ax:45.28%;--ay:12.25%"></span><span data-anchor="edge" style="--ax:47.97%;--ay:27.88%"></span>';
+  await using(['humanoid'], async ({ els, start }) => {
+    const controller = start();
+    await until(() => live(els[0]), 5000, 'the robot to go live');
+    await until(() => els[0].querySelector('[data-anchor="perception"]').style.getPropertyValue('--ax').endsWith('px'), 3000, 'live callout positions');
+    controller.entries.get(els[0]).stage.canvas.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext();
+    await until(() => els[0].classList.contains('is-failed'), 3000, 'is-failed after context loss');
+    const perception = els[0].querySelector('[data-anchor="perception"]').style;
+    const edge = els[0].querySelector('[data-anchor="edge"]').style;
+    assertEqual(perception.getPropertyValue('--ax').trim(), '45.28%', 'perception --ax');
+    assertEqual(perception.getPropertyValue('--ay').trim(), '12.25%', 'perception --ay');
+    assertEqual(edge.getPropertyValue('--ax').trim(), '47.97%', 'edge --ax');
+  }, markup);
+});
+
 test('context loss reverts to poster', async () => {
   await watching(({ warnings }) => using(['humanoid'], async ({ els, start }) => {
     const controller = start();

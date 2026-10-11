@@ -225,7 +225,6 @@ button {
 .timeline-date,
 .timeline-org,
 .note-meta,
-.contact-eyebrow,
 .contact-detail dt,
 .footer-row,
 .footer-legend,
@@ -233,7 +232,6 @@ button {
 .hero-legend-detail,
 .callout,
 .nav-status,
-.mono-note,
 .lock-tag,
 .case-study-head,
 .case-study-grid > div > span {
@@ -623,6 +621,14 @@ button {
         translate: calc(100cqw - var(--space-4)) 0;
       }
     }
+  }
+}
+
+/* The open phone menu covers the header rule the carriage rides on. Scoped
+   to phones so a window widened with the menu open keeps its actuator. */
+@media (width < 48rem) {
+  body.menu-open .actuator {
+    display: none;
   }
 }
 
@@ -1256,7 +1262,9 @@ body.menu-open #menu {
 
 .mono-note {
   margin-top: var(--space-6);
-  color: var(--ink-faint);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
 }
 
 .facts {
@@ -1399,8 +1407,10 @@ body.menu-open #menu {
 
 .lock-tag {
   position: absolute;
-  right: 0;
-  bottom: calc(100% + var(--space-1));
+  /* Inside the frame's bottom-right corner: still in view when keyboard focus
+     lands on the case-study button and the browser centres it. */
+  right: calc(var(--space-3) + var(--space-4));
+  bottom: calc(var(--space-3) + var(--space-4));
   padding: var(--space-1) var(--space-2);
   background: var(--ink);
   color: var(--white);
@@ -2208,6 +2218,12 @@ body.menu-open #menu {
 
 .contact-main {
   margin-top: var(--space-7);
+}
+
+.contact-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
 }
 
 .email-link {

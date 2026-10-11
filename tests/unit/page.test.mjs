@@ -115,6 +115,15 @@ test('each featured frame carries a decorative detection lock reporting the skil
   frames.forEach((chunk, i) => assert.ok(chunk.slice(0, chunk.indexOf('<figcaption')).includes('class="lock"'), `lock ${i + 1} is outside its frame`));
 });
 
+test('hero callout tags name the skill only (the legend below already numbers them)', () => {
+  const titles = [...html.matchAll(/<span class="callout-title"><span class="shape [^"]+" aria-hidden="true"><\/span> ([^<]+)<\/span>/g)].map((m) => m[1].trim());
+  assert.deepEqual(titles, ['Perception', 'Edge compute', 'Actuation']);
+});
+
+test('the motto is plain text, not a code comment', () => {
+  assert.match(html, /<p class="mono-note[^"]*"[^>]*>build with intent\. learn in public\. ship what matters\.<\/p>/);
+});
+
 test('the header carries one decorative scroll actuator', () => {
   const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
   assert.equal((header.match(/<span class="actuator" aria-hidden="true"><\/span>/g) ?? []).length, 1);

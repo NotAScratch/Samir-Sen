@@ -59,8 +59,11 @@
   measurement: specs, captions, dates, coordinates, the clock, metre scales,
   index numbers. Never mono as a "technical" costume. (Geist and Geist Mono
   were retired as overused.)
-- No eyebrow labels above headings: the heading carries its own weight. The
-  hero's role line lives in the intro sentence.
+- No decorative eyebrow labels above headings: the heading carries its own
+  weight, and the hero's role line lives in the intro sentence. Labels that
+  carry data stay: the section label (number, name, rule, meta), a project
+  kicker (skill shape + index) and the case-study label.
+- Prose is never set in mono: the motto and "Write to me" are Jost.
 - `--text-hero` is used exactly twice: the hero H1 and the contact headline.
   Section heads are `--text-h2`. The footer ends on the lowercase name with a
   yellow full stop.
@@ -160,7 +163,8 @@ senses the visitor, and reports its state.
 - Stock photography and AI-generated robot images
 - Robots outside the approved lineup, or in their original colours
 - Marquees and decorative particles
-- Eyebrow or kicker labels added above headings
+- Decorative eyebrow labels added above headings (data-carrying kickers and
+  section labels are allowed)
 - Invented numbers in diagrams
 - Motion that ignores `prefers-reduced-motion`
 

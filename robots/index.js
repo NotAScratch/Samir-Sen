@@ -56,15 +56,19 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
 
   // Hands the container back to its poster. Safe to call twice.
   const release = (el, entry) => {
-    const { stage } = entry;
+    const { stage, callouts = [] } = entry;
     delete entry.stage;
     delete entry.robot;
     delete entry.callouts;
     if (activeEl === el && !entry.loading) activeEl = null;
     el.classList.remove('is-live');
-    for (const node of el.querySelectorAll('[data-anchor]')) {
-      node.style.removeProperty('--ax'); // back to the poster's own callout position
-      node.style.removeProperty('--ay');
+    // Back to the poster's own callout positions (removing them would leave the
+    // callouts with no position at all and stack them on one spot).
+    for (const { node, poster } of callouts) {
+      if (poster.x) node.style.setProperty('--ax', poster.x);
+      else node.style.removeProperty('--ax');
+      if (poster.y) node.style.setProperty('--ay', poster.y);
+      else node.style.removeProperty('--ay');
     }
     try {
       stage?.dispose();
@@ -97,7 +101,12 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
       const stage = createStage(el, robot, { shadowOpacity: tokens.shadow });
       entry.stage = stage;
       entry.robot = robot;
-      entry.callouts = [...el.querySelectorAll('[data-anchor]')].map((node) => ({ node, name: node.dataset.anchor }));
+      entry.callouts = [...el.querySelectorAll('[data-anchor]')].map((node) => ({
+        node,
+        name: node.dataset.anchor,
+        // The poster position the markup carries inline, restored when the robot goes back to its poster.
+        poster: { x: node.style.getPropertyValue('--ax'), y: node.style.getPropertyValue('--ay') },
+      }));
       stage.firstFrame.then(() => { if (entry.stage === stage) el.classList.add('is-live'); });
       wake();
     } catch (error) {

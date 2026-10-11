@@ -339,6 +339,26 @@ test('the actuator sits on the header rule and moves on the compositor', () => {
   assert.ok(frames.length && frames.every((r) => !/\bleft:/.test(r.body)) && frames.some((r) => /translate:\s*calc\(100cqw - var\(--space-4\)\)/.test(r.body)), 'actuator must travel by translate across the header width');
 });
 
+test('the lock tag reads inside the frame, so it is in view when keyboard focus lands on the case-study button', () => {
+  const tag = ruleFor('.lock-tag', /bottom/);
+  assert.doesNotMatch(tag.body, /bottom:\s*calc\(100%/, 'tag above the frame scrolls out of view on focus');
+  assert.match(tag.body, /bottom:\s*calc\(var\(--space-3\) \+ var\(--space-4\)\)/);
+});
+
+test('prose labels leave the mono face: the motto and "Write to me" are set in Jost', () => {
+  const monoList = rules.find((r) => /font-family:\s*var\(--font-mono\)/.test(r.body) && selectorsOf(r).length > 10);
+  for (const prose of ['.mono-note', '.contact-eyebrow']) {
+    assert.ok(!selectorsOf(monoList).includes(prose), `${prose} still wears the mono costume`);
+    assert.match(ruleFor(prose, /font-family/).body, /font-family:\s*var\(--font-sans\)/, `${prose} is not in Jost`);
+  }
+});
+
+test('the actuator hides while the phone menu is open (and only below the breakpoint)', () => {
+  const hide = rules.find((r) => selectorsOf(r).includes('body.menu-open .actuator') && /display:\s*none/.test(r.body));
+  assert.ok(hide, 'actuator stays painted over the open menu');
+  assert.ok(hide.parents.some((p) => /\(width < 48rem\)/.test(p)), 'must be scoped to phones so a widened window does not hide it');
+});
+
 test('servo reach is a token', () => {
   assert.match(tokenValue('--servo-reach'), /^\d+(\.\d+)?rem$/);
 });
