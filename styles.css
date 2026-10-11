@@ -579,33 +579,48 @@ button {
   transform: scale(var(--press-scale));
 }
 
-/* Scroll actuator: a yellow carriage rides the header's rule from left to
-   right as the page scrolls, like a linear actuator reporting its stroke.
-   Hidden where scroll timelines are unsupported or motion is reduced. */
+/* Scroll actuator: a yellow carriage rides along the header's rule as the
+   page scrolls, like a linear actuator reporting its stroke. The track is
+   its own size container (a contained header would trap the fixed mobile
+   menu), so the carriage can travel by translate. Hidden where scroll
+   timelines are unsupported or motion is reduced. */
 .actuator {
   position: absolute;
   z-index: 2;
-  bottom: calc(-1 * (var(--space-3) + var(--rule)) / 2);
+  right: 0;
+  bottom: 0;
   left: 0;
   display: none;
-  width: var(--space-4);
   height: var(--space-3);
+  container-type: inline-size;
+  pointer-events: none;
+}
+
+.actuator::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--space-4);
+  height: 100%;
   background: var(--actuation);
   clip-path: polygon(0 0, 100% 50%, 0 100%);
-  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: scroll()) {
     .actuator {
       display: block;
+    }
+
+    .actuator::before {
       animation: actuator-stroke linear both;
       animation-timeline: scroll(root);
     }
 
     @keyframes actuator-stroke {
       to {
-        left: calc(100% - var(--space-4));
+        translate: calc(100cqw - var(--space-4)) 0;
       }
     }
   }
@@ -688,6 +703,7 @@ body.menu-open #menu {
 /* ---- Hero ---------------------------------------------------------------- */
 
 .hero {
+  overflow-x: clip;
   padding-top: var(--space-6);
   padding-bottom: var(--space-6);
 }
@@ -884,6 +900,10 @@ body.menu-open #menu {
     from {
       clip-path: inset(0 0 100% 0);
     }
+
+    to {
+      clip-path: inset(calc(-1 * var(--space-3)));
+    }
   }
 
   @keyframes hero-power {
@@ -900,7 +920,7 @@ body.menu-open #menu {
   }
 
   /* As the hero scrolls away, the parts come apart again. */
-  @supports (animation-timeline: view()) {
+  @supports (animation-timeline: view()) and (animation-range: exit 0% exit 100%) {
     .hero-circle,
     .hero-square,
     .hero-triangle {
@@ -1145,18 +1165,10 @@ body.menu-open #menu {
   gap: var(--space-3);
 }
 
-/* Servo strip: the perception circle is a sensor with a pupil; script.js feeds
+/* Servo strip: script.js marks the strip .is-tracking for mouse users and feeds
    --servo-tilt / --servo-x / --servo-y from the pointer. */
 .strip .shape--perception {
   position: relative;
-}
-
-.strip .shape--perception::after {
-  content: "";
-  position: absolute;
-  inset: 30%;
-  border-radius: 50%;
-  background: var(--ink);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1174,9 +1186,16 @@ body.menu-open #menu {
     rotate: none;
   }
 
-  .strip .shape--perception::after {
+  /* The pupil exists only while script.js is tracking a mouse; otherwise the
+     circle stays a solid perception disc. */
+  .strip.is-tracking .shape--perception::after {
+    content: "";
+    position: absolute;
+    inset: 30%;
+    border-radius: 50%;
+    background: var(--ink);
     translate: calc(var(--servo-x, 0) * 70%) calc(var(--servo-y, 0) * 70%);
-    transition: translate var(--dur-base) var(--ease-out);
+    transition: translate var(--dur-slow) var(--ease-out);
   }
 }
 

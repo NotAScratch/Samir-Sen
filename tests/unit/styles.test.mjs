@@ -291,7 +291,7 @@ test('hero assembles on load: circle rolls in, square drops, triangle slides, or
 });
 
 test('hero disassembles as it scrolls away, only where scroll timelines exist', () => {
-  const gate = '@supports (animation-timeline: view())';
+  const gate = '@supports (animation-timeline: view()) and (animation-range: exit 0% exit 100%)';
   const apart = rules.filter((r) => r.parents.includes(NO_PREF) && r.parents.includes(gate) && /animation-timeline:\s*auto,\s*view\(\)/.test(r.body));
   assert.ok(apart.length > 0, 'no view()-driven disassembly inside the motion + support gates');
 });
@@ -307,15 +307,40 @@ test('featured projects lock on: four corner brackets snap in on hover or keyboa
 test('servo strip: shapes tilt toward the pointer and the perception circle grows a tracking pupil', () => {
   const tilt = rules.find((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes('.strip .shape') && /rotate:\s*var\(--servo-tilt,\s*0deg\)/.test(r.body));
   assert.ok(tilt && /transition:[^;]*rotate/.test(tilt.body), 'strip shapes do not tilt with --servo-tilt');
-  const pupil = rules.find((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes('.strip .shape--perception::after') && /var\(--servo-x/.test(r.body) && /var\(--servo-y/.test(r.body));
-  assert.ok(pupil, 'perception pupil does not follow --servo-x/--servo-y');
+  const pupil = rules.find((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes('.strip.is-tracking .shape--perception::after') && /var\(--servo-x/.test(r.body) && /var\(--servo-y/.test(r.body));
+  assert.ok(pupil, 'perception pupil does not follow --servo-x/--servo-y while tracking');
+  // Without tracking (touch, reduced motion, before script runs) the circle stays a solid perception disc.
+  assert.ok(!rules.some((r) => selectorsOf(r).includes('.strip .shape--perception::after')), 'pupil drawn even when the servo is off');
 });
 
 test('scroll actuator: a yellow carriage rides the header rule on the root scroll timeline', () => {
   const gate = '@supports (animation-timeline: scroll())';
-  const carriage = rules.find((r) => r.parents.includes(NO_PREF) && r.parents.includes(gate) && selectorsOf(r).includes('.actuator') && /animation-timeline:\s*scroll\(root\)/.test(r.body));
-  assert.ok(carriage, 'no scroll(root) actuator inside the motion + support gates');
-  assert.match(ruleFor('.actuator', /background/).body, /background:\s*var\(--actuation\)/);
+  const carriage = rules.find((r) => r.parents.includes(NO_PREF) && r.parents.includes(gate) && selectorsOf(r).includes('.actuator::before') && /animation-timeline:\s*scroll\(root\)/.test(r.body));
+  assert.ok(carriage, 'no scroll(root) actuator carriage inside the motion + support gates');
+  assert.match(ruleFor('.actuator::before', /background/).body, /background:\s*var\(--actuation\)/);
+});
+
+test('the hero never widens the page while its parts slide in', () => {
+  assert.match(ruleFor('.hero', /overflow/).body, /overflow-x:\s*clip/);
+});
+
+test('the orbit draws itself: hero-draw interpolates between two inset() shapes', () => {
+  const frames = rules.filter((r) => r.parents.some((p) => p === '@keyframes hero-draw'));
+  assert.ok(frames.some((r) => r.prelude === 'from' && /clip-path:\s*inset\(/.test(r.body)), 'no inset() start frame');
+  assert.ok(frames.some((r) => r.prelude === 'to' && /clip-path:\s*inset\(calc\(-1 \* var\(--space-3\)\)\)/.test(r.body)), 'no inset() end frame (inset vs none snaps at 50%)');
+});
+
+test('the actuator sits on the header rule and moves on the compositor', () => {
+  assert.match(ruleFor('.actuator', /bottom/).body, /bottom:\s*0;/);
+  // The track is the size container, not the header: a contained header would trap the fixed mobile menu.
+  assert.match(ruleFor('.actuator', /container-type/).body, /container-type:\s*inline-size/);
+  assert.ok(!rules.some((r) => selectorsOf(r).includes('.site-header') && /container-type/.test(r.body)), 'header must not become a containing block');
+  const frames = rules.filter((r) => r.parents.some((p) => p === '@keyframes actuator-stroke'));
+  assert.ok(frames.length && frames.every((r) => !/\bleft:/.test(r.body)) && frames.some((r) => /translate:\s*calc\(100cqw - var\(--space-4\)\)/.test(r.body)), 'actuator must travel by translate across the header width');
+});
+
+test('servo reach is a token', () => {
+  assert.match(tokenValue('--servo-reach'), /^\d+(\.\d+)?rem$/);
 });
 
 test('browser surfaces are themed: scrollbar from the palette', () => {

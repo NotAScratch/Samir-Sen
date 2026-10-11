@@ -154,33 +154,57 @@ if (interlude && quadruped) {
 
 // Servo strip: the strip's shapes track the pointer like a row of sensors and
 // servos. Mouse/trackpad only, never under reduced motion, and only while the
-// strip is on screen; one write per frame.
+// strip is on screen. Shapes fade to rest beyond --servo-reach, follow the
+// strip when the page scrolls under a still pointer, and rest again when the
+// strip leaves view or the pointer leaves the window. One write per frame.
 const strip = document.querySelector('.strip');
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 if (strip && finePointer && !reducedMotion && 'IntersectionObserver' in window) {
   const servos = [...strip.querySelectorAll('.shape')];
-  const lookMax = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--look-max')) || 40;
+  const rootStyle = getComputedStyle(document.documentElement);
+  const lookMax = parseFloat(rootStyle.getPropertyValue('--look-max')) || 40;
+  const reach = parseFloat(rootStyle.getPropertyValue('--servo-reach')) * parseFloat(rootStyle.fontSize);
   let stripInView = false;
   let pointer = null;
   let frame = 0;
+  const rest = () => servos.forEach((servo) => {
+    servo.style.removeProperty('--servo-tilt');
+    servo.style.removeProperty('--servo-x');
+    servo.style.removeProperty('--servo-y');
+  });
   const aim = () => {
     frame = 0;
-    servos.forEach((servo) => {
-      const box = servo.getBoundingClientRect();
-      const pose = servoPose(pointer.x - (box.left + box.width / 2), pointer.y - (box.top + box.height / 2), lookMax);
+    if (!pointer || !stripInView) return;
+    const boxes = servos.map((servo) => servo.getBoundingClientRect());
+    servos.forEach((servo, i) => {
+      const box = boxes[i];
+      const pose = servoPose(pointer.x - (box.left + box.width / 2), pointer.y - (box.top + box.height / 2), lookMax, reach);
       servo.style.setProperty('--servo-tilt', `${pose.tilt.toFixed(1)}deg`);
       servo.style.setProperty('--servo-x', pose.ux.toFixed(3));
       servo.style.setProperty('--servo-y', pose.uy.toFixed(3));
     });
   };
-  new IntersectionObserver(([entry]) => {
-    stripInView = entry.isIntersecting;
+  const schedule = () => {
+    if (!frame) frame = window.requestAnimationFrame(aim);
+  };
+  strip.classList.add('is-tracking');
+  new IntersectionObserver((entries) => {
+    stripInView = entries[entries.length - 1].isIntersecting;
+    if (stripInView) schedule();
+    else rest();
   }).observe(strip);
   window.addEventListener('pointermove', (event) => {
-    if (!stripInView || event.pointerType === 'touch') return;
+    if (event.pointerType === 'touch') return;
     pointer = { x: event.clientX, y: event.clientY };
-    if (!frame) frame = window.requestAnimationFrame(aim);
+    if (stripInView) schedule();
   }, { passive: true });
+  window.addEventListener('scroll', () => {
+    if (stripInView && pointer) schedule();
+  }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => {
+    pointer = null;
+    rest();
+  });
 }
 
 // Start live robots after the first paint so static page behavior stays usable.

@@ -107,9 +107,9 @@ test('hero has no eyebrow label above the H1; the role opens the intro instead',
   assert.match(hero, /<p class="hero-intro[^"]*"[^>]*>R&amp;D AI roboticist and automation engineer at Baliyo Ventures\./);
 });
 
-test('each featured frame carries a decorative detection lock naming its project number', () => {
-  const locks = [...html.matchAll(/<span class="lock" aria-hidden="true"><span class="lock-tag">Locked on (\d\d) \/ 06<\/span><\/span>/g)].map((m) => m[1]);
-  assert.deepEqual(locks, ['01', '02']);
+test('each featured frame carries a decorative detection lock reporting the skill it locked on to', () => {
+  const locks = [...html.matchAll(/<span class="lock" aria-hidden="true"><span class="lock-tag">Locked · ([a-z ]+)<\/span><\/span>/g)].map((m) => m[1]);
+  assert.deepEqual(locks, ['perception', 'edge compute']);
   const frames = html.split('<div class="featured-frame">').slice(1);
   assert.equal(frames.length, 2);
   frames.forEach((chunk, i) => assert.ok(chunk.slice(0, chunk.indexOf('<figcaption')).includes('class="lock"'), `lock ${i + 1} is outside its frame`));

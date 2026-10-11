@@ -202,7 +202,21 @@ test('servo strip shapes turn toward the pointer while the strip is in view', as
     win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: box.right + 100, clientY: box.top - 100, pointerType: 'mouse', bubbles: true }));
     await waitFor(() => triangle.style.getPropertyValue('--servo-tilt') !== '', 'triangle to receive a tilt');
     assert(parseFloat(triangle.style.getPropertyValue('--servo-tilt')) < 0, `pointer above should tilt up, got ${triangle.style.getPropertyValue('--servo-tilt')}`);
-    assert(eye.style.getPropertyValue('--servo-y') !== '' && parseFloat(eye.style.getPropertyValue('--servo-y')) < 0, 'pupil does not look up');
+    // The pupil looks toward a pointer within reach of the circle itself (the circle sits far left of the triangle).
+    const eyeBox = eye.getBoundingClientRect();
+    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: eyeBox.right + 60, clientY: eyeBox.top - 60, pointerType: 'mouse', bubbles: true }));
+    await waitFor(() => parseFloat(eye.style.getPropertyValue('--servo-y')) < 0, 'pupil to look up toward a nearby pointer');
+    assert(strip.classList.contains('is-tracking'), 'strip is not marked as tracking a mouse');
+
+    // A pointer far outside the servos' reach leaves them level.
+    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: 0, clientY: 0, pointerType: 'mouse', bubbles: true }));
+    await waitFor(() => parseFloat(triangle.style.getPropertyValue('--servo-tilt')) === 0, 'distant pointer to leave the triangle level');
+
+    // Scrolling the strip away puts every servo back at rest.
+    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: box.right + 100, clientY: box.top - 100, pointerType: 'mouse', bubbles: true }));
+    await waitFor(() => parseFloat(triangle.style.getPropertyValue('--servo-tilt')) < 0, 'triangle to tilt again');
+    page.querySelector('.site-footer').scrollIntoView({ behavior: 'instant' });
+    await waitFor(() => triangle.style.getPropertyValue('--servo-tilt') === '', 'servos to rest once the strip leaves view');
   } finally { remove(frame); }
 });
 

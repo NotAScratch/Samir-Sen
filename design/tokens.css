@@ -131,6 +131,7 @@
   --parallax-tilt:   4deg;   /* whole-robot cursor tilt */
   --walk-distance:   120px;  /* track travel per quadruped gait cycle */
   --hand-nudge:      24px;   /* contact hand eases toward the email */
+  --servo-reach:     20rem;  /* strip servos fade to rest beyond this pointer distance */
   --press-scale:     0.98;
 }
 

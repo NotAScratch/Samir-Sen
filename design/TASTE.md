@@ -128,11 +128,13 @@ senses the visitor, and reports its state.
   powers on. As the hero scrolls away the parts come apart again (scroll-driven,
   only where `animation-timeline: view()` exists).
 - **Detection lock.** Pointing at or focusing a featured project snaps four
-  ink corner brackets round its frame with a `LOCKED ON 0N / 06` tag. Real
-  project numbers, never confidence scores.
+  ink corner brackets round its frame with a tag naming the skill it locked
+  on to (`LOCKED · PERCEPTION`, `LOCKED · EDGE COMPUTE`). Never confidence
+  scores or other invented numbers.
 - **Servo strip.** The strip's shapes track a mouse pointer: triangles and
   squares tilt (capped at `--look-max`), the perception circle turns a pupil.
-  Fine pointers only, only while the strip is on screen.
+  Fine pointers only, only while the strip is on screen; shapes fade to rest
+  beyond `--servo-reach` and rest again when the strip leaves view.
 - **Scroll actuator.** A yellow triangle rides the header rule left to right
   as the page scrolls, like a linear actuator reporting its stroke.
 - The orbit turns once per `--dur-orbit`.
