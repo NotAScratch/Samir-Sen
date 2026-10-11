@@ -1,26 +1,44 @@
 import { formatNpt } from './lib/clock.js';
-import { servoPose } from './lib/servo.js';
+import { validateContact, buildMailto, CONTACT_EMAIL } from './lib/contact.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Reveal runs first: CSS holds .reveal content back until this marks it in.
+const reveals = [...document.querySelectorAll('.reveal')];
+if (reducedMotion || !('IntersectionObserver' in window)) {
+  reveals.forEach((element) => element.classList.add('is-in'));
+} else {
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-in');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach((element) => revealObserver.observe(element));
+}
+
+// Local time in Kathmandu, shown in Contact.
 const updateClock = () => {
-  document.querySelectorAll('.nav-clock').forEach((clock) => {
+  document.querySelectorAll('.local-clock').forEach((clock) => {
     clock.textContent = formatNpt(new Date());
   });
 };
 updateClock();
 window.setInterval(updateClock, 30_000);
 
+// Phone menu: the toggle names what it will do, focus stays inside while open.
 const menuToggle = document.querySelector('.menu-toggle');
 const menu = document.getElementById('menu');
 
-const setMenuState = (open) => {
+const setMenuState = (open, { restoreFocus = true } = {}) => {
   if (!menuToggle || !menu) return;
   menuToggle.setAttribute('aria-expanded', String(open));
+  menuToggle.textContent = open ? 'Close' : 'Menu';
   menu.hidden = !open;
   document.body.classList.toggle('menu-open', open);
   if (open) menu.querySelector('a')?.focus({ preventScroll: true });
-  else menuToggle.focus({ preventScroll: true });
+  else if (restoreFocus) menuToggle.focus({ preventScroll: true });
 };
 
 menuToggle?.addEventListener('click', () => {
@@ -35,20 +53,24 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   if (event.key !== 'Tab' || !menu) return;
-  const links = [...menu.querySelectorAll('a[href]')].filter((link) => !link.hasAttribute('disabled'));
-  if (!links.length) return;
-  const first = links[0];
-  const last = links.at(-1);
-  const outsideMenu = !menu.contains(document.activeElement);
-  if (event.shiftKey && (document.activeElement === first || outsideMenu)) {
+  const focusable = [menuToggle, ...menu.querySelectorAll('a[href]')];
+  const first = focusable[0];
+  const last = focusable.at(-1);
+  const outside = !focusable.includes(document.activeElement);
+  if (event.shiftKey && (document.activeElement === first || outside)) {
     event.preventDefault();
     last.focus();
-  } else if (!event.shiftKey && (document.activeElement === last || outsideMenu)) {
+  } else if (!event.shiftKey && (document.activeElement === last || outside)) {
     event.preventDefault();
     first.focus();
   }
 });
+// The menu only exists below 48rem; widening the window closes it.
+window.matchMedia('(width >= 48rem)').addEventListener('change', (event) => {
+  if (event.matches && menuToggle?.getAttribute('aria-expanded') === 'true') setMenuState(false, { restoreFocus: false });
+});
 
+// More projects: each row discloses its detail paragraph.
 document.querySelectorAll('.index-row').forEach((row) => {
   row.addEventListener('click', () => {
     const open = row.getAttribute('aria-expanded') === 'true';
@@ -58,26 +80,27 @@ document.querySelectorAll('.index-row').forEach((row) => {
   });
 });
 
+// Case studies open in a dialog; ?case=vision|edge links straight to one.
 const caseStudy = document.querySelector('.case-study');
 const caseClose = document.querySelector('.case-close');
 const caseFields = {
   vision: {
     index: '01',
-    kicker: 'PERCEPTION PIPELINE',
-    title: 'Real-time object detection',
+    kicker: 'Final-year project, 2025',
+    title: 'Real-time object detection with distance and direction',
     summary: 'A computer-vision pipeline that turns a live camera feed into spatial information a robotic system can use.',
-    problem: 'Raw video is rich in information but difficult for a downstream system to act on without a clear, structured signal.',
-    approach: 'SSD MobileNetV2 handles detection while FastAPI exposes the result as a lightweight service for distance and direction estimation.',
-    lesson: 'Perception becomes valuable when it is designed around the next decision, not just the model output.',
+    problem: 'Raw video holds a lot of information, but a downstream system needs a clear, structured signal before it can act on it.',
+    approach: 'SSD MobileNet detects objects in each frame, and a FastAPI service reports each object with its estimated distance and direction. A Spring Boot web app with user login sits in front, and the whole stack is deployed with Docker.',
+    lesson: 'Perception pays off when it is designed around the decision that comes next.',
   },
   edge: {
     index: '02',
-    kicker: 'EDGE INTELLIGENCE',
-    title: 'Orientation and spatial intelligence',
-    summary: 'A Jetson Nano experiment combining Lidar, depth sensing, and PyTorch inference for local environmental context.',
-    problem: 'Remote inference adds latency and connectivity assumptions to systems that need to respond close to the sensor.',
-    approach: 'Sensor input and model inference are brought closer to the device so spatial reasoning can happen with a smaller feedback loop.',
-    lesson: 'Hardware constraints are design inputs: memory, latency, and power shape the useful version of an AI system.',
+    kicker: 'Edge AI',
+    title: 'Orientation and spatial edge intelligence',
+    summary: 'A Jetson Nano experiment combining LiDAR, depth sensing and PyTorch inference for local environmental context.',
+    problem: 'Remote inference adds latency and a dependence on the network, which a robot that has to react close to its sensors can’t afford.',
+    approach: 'Sensor input and model inference run on the device, so spatial reasoning happens inside a short feedback loop.',
+    lesson: 'Hardware constraints are design inputs: memory, latency and power shape the useful version of an AI system.',
   },
 };
 
@@ -110,6 +133,7 @@ caseStudy?.addEventListener('close', () => setCaseParam(null));
 const initialCase = new URLSearchParams(window.location.search).get('case');
 if (initialCase && Object.hasOwn(caseFields, initialCase)) openCase(initialCase);
 
+// A robot pays attention while its control is hovered or focused.
 const attend = (element, active) => {
   const robot = document.querySelector(`.robot[data-robot="${CSS.escape(element.dataset.attends)}"]`);
   robot?.setAttribute('data-attend', String(active));
@@ -122,20 +146,7 @@ document.querySelectorAll('[data-attends]').forEach((element) => {
 });
 document.querySelectorAll('.robot[data-robot]').forEach((robot) => robot.setAttribute('data-attend', 'false'));
 
-const reveals = [...document.querySelectorAll('.reveal')];
-if (reducedMotion || !('IntersectionObserver' in window)) {
-  reveals.forEach((element) => element.classList.add('is-in'));
-} else {
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('is-in');
-      observer.unobserve(entry.target);
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach((element) => revealObserver.observe(element));
-}
-
+// The track under the quadruped moves only while the dog is live and on screen.
 const interlude = document.querySelector('.interlude');
 const quadruped = interlude?.querySelector('.robot[data-robot="quadruped"]');
 if (interlude && quadruped) {
@@ -152,58 +163,56 @@ if (interlude && quadruped) {
   syncWalking();
 }
 
-// Servo strip: the strip's shapes track the pointer like a row of sensors and
-// servos. Mouse/trackpad only, never under reduced motion, and only while the
-// strip is on screen. Shapes fade to rest beyond --servo-reach, follow the
-// strip when the page scrolls under a still pointer, and rest again when the
-// strip leaves view or the pointer leaves the window. One write per frame.
-const strip = document.querySelector('.strip');
-const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-if (strip && finePointer && !reducedMotion && 'IntersectionObserver' in window) {
-  const servos = [...strip.querySelectorAll('.shape')];
-  const rootStyle = getComputedStyle(document.documentElement);
-  const lookMax = parseFloat(rootStyle.getPropertyValue('--look-max')) || 40;
-  const reach = parseFloat(rootStyle.getPropertyValue('--servo-reach')) * parseFloat(rootStyle.fontSize);
-  let stripInView = false;
-  let pointer = null;
-  let frame = 0;
-  const rest = () => servos.forEach((servo) => {
-    servo.style.removeProperty('--servo-tilt');
-    servo.style.removeProperty('--servo-x');
-    servo.style.removeProperty('--servo-y');
+// Copy the email address, and say whether it worked.
+document.querySelectorAll('.copy-email').forEach((button) => {
+  const status = button.closest('.contact-email')?.querySelector('.copy-status');
+  button.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(button.dataset.copy);
+      if (status) status.textContent = `Copied ${button.dataset.copy} to your clipboard.`;
+    } catch {
+      if (status) status.textContent = 'Couldn’t copy automatically. Select the address and copy it yourself.';
+    }
   });
-  const aim = () => {
-    frame = 0;
-    if (!pointer || !stripInView) return;
-    const boxes = servos.map((servo) => servo.getBoundingClientRect());
-    servos.forEach((servo, i) => {
-      const box = boxes[i];
-      const pose = servoPose(pointer.x - (box.left + box.width / 2), pointer.y - (box.top + box.height / 2), lookMax, reach);
-      servo.style.setProperty('--servo-tilt', `${pose.tilt.toFixed(1)}deg`);
-      servo.style.setProperty('--servo-x', pose.ux.toFixed(3));
-      servo.style.setProperty('--servo-y', pose.uy.toFixed(3));
+});
+
+// Contact form: errors appear on submit and clear as each field is fixed.
+// A valid message opens the visitor's email app; the site stores nothing.
+const form = document.querySelector('.contact-form');
+if (form) {
+  const fields = ['name', 'email', 'message'].map((key) => [key, form.elements[key]]);
+  const status = form.querySelector('.form-status');
+  const values = () => Object.fromEntries(fields.map(([key, input]) => [key, input.value]));
+  const showError = (input, message) => {
+    const error = document.getElementById(`${input.id}-error`);
+    if (message) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
+    if (error) {
+      error.textContent = message ?? '';
+      error.hidden = !message;
+    }
+  };
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const current = values();
+    const errors = validateContact(current);
+    fields.forEach(([key, input]) => showError(input, errors[key]));
+    const firstInvalid = fields.find(([key]) => errors[key]);
+    if (firstInvalid) {
+      if (status) status.textContent = '';
+      firstInvalid[1].focus();
+      return;
+    }
+    if (status) status.textContent = `Your email app should now open with the message ready to send. If nothing opens, write to ${CONTACT_EMAIL} from any email account.`;
+    window.location.href = buildMailto(current);
+  });
+
+  fields.forEach(([key, input]) => {
+    input.addEventListener('input', () => {
+      if (input.getAttribute('aria-invalid') !== 'true') return;
+      if (!validateContact(values())[key]) showError(input, null);
     });
-  };
-  const schedule = () => {
-    if (!frame) frame = window.requestAnimationFrame(aim);
-  };
-  strip.classList.add('is-tracking');
-  new IntersectionObserver((entries) => {
-    stripInView = entries[entries.length - 1].isIntersecting;
-    if (stripInView) schedule();
-    else rest();
-  }).observe(strip);
-  window.addEventListener('pointermove', (event) => {
-    if (event.pointerType === 'touch') return;
-    pointer = { x: event.clientX, y: event.clientY };
-    if (stripInView) schedule();
-  }, { passive: true });
-  window.addEventListener('scroll', () => {
-    if (stripInView && pointer) schedule();
-  }, { passive: true });
-  document.documentElement.addEventListener('pointerleave', () => {
-    pointer = null;
-    rest();
   });
 }
 

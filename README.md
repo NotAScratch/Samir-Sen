@@ -1,3 +1,3 @@
 # Portfolio
 
-A dependency-free, responsive portfolio site for Samir Sen. It uses semantic HTML, CSS custom properties, and a small JavaScript layer for the theme toggle, project detail expansion, and reveal animations.
+A dependency-free, responsive portfolio site for Samir Sen. Static HTML and CSS with a small JavaScript layer for the menu, project details, case studies, the contact form and live 3D robots (Three.js). Design rules live in `design/TASTE.md` and `design/tokens.css`.

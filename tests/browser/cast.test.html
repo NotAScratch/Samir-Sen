@@ -97,19 +97,19 @@ test('materials come from tokens', () => {
   assertEqual(mats.shell.color.getHexString(), 'f2f2ef', 'shell');
   assertEqual(mats.joint.color.getHexString(), '102030', 'joint');
   assertEqual(mats.rubber.color.getHexString(), '102030', 'rubber');
-  // The status light reads --robot-signal; the retired v3 --accent (a decoy here) is ignored.
+  // The status light reads --robot-signal (the page aliases it to --accent); a different --accent here proves the robot token wins.
   assertEqual(mats.signal.emissive.getHexString(), '112233', 'signal emissive');
   assertEqual(mats.signal.color.getHexString(), '112233', 'signal colour');
   assert(Math.abs(mats.visor.color.g - mats.joint.color.g * 0.2) < 1e-9, 'visor is not joint x 0.2');
 });
 
-test('page robot tokens resolve through their aliases to v4 colours', () => {
-  // tokens.css defines --robot-shell: var(--paper) etc.; Three.js needs the resolved hex.
+test('page robot tokens resolve through their aliases to v5 colours', () => {
+  // tokens.css defines --robot-joint: var(--ink) and --robot-signal: var(--accent); Three.js needs the resolved hex.
   const tokens = readTokens();
   const mats = createMaterials(tokens);
-  assertEqual(mats.shell.color.getHexString(), new THREE.Color('#F4F5F7').getHexString(), 'shell = --paper');
-  assertEqual(mats.joint.color.getHexString(), new THREE.Color('#141414').getHexString(), 'joint = --ink');
-  assertEqual(mats.signal.emissive.getHexString(), new THREE.Color('#D7261E').getHexString(), 'signal = --red');
+  assertEqual(mats.shell.color.getHexString(), new THREE.Color('#F7F5F0').getHexString(), 'shell = warm matte white');
+  assertEqual(mats.joint.color.getHexString(), new THREE.Color('#1C1B19').getHexString(), 'joint = --ink');
+  assertEqual(mats.signal.emissive.getHexString(), new THREE.Color('#0F5C8C').getHexString(), 'signal = --accent');
 });
 
 await run();

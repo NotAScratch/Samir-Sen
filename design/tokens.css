@@ -1,66 +1,59 @@
-/* design/tokens.css — v4 "Bauhaus Kinematics"
-   A robot read as Bauhaus primitives: every skill has one shape and one
-   primary colour, on a cool concrete ground with ink type and heavy rules.
-   Read design/TASTE.md first. Mirrored in Figma
-   https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47 when the file is synced. */
+/* design/tokens.css: v5 "Quiet instrument"
+   A warm near-white ground, graphite type and one signal-blue accent. The
+   robots and the work carry the page; type, space and alignment do the rest.
+   Read design/TASTE.md first. Figma (https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47)
+   still shows an older version until it is synced; until then this file wins. */
 
 :root {
   /* ---- Colour, by role ------------------------------------------------- */
-  --bg:        #E8EAEE;   /* ground: the page background (cool concrete) */
-  --paper:     #F4F5F7;   /* alternating bands (work, experience); robot shell */
-  --ink:       #141414;   /* type, rules, buttons, ink bands */
-  --ink-muted: #4A4C52;   /* body copy · 7.1:1 on --bg, 7.9:1 on --paper, 4.7:1 on --yellow */
-  --ink-faint: #5E6068;   /* mono labels + captions only · 5.2:1 on --bg */
-  --red:       #D7261E;   /* 4.2:1 on --bg: display sizes and shapes only, never small text */
-  --blue:      #1F45B5;
-  --yellow:    #F2B705;   /* never a text colour on light surfaces */
-  --white:     #FFFFFF;   /* type on red, blue and ink · 5.0:1 on --red */
-
-  /* ---- Skills: one shape, one colour each (TASTE.md § The system) ------- */
-  --perception: var(--red);     /* circle */
-  --compute:    var(--blue);    /* square */
-  --actuation:  var(--yellow);  /* triangle */
-  --data:       var(--ink);     /* half-disc */
+  --bg:          #F5F4F0;   /* ground: the page background (warm near-white, never #FFF) */
+  --surface:     #ECEAE4;   /* plates behind figures and robots; the alternate band */
+  --field:       #FBFAF7;   /* form fields and the dialog sheet */
+  --ink:         #1C1B19;   /* headings, primary text · 15.6:1 on --bg */
+  --ink-muted:   #56534D;   /* body copy · 7.0:1 on --bg, 6.4:1 on --surface */
+  --ink-faint:   #6A675F;   /* captions, labels, metadata · 5.1:1 on --bg, 4.7:1 on --surface */
+  --line:        #D9D6CE;   /* hairline dividers (decorative separation only) */
+  --line-strong: #8F8B83;   /* field borders · 3.1:1 on --bg, 3.3:1 on --field */
+  --accent:      #0F5C8C;   /* the one accent: links, primary action, focus, robot status light · 6.5:1 on --bg */
+  --accent-strong: #0A4568; /* pressed/hovered primary action · 9.4:1 on --bg */
+  --on-accent:   #FBFAF7;   /* text on the accent · 6.9:1 */
+  --error:       #A62B1F;   /* form errors only · 6.4:1 on --bg, 7.0:1 on --field */
 
   /* ---- Type ------------------------------------------------------------ */
-  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;  /* lowercase, heavy */
-  --font-sans:    "Jost", "Futura", system-ui, -apple-system, sans-serif;    /* Futura lineage; text + controls */
-  --font-mono:    "Martian Mono", ui-monospace, "SF Mono", monospace;       /* data and measurement only; loaded at wdth 87.5 */
+  --font-sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;  /* everything readable */
+  --font-mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;  /* data only: dates, specs, captions; loaded at wdth 87.5 */
 
-  /* Sizes: mobile value at 390px → desktop value from the mockup. */
-  --text-hero:     clamp(2.625rem, 7.4vw, 7rem);       /* 42 → 112  H1 + contact only */
-  --text-h2:       clamp(2rem, 4.6vw, 4.25rem);        /* 32 → 68   section heads */
-  --text-figure:   clamp(1.75rem, 3.2vw, 3rem);        /* 28 → 48   facts, email, interlude line */
-  --text-h3:       clamp(1.25rem, 1.9vw, 1.75rem);     /* 20 → 28   project titles */
-  --text-h4:       clamp(1.0625rem, 1.4vw, 1.3125rem); /* 17 → 21   service/role/note titles */
-  --text-lead:     clamp(1.0625rem, 1.45vw, 1.3125rem);/* 17 → 21   lead paragraphs */
-  --text-body:     1.0625rem;                          /* 17  Jost runs a small x-height */
-  --text-small:    0.9375rem;                          /* 15 */
-  --text-label:    0.75rem;                            /* 12  mono, uppercase */
-  --text-wordmark: 15.5vw;                             /* footer name, fills the container */
+  /* Sizes: phone value at 390px → desktop value at 1440px. */
+  --text-display: clamp(2.75rem, 6.6vw, 6rem);      /* 44 → 96  hero headline only */
+  --text-h2:      clamp(2rem, 4.4vw, 3.75rem);      /* 32 → 60  section headlines */
+  --text-h3:      clamp(1.375rem, 2.1vw, 1.875rem); /* 22 → 30  project and block titles */
+  --text-h4:      1.1875rem;                        /* 19       list item titles */
+  --text-figure:  clamp(2.25rem, 4.4vw, 3.75rem);   /* 36 → 60  real spec values */
+  --text-lead:    clamp(1.1875rem, 1.7vw, 1.5rem);  /* 19 → 24  intro paragraphs */
+  --text-body:    1.0625rem;                        /* 17 */
+  --text-small:   0.9375rem;                        /* 15 */
+  --text-caption: 0.8125rem;                        /* 13 */
+  --text-label:   0.75rem;                          /* 12  mono, uppercase */
 
-  --leading-hero:  0.95;
-  --leading-h2:    1;
-  --leading-h3:    1.15;
-  --leading-h4:    1.25;
-  --leading-lead:  1.45;
-  --leading-body:  1.6;
-  --leading-label: 1.35;
-  --leading-wordmark: 0.82;
+  --leading-display: 1;
+  --leading-h2:      1.05;
+  --leading-h3:      1.18;
+  --leading-h4:      1.3;
+  --leading-lead:    1.42;
+  --leading-body:    1.6;
+  --leading-caption: 1.45;
 
-  --tracking-hero:     -0.04em;
-  --tracking-h2:       -0.035em;
-  --tracking-h3:       -0.02em;
-  --tracking-h4:       -0.01em;
-  --tracking-label:     0.06em;
-  --tracking-wordmark: -0.06em;
+  --tracking-display: -0.04em;
+  --tracking-h2:      -0.03em;
+  --tracking-h3:      -0.015em;
+  --tracking-label:    0.05em;
 
   --weight-regular:  400;
-  --weight-medium:   500;   /* Geist emphasis */
-  --weight-semibold: 600;   /* Unbounded: h3/h4, nav, labels */
-  --weight-bold:     800;   /* Unbounded: hero, h2, wordmark */
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
 
-  /* ---- Space (N = px) ------------------------------------------------------ */
+  /* ---- Space (N = px) -------------------------------------------------- */
   --space-1:  0.25rem;  /*   4 */
   --space-2:  0.5rem;   /*   8 */
   --space-3:  0.75rem;  /*  12 */
@@ -71,73 +64,63 @@
   --space-8:  4rem;     /*  64 */
   --space-10: 6rem;     /*  96 */
   --space-12: 8rem;     /* 128 */
-  --space-16: 10rem;    /* 160 */
 
-  /* ---- Layout ------------------------------------------------------------ */
-  --container:   82.5rem;                          /* 1320 */
-  --columns:     12;                               /* 4 below --bp-mobile */
-  --gutter:      clamp(1rem, 1.7vw, 1.5rem);       /* 16 → 24 */
-  --margin:      clamp(1.25rem, 4.2vw, 3.75rem);   /* 20 → 60 */
-  --section-y:   clamp(4.5rem, 10vw, 9rem);        /* 72 → 144 section padding */
-  --section-gap: clamp(1.75rem, 4.5vw, 4rem);      /* 28 → 64 label → content */
-  --measure:     62ch;
-  --bp-mobile:   48rem;   /* reference only — media queries can't read vars */
-  --bp-callout-compact: 28rem; /* inline-size threshold; @container can't read vars */
-  --bp-tiles-2:  36rem;   /* service tiles go 1 → 2 columns; @container can't read vars */
-  --bp-tiles-4:  60rem;   /* service tiles go 2 → 4 columns; @container can't read vars */
+  /* ---- Layout ---------------------------------------------------------- */
+  --container:   75rem;                           /* 1200 */
+  --margin:      clamp(1rem, 5vw, 4rem);          /* 16 → 64 side gutter */
+  --gutter:      clamp(1rem, 2.2vw, 2rem);        /* 16 → 32 column gap */
+  --section-y:   clamp(5rem, 11vw, 10rem);        /* 80 → 160 section padding */
+  --section-gap: clamp(2rem, 5vw, 4.5rem);        /* 32 → 72 headline → content */
+  --measure:     38rem;                           /* ~65 characters of body copy */
+  --measure-lead: 34rem;                          /* lead paragraphs */
+  --measure-title: 18ch;                          /* long headlines wrap before this */
+  --header-h:    3.5rem;                          /* 56 sticky header */
+  --hero-robot-h: min(72svh, 46rem);              /* hero robot height, before the column limits it */
+  --callout-room: 9rem;                           /* space right of the hero robot for its labels */
+  --callout-room-compact: 6rem;                   /* the same on phones, titles only */
+  --bp-mobile:   48rem;   /* reference only: media queries can't read custom properties */
 
-  /* ---- Shape ------------------------------------------------------------- */
+  /* ---- Shape ----------------------------------------------------------- */
   --radius-none: 0;
-  --radius-pill: 999px;   /* buttons, tags, chips, menu trigger — nothing else */
-  --hairline:    1px;     /* table row dividers only */
-  --rule:        2px;     /* the structural line: borders, section rules, frames */
-  --rule-heavy:  6px;     /* the gait track, underline bars, timeline spine */
-  --bar:         10px;    /* note colour bars */
-  --control-h:   3rem;    /* 48 — buttons + minimum hit target */
-  --dot:         8px;     /* live/status dot */
-  --glyph:       0.72em;  /* inline shape glyph: scales with its text */
-  --shape-lg:    4.5rem;  /* service tile shape (72) */
-  --underline-bar: 0.12em; /* yellow bar under an actuation word; scales with the type */
+  --radius-pill: 999px;   /* buttons and the menu trigger only */
+  --hairline:    1px;
+  --rule:        2px;     /* diagram strokes and the gait track */
+  --control-h:   2.75rem; /* 44: buttons, fields, minimum hit target */
+  --dot:         0.5rem;  /* status dot */
+  --icon:        1.25rem; /* the few icons that clarify an action */
 
-  /* ---- Depth: none. Rules and colour fields carry separation. ------------ */
-  --shadow: none;
+  /* ---- Depth: none. Space and hairlines separate things. --------------- */
+  --shadow:   none;
+  --backdrop: rgb(28 27 25 / 0.42);  /* behind the open dialog: --ink at 42% */
 
-  /* ---- Robots (live 3D) — read by JS via getComputedStyle ---------------- */
-  --robot-shell:  var(--paper);  /* cool matte white shell, every robot */
-  --robot-joint:  var(--ink);    /* ink joints, visors, actuators */
-  --robot-signal: var(--red);    /* status light (perception red) */
-  --robot-shadow: 0.12;          /* contact-shadow opacity */
-  --look-max:     40deg;         /* max head turn toward the cursor */
+  /* ---- Robots (live 3D), read by robots/tokens.js ------------------------ */
+  --robot-shell:  #F7F5F0;        /* matte warm white shell, every robot */
+  --robot-joint:  var(--ink);     /* graphite joints, visors, actuators */
+  --robot-signal: var(--accent);  /* status light: the page's one accent */
+  --robot-shadow: 0.1;            /* contact-shadow opacity */
+  --look-max:     40deg;          /* max head turn toward the pointer */
   --robot-activation-margin: 12.5rem; /* preload boundary beyond the viewport */
+  --hand-nudge:   24px;           /* contact hand eases toward the email */
 
-  /* ---- Focus ------------------------------------------------------------- */
-  --focus-ring:         2px solid var(--ink);
-  --focus-ring-inverse: 2px solid var(--white);  /* on red, blue and ink bands */
+  /* ---- Focus ----------------------------------------------------------- */
+  --focus-ring:   2px solid var(--accent);
   --focus-offset: 3px;
 
-  /* ---- Motion: driven, not bounced -------------------------------------- */
-  --dur-fast:   120ms;
-  --dur-base:   240ms;
-  --dur-slow:   600ms;
-  --dur-reveal: 800ms;
-  --dur-assembly: 800ms; /* hero parts arrive on load: the page's one authored entrance */
-  --dur-orbit:  30s;     /* one turn of the hero orbit */
+  /* ---- Motion: few, short, purposeful ---------------------------------- */
+  --dur-fast:   120ms;   /* colour changes on controls */
+  --dur-base:   200ms;   /* canvas fade-in, disclosure */
+  --dur-reveal: 700ms;   /* content arriving on scroll */
   --dur-gait:   1140ms;  /* one quadruped trot cycle */
-  --stagger:    60ms;
-  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --reveal-distance: 24px;   /* fade-up on scroll entry */
-  --assembly-distance: 10rem; /* how far each hero part travels into place */
-  --parallax-tilt:   4deg;   /* whole-robot cursor tilt */
+  --stagger:    80ms;
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --reveal-distance: 1rem;   /* fade-up on scroll entry */
   --walk-distance:   120px;  /* track travel per quadruped gait cycle */
-  --hand-nudge:      24px;   /* contact hand eases toward the email */
-  --servo-reach:     20rem;  /* strip servos fade to rest beyond this pointer distance */
-  --press-scale:     0.98;
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
@@ -145,10 +128,10 @@
 
 /* ---- How to use this file ------------------------------------------------
  * 1. No raw values in styles.css. If a value isn't here, add it here first.
- * 2. --text-hero is used exactly twice: the hero H1 and the contact head.
- * 3. A primary colour appears only where it means its skill (shapes, the
- *    coloured headline word, the skill's colour field) or as a status dot.
- * 4. Red text only at display sizes; yellow is never text on a light ground.
- * 5. Focus is always visible: var(--focus-ring), or --focus-ring-inverse on
- *    red, blue and ink bands, with outline-offset: var(--focus-offset).
+ * 2. --accent marks what you can act on (links, the primary button, focus)
+ *    and the robots' status light. Nothing decorative is ever accent-coloured.
+ * 3. --error appears only in form validation, always next to text.
+ * 4. Body copy is --ink-muted; captions and metadata --ink-faint, never lighter.
+ * 5. Focus is always visible: outline: var(--focus-ring) with
+ *    outline-offset: var(--focus-offset).
  * ------------------------------------------------------------------------ */

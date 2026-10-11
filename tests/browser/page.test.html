@@ -65,19 +65,22 @@ const loadWithRobotImportFailure = async () => {
   return { frame, page };
 };
 
-test('menu opens and Esc closes', async () => {
+test('menu opens, names what it will do, and Esc closes', async () => {
   const { frame, page } = await loadPage();
   try {
     const toggle = page.querySelector('.menu-toggle');
     toggle.click();
     assertEqual(toggle.getAttribute('aria-expanded'), 'true');
+    assertEqual(toggle.textContent, 'Close', 'open toggle offers to close');
+    assertEqual(page.body.classList.contains('menu-open'), true, 'page scroll locked while open');
     page.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     assertEqual(toggle.getAttribute('aria-expanded'), 'false');
+    assertEqual(toggle.textContent, 'Menu', 'closed toggle offers the menu');
     assertEqual(page.activeElement, toggle, 'menu toggle focus');
   } finally { remove(frame); }
 });
 
-test('mobile menu contains Tab focus in both directions', async () => {
+test('mobile menu contains Tab focus in both directions, Close button included', async () => {
   const { frame, page } = await loadPage();
   try {
     const toggle = page.querySelector('.menu-toggle');
@@ -87,14 +90,30 @@ test('mobile menu contains Tab focus in both directions', async () => {
 
     links.at(-1).focus();
     links.at(-1).dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
-    assertEqual(page.activeElement, links[0], 'Tab from the last link wraps to the first');
+    assertEqual(page.activeElement, toggle, 'Tab from the last link wraps to the Close button');
 
-    links[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true }));
-    assertEqual(page.activeElement, links.at(-1), 'Shift+Tab from the first link wraps to the last');
+    toggle.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true }));
+    assertEqual(page.activeElement, links.at(-1), 'Shift+Tab from the Close button wraps to the last link');
 
     page.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     assertEqual(toggle.getAttribute('aria-expanded'), 'false', 'Escape closes the menu');
     assertEqual(page.activeElement, toggle, 'Escape returns focus to the toggle');
+  } finally { remove(frame); }
+});
+
+test('widening the window past the breakpoint closes the phone menu', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    frame.style.width = '390px';
+    frame.style.height = '700px';
+    await wait(50);
+    const toggle = page.querySelector('.menu-toggle');
+    toggle.click();
+    assertEqual(toggle.getAttribute('aria-expanded'), 'true', 'menu opens on a phone width');
+    frame.style.width = '1200px';
+    await waitFor(() => toggle.getAttribute('aria-expanded') === 'false', 'menu to close on a wide window');
+    assertEqual(page.body.classList.contains('menu-open'), false, 'scroll lock released');
+    assertEqual(page.getElementById('menu').hidden, true, 'menu hidden');
   } finally { remove(frame); }
 });
 
@@ -115,7 +134,12 @@ test('case param opens dialog', async () => {
   try {
     const dialog = edge.page.querySelector('dialog');
     assertEqual(dialog.open, true, 'edge dialog open');
-    assertEqual(edge.page.querySelector('#case-title').textContent, 'Orientation and spatial intelligence');
+    assertEqual(edge.page.querySelector('#case-title').textContent, 'Orientation and spatial edge intelligence');
+    assertEqual(new URL(edge.frame.contentWindow.location.href).searchParams.get('case'), 'edge', 'the link names the case');
+    edge.page.querySelector('.case-close').click();
+    assertEqual(dialog.open, false, 'Close button closes the dialog');
+    // The dialog's close event is queued, so the address updates a moment later.
+    await waitFor(() => !new URL(edge.frame.contentWindow.location.href).searchParams.has('case'), 'closing to clear the case from the link');
   } finally { remove(edge.frame); }
   const nope = await loadPage('?case=nope');
   try {
@@ -144,7 +168,7 @@ test('attend follows focus', async () => {
 test('clock renders', async () => {
   const { frame, page } = await loadPage();
   try {
-    assert(/^\d{2}:\d{2}$/.test(page.querySelector('.nav-clock').textContent), 'clock format');
+    assert(/^\d{2}:\d{2}$/.test(page.querySelector('.local-clock').textContent), 'clock format');
   } finally { remove(frame); }
 });
 
@@ -172,6 +196,8 @@ test('quadruped walking follows its own visibility and live state', async () => 
   try {
     const interlude = page.querySelector('.interlude');
     const quadruped = page.querySelector('.robot[data-robot="quadruped"]');
+    // A pending reveal's translate would become the fixed quadruped's containing block; settle it first.
+    interlude.querySelectorAll('.reveal').forEach((el) => { el.style.transition = 'none'; el.classList.add('is-in'); });
     interlude.style.position = 'fixed';
     interlude.style.top = '-10000px';
     quadruped.style.position = 'fixed';
@@ -186,37 +212,58 @@ test('quadruped walking follows its own visibility and live state', async () => 
   } finally { remove(frame); }
 });
 
-test('servo strip shapes turn toward the pointer while the strip is in view', async () => {
+test('contact form: empty submit shows every error and focuses the first field', async () => {
   const { frame, page } = await loadPage();
   try {
-    frame.style.width = '1200px';
-    frame.style.height = '800px';
-    const strip = page.querySelector('.strip');
-    // The page scrolls smoothly; jump instead so the strip is really in view and its box is final.
-    strip.scrollIntoView({ block: 'center', behavior: 'instant' });
-    const triangle = strip.querySelector('.shape--actuation');
-    const eye = strip.querySelector('.shape--perception');
-    await wait(200); // let the strip's IntersectionObserver report it in view
-    const box = triangle.getBoundingClientRect();
-    const win = page.defaultView;
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: box.right + 100, clientY: box.top - 100, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => triangle.style.getPropertyValue('--servo-tilt') !== '', 'triangle to receive a tilt');
-    assert(parseFloat(triangle.style.getPropertyValue('--servo-tilt')) < 0, `pointer above should tilt up, got ${triangle.style.getPropertyValue('--servo-tilt')}`);
-    // The pupil looks toward a pointer within reach of the circle itself (the circle sits far left of the triangle).
-    const eyeBox = eye.getBoundingClientRect();
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: eyeBox.right + 60, clientY: eyeBox.top - 60, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => parseFloat(eye.style.getPropertyValue('--servo-y')) < 0, 'pupil to look up toward a nearby pointer');
-    assert(strip.classList.contains('is-tracking'), 'strip is not marked as tracking a mouse');
+    const form = page.querySelector('.contact-form');
+    form.requestSubmit();
+    for (const field of ['name', 'email', 'message']) {
+      const input = page.getElementById(`contact-${field}`);
+      const error = page.getElementById(`contact-${field}-error`);
+      assertEqual(input.getAttribute('aria-invalid'), 'true', `${field} marked invalid`);
+      assertEqual(error.hidden, false, `${field} error shown`);
+      assert(error.textContent.length > 0, `${field} error has text`);
+    }
+    assertEqual(page.activeElement, page.getElementById('contact-name'), 'focus moves to the first invalid field');
+    assertEqual(page.querySelector('.form-status').textContent, '', 'no success message on an invalid form');
+  } finally { remove(frame); }
+});
 
-    // A pointer far outside the servos' reach leaves them level.
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: 0, clientY: 0, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => parseFloat(triangle.style.getPropertyValue('--servo-tilt')) === 0, 'distant pointer to leave the triangle level');
+test('contact form: an error clears as soon as its field is fixed', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    const form = page.querySelector('.contact-form');
+    const email = page.getElementById('contact-email');
+    email.value = 'not-an-address';
+    form.requestSubmit();
+    assertEqual(page.getElementById('contact-email-error').textContent, 'Enter an email address like name@example.com.');
+    email.value = 'ada@example.com';
+    email.dispatchEvent(new Event('input', { bubbles: true }));
+    assertEqual(email.hasAttribute('aria-invalid'), false, 'fixed field no longer invalid');
+    assertEqual(page.getElementById('contact-email-error').hidden, true, 'fixed field error hidden');
+    assertEqual(page.getElementById('contact-name').getAttribute('aria-invalid'), 'true', 'other errors stay until fixed');
+  } finally { remove(frame); }
+});
 
-    // Scrolling the strip away puts every servo back at rest.
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: box.right + 100, clientY: box.top - 100, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => parseFloat(triangle.style.getPropertyValue('--servo-tilt')) < 0, 'triangle to tilt again');
-    page.querySelector('.site-footer').scrollIntoView({ behavior: 'instant' });
-    await waitFor(() => triangle.style.getPropertyValue('--servo-tilt') === '', 'servos to rest once the strip leaves view');
+test('contact form: a valid message says what happens next', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    page.getElementById('contact-name').value = 'Ada';
+    page.getElementById('contact-email').value = 'ada@example.com';
+    page.getElementById('contact-message').value = 'Hello from a test.';
+    page.querySelector('.contact-form').requestSubmit();
+    assert(/email app should now open/.test(page.querySelector('.form-status').textContent), 'status explains the mail app step');
+    assertEqual(page.querySelectorAll('[aria-invalid="true"]').length, 0, 'no fields marked invalid');
+  } finally { remove(frame); }
+});
+
+test('copy address reports the outcome either way', async () => {
+  const { frame, page } = await loadPage();
+  try {
+    page.querySelector('.copy-email').click();
+    const status = page.querySelector('.copy-status');
+    await waitFor(() => status.textContent.length > 0, 'copy status');
+    assert(/Copied samirsen66@gmail\.com|Couldn’t copy automatically/.test(status.textContent), `unexpected status: ${status.textContent}`);
   } finally { remove(frame); }
 });
 
