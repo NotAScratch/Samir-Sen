@@ -95,9 +95,10 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
     entry.loading = true;
     try {
       const { createStage, createRobot, tokens, M } = await load();
-      const robot = await createRobot(el.dataset.robot, { M, tokens, base });
-      // The page may have scrolled on while the model downloaded.
-      if (destroyed || entry.failed || candidate()?.el !== el) return;
+      const model = el.dataset.model;
+      const robot = await createRobot(el.dataset.robot, { M, tokens, base, model });
+      // The page may have scrolled on, or a new specimen been picked, while the model downloaded.
+      if (destroyed || entry.failed || candidate()?.el !== el || el.dataset.model !== model) return;
       const stage = createStage(el, robot, { shadowOpacity: tokens.shadow });
       entry.stage = stage;
       entry.robot = robot;
@@ -121,7 +122,8 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
   const evaluate = () => {
     const viewportH = window.innerHeight;
     for (const [el, entry] of entries) {
-      entry.phase = phaseFor(el.getBoundingClientRect(), viewportH, tokens.activationMargin);
+      // A container inside a hidden section (specimens before the manifest loads) never runs.
+      entry.phase = el.closest('[hidden]') ? 'idle' : phaseFor(el.getBoundingClientRect(), viewportH, tokens.activationMargin);
       if (entry.phase === 'dispose' && entry.stage) release(el, entry);
     }
     const selected = candidate()?.el;
@@ -185,6 +187,16 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
     pointer.x = clampLook((event.clientX / window.innerWidth - 0.5) * 2, 1);
     pointer.y = clampLook((event.clientY / window.innerHeight - 0.5) * 2, 1);
   };
+  // A container whose model changed (a new specimen) drops its stage and may load again.
+  const onReload = (event) => {
+    const el = event.currentTarget;
+    const entry = entries.get(el);
+    if (!entry) return;
+    release(el, entry);
+    entry.failed = false;
+    el.classList.remove('is-failed');
+    recheck();
+  };
   const onLost = (event) => {
     const el = event.currentTarget;
     fail(el, entries.get(el), new Error('WebGL context lost'));
@@ -193,6 +205,7 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
   for (const el of root.querySelectorAll('[data-robot]')) {
     entries.set(el, { phase: 'idle' });
     el.addEventListener('robot:lost', onLost);
+    el.addEventListener('robot:reload', onReload);
   }
   window.addEventListener('scroll', recheck, { passive: true });
   window.addEventListener('resize', recheck, { passive: true });
@@ -213,6 +226,7 @@ export function initRobots(root = document, env = detectEnv(), { base = '' } = {
         release(el, entry);
         el.classList.remove('is-failed');
         el.removeEventListener('robot:lost', onLost);
+        el.removeEventListener('robot:reload', onReload);
       }
       entries.clear();
       activeEl = null;

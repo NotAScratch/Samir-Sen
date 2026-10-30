@@ -1,66 +1,65 @@
-/* design/tokens.css — v4 "Bauhaus Kinematics"
-   A robot read as Bauhaus primitives: every skill has one shape and one
-   primary colour, on a cool concrete ground with ink type and heavy rules.
-   Read design/TASTE.md first. Mirrored in Figma
-   https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47 when the file is synced. */
+/* design/tokens.css — v5 "Field Edition"
+   The site as a printed magazine about one engineer: newsprint ground, ink
+   type set big and condensed, one signal colour, heavy rules. Read
+   design/TASTE.md first. The Figma file
+   https://www.figma.com/design/1H3FimcUCNMbv5AZWmbG47 still shows v3/v4
+   until it is synced; until then this file is the source of truth. */
 
 :root {
   /* ---- Colour, by role ------------------------------------------------- */
-  --bg:        #E8EAEE;   /* ground: the page background (cool concrete) */
-  --paper:     #F4F5F7;   /* alternating bands (work, experience); robot shell */
-  --ink:       #141414;   /* type, rules, buttons, ink bands */
-  --ink-muted: #4A4C52;   /* body copy · 7.1:1 on --bg, 7.9:1 on --paper, 4.7:1 on --yellow */
-  --ink-faint: #5E6068;   /* mono labels + captions only · 5.2:1 on --bg */
-  --red:       #D7261E;   /* 4.2:1 on --bg: display sizes and shapes only, never small text */
-  --blue:      #1F45B5;
-  --yellow:    #F2B705;   /* never a text colour on light surfaces */
-  --white:     #FFFFFF;   /* type on red, blue and ink · 5.0:1 on --red */
-
-  /* ---- Skills: one shape, one colour each (TASTE.md § The system) ------- */
-  --perception: var(--red);     /* circle */
-  --compute:    var(--blue);    /* square */
-  --actuation:  var(--yellow);  /* triangle */
-  --data:       var(--ink);     /* half-disc */
+  --paper:      #F1EDE4;  /* ground: newsprint */
+  --paper-deep: #E6E0D3;  /* alternating spreads (work, experience) */
+  --ink:        #0F0E0C;  /* type, rules, ink spreads */
+  --ink-muted:  #45423C;  /* body copy · 8.6:1 on --paper, 7.6:1 on --paper-deep */
+  --ink-faint:  #625E55;  /* captions, mono labels · 5.5:1 on --paper, 4.9:1 on --paper-deep */
+  --signal:     #E8380C;  /* the one colour · 3.6:1 on --paper, 3.2:1 on --paper-deep: display sizes, shapes and fields only, never text below --text-h2 */
+  --on-ink:     var(--paper);  /* type on ink spreads · 16.5:1 */
+  --on-ink-muted: #B9B3A6;     /* secondary type on ink · 9.2:1 */
+  --on-signal:  var(--ink);    /* type on the signal field · 4.6:1 */
 
   /* ---- Type ------------------------------------------------------------ */
-  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;  /* lowercase, heavy */
-  --font-sans:    "Jost", "Futura", system-ui, -apple-system, sans-serif;    /* Futura lineage; text + controls */
-  --font-mono:    "Martian Mono", ui-monospace, "SF Mono", monospace;       /* data and measurement only; loaded at wdth 87.5 */
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;  /* condensed black caps */
+  --font-serif:   "Newsreader", "Georgia", serif;                     /* reading text, decks, quotes */
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", monospace; /* data, dates, folios */
 
-  /* Sizes: mobile value at 390px → desktop value from the mockup. */
-  --text-hero:     clamp(2.625rem, 7.4vw, 7rem);       /* 42 → 112  H1 + contact only */
-  --text-h2:       clamp(2rem, 4.6vw, 4.25rem);        /* 32 → 68   section heads */
-  --text-figure:   clamp(1.75rem, 3.2vw, 3rem);        /* 28 → 48   facts, email, interlude line */
-  --text-h3:       clamp(1.25rem, 1.9vw, 1.75rem);     /* 20 → 28   project titles */
-  --text-h4:       clamp(1.0625rem, 1.4vw, 1.3125rem); /* 17 → 21   service/role/note titles */
-  --text-lead:     clamp(1.0625rem, 1.45vw, 1.3125rem);/* 17 → 21   lead paragraphs */
-  --text-body:     1.0625rem;                          /* 17  Jost runs a small x-height */
-  --text-small:    0.9375rem;                          /* 15 */
-  --text-label:    0.75rem;                            /* 12  mono, uppercase */
-  --text-wordmark: 15.5vw;                             /* footer name, fills the container */
+  --display-width: 68;    /* Archivo wdth axis for headlines (condensed) */
+  --display-width-wide: 100; /* Archivo wdth axis for the footer wordmark */
 
-  --leading-hero:  0.95;
-  --leading-h2:    1;
-  --leading-h3:    1.15;
-  --leading-h4:    1.25;
-  --leading-lead:  1.45;
+  /* Sizes: phone value at 390px → desktop value. */
+  --text-cover:    clamp(3.5rem, 13.5vw, 13rem);       /* 56 → 208  cover headline + contact only */
+  --text-h2:       clamp(2.75rem, 8vw, 7.5rem);        /* 44 → 120  feature heads */
+  --text-numeral:  clamp(5rem, 16vw, 15rem);           /* 80 → 240  feature numerals */
+  --text-quote:    clamp(1.75rem, 3.6vw, 3.25rem);     /* 28 → 52   pull quotes, email */
+  --text-h3:       clamp(1.75rem, 3.4vw, 3rem);        /* 28 → 48   project titles */
+  --text-h4:       clamp(1.25rem, 1.8vw, 1.625rem);    /* 20 → 26   tool/role/column heads */
+  --text-deck:     clamp(1.25rem, 2vw, 1.75rem);       /* 20 → 28   standfirsts */
+  --text-body:     1.1875rem;                          /* 19  serif reads small */
+  --text-small:    1rem;                               /* 16 */
+  --text-label:    0.75rem;                            /* 12  mono caps */
+  --text-dropcap:  5.25em;                             /* drop cap, relative to body */
+  --text-wordmark: 16vw;                               /* footer name on phones */
+  --text-wordmark-wide: 15vw;                          /* footer name from 48rem */
+  --mask-room:     0.04em;                             /* descender room inside the cover masks */
+  --wordmark-bleed: -0.12em;                           /* footer name runs off the page */
+
+  --leading-cover: 0.82;
+  --leading-h2:    0.86;
+  --leading-h3:    0.95;
+  --leading-h4:    1.15;
+  --leading-quote: 1.12;
+  --leading-deck:  1.35;
   --leading-body:  1.6;
-  --leading-label: 1.35;
-  --leading-wordmark: 0.82;
+  --leading-label: 1.4;
 
-  --tracking-hero:     -0.04em;
-  --tracking-h2:       -0.035em;
-  --tracking-h3:       -0.02em;
-  --tracking-h4:       -0.01em;
-  --tracking-label:     0.06em;
-  --tracking-wordmark: -0.06em;
+  --tracking-display: -0.01em;
+  --tracking-label:    0.08em;
 
-  --weight-regular:  400;
-  --weight-medium:   500;   /* Geist emphasis */
-  --weight-semibold: 600;   /* Unbounded: h3/h4, nav, labels */
-  --weight-bold:     800;   /* Unbounded: hero, h2, wordmark */
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-bold:    700;
+  --weight-black:   900;
 
-  /* ---- Space (N = px) ------------------------------------------------------ */
+  /* ---- Space (N = px) ---------------------------------------------------- */
   --space-1:  0.25rem;  /*   4 */
   --space-2:  0.5rem;   /*   8 */
   --space-3:  0.75rem;  /*  12 */
@@ -71,67 +70,61 @@
   --space-8:  4rem;     /*  64 */
   --space-10: 6rem;     /*  96 */
   --space-12: 8rem;     /* 128 */
-  --space-16: 10rem;    /* 160 */
 
   /* ---- Layout ------------------------------------------------------------ */
-  --container:   82.5rem;                          /* 1320 */
-  --columns:     12;                               /* 4 below --bp-mobile */
-  --gutter:      clamp(1rem, 1.7vw, 1.5rem);       /* 16 → 24 */
-  --margin:      clamp(1.25rem, 4.2vw, 3.75rem);   /* 20 → 60 */
-  --section-y:   clamp(4.5rem, 10vw, 9rem);        /* 72 → 144 section padding */
-  --section-gap: clamp(1.75rem, 4.5vw, 4rem);      /* 28 → 64 label → content */
-  --measure:     62ch;
-  --bp-mobile:   48rem;   /* reference only — media queries can't read vars */
-  --bp-callout-compact: 28rem; /* inline-size threshold; @container can't read vars */
-  --bp-tiles-2:  36rem;   /* service tiles go 1 → 2 columns; @container can't read vars */
-  --bp-tiles-4:  60rem;   /* service tiles go 2 → 4 columns; @container can't read vars */
+  --container: 90rem;                           /* 1440 */
+  --gutter:    clamp(1rem, 1.7vw, 1.5rem);      /* 16 → 24 */
+  --margin:    clamp(1rem, 3.4vw, 3rem);        /* 16 → 48 */
+  --section-y: clamp(4rem, 9vw, 8rem);          /* 64 → 128 */
+  --measure:   38rem;                           /* reading column */
+  --bp-mobile: 48rem;   /* reference only — media queries can't read vars */
+  --bp-callout-compact: 28rem; /* robot inline-size where callouts shed detail; @container can't read vars */
+  --col-key:   7rem;    /* spec-table key column */
+  --col-no:    4rem;    /* index-table number column */
+  --col-icon:  2rem;    /* index-table open/close column */
+  --figure-sm:    16rem;  /* arm beside the toolkit head */
+  --figure-cover: 22rem;  /* humanoid on a phone cover */
+  --figure-md:    26rem;  /* perception head */
+  --figure-lg:    36rem;  /* the hand on the back page */
+  --figure-xl:    40rem;  /* the quadruped */
+  --measure-display: 14ch; /* feature heads */
+  --measure-quote:   16ch; /* photo-essay quote */
+  --measure-cover:   11ch; /* back-page head */
 
-  /* ---- Shape ------------------------------------------------------------- */
-  --radius-none: 0;
-  --radius-pill: 999px;   /* buttons, tags, chips, menu trigger — nothing else */
-  --hairline:    1px;     /* table row dividers only */
-  --rule:        2px;     /* the structural line: borders, section rules, frames */
-  --rule-heavy:  6px;     /* the gait track, underline bars, timeline spine */
-  --bar:         10px;    /* note colour bars */
-  --control-h:   3rem;    /* 48 — buttons + minimum hit target */
-  --dot:         8px;     /* live/status dot */
-  --glyph:       0.72em;  /* inline shape glyph: scales with its text */
-  --shape-lg:    4.5rem;  /* service tile shape (72) */
-  --underline-bar: 0.12em; /* yellow bar under an actuation word; scales with the type */
-
-  /* ---- Depth: none. Rules and colour fields carry separation. ------------ */
-  --shadow: none;
+  /* ---- Rules and shape ---------------------------------------------------- */
+  --hairline:   1px;   /* table rows, column dividers */
+  --rule:       2px;   /* section heads, frames */
+  --rule-heavy: 8px;   /* the masthead bar, feature tops, the gait track */
+  --radius:     0;     /* nothing is rounded */
+  --control-h:  3rem;  /* 48 — buttons + minimum hit target */
+  --dot:        0.5rem;
+  --backdrop-opacity: 0.75; /* dialog scrim */
 
   /* ---- Robots (live 3D) — read by JS via getComputedStyle ---------------- */
-  --robot-shell:  var(--paper);  /* cool matte white shell, every robot */
-  --robot-joint:  var(--ink);    /* ink joints, visors, actuators */
-  --robot-signal: var(--red);    /* status light (perception red) */
-  --robot-shadow: 0.12;          /* contact-shadow opacity */
-  --look-max:     40deg;         /* max head turn toward the cursor */
-  --robot-activation-margin: 12.5rem; /* preload boundary beyond the viewport */
+  --robot-shell:  #F4F5F7;       /* porcelain shell; matches the rendered posters */
+  --robot-joint:  var(--ink);
+  --robot-signal: var(--signal); /* status light */
+  --robot-shadow: 0.14;
+  --look-max:     40deg;
+  --hand-nudge:   24px;
+  --robot-activation-margin: 12.5rem;
 
   /* ---- Focus ------------------------------------------------------------- */
-  --focus-ring:         2px solid var(--ink);
-  --focus-ring-inverse: 2px solid var(--white);  /* on red, blue and ink bands */
+  --focus-ring:         3px solid var(--ink);
+  --focus-ring-inverse: 3px solid var(--on-ink);  /* on ink spreads */
   --focus-offset: 3px;
 
-  /* ---- Motion: driven, not bounced -------------------------------------- */
+  /* ---- Motion: set like type — it arrives, it doesn't bounce ------------- */
   --dur-fast:   120ms;
   --dur-base:   240ms;
-  --dur-slow:   600ms;
-  --dur-reveal: 800ms;
-  --dur-assembly: 800ms; /* hero parts arrive on load: the page's one authored entrance */
-  --dur-orbit:  30s;     /* one turn of the hero orbit */
+  --dur-reveal: 700ms;
+  --dur-cover:  900ms;   /* cover lines rise into place on load: the one authored entrance */
   --dur-gait:   1140ms;  /* one quadruped trot cycle */
-  --stagger:    60ms;
+  --stagger:    80ms;
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --reveal-distance: 24px;   /* fade-up on scroll entry */
-  --assembly-distance: 10rem; /* how far each hero part travels into place */
-  --parallax-tilt:   4deg;   /* whole-robot cursor tilt */
-  --walk-distance:   120px;  /* track travel per quadruped gait cycle */
-  --hand-nudge:      24px;   /* contact hand eases toward the email */
-  --servo-reach:     20rem;  /* strip servos fade to rest beyond this pointer distance */
+  --reveal-distance: 2rem;
+  --walk-distance:   120px;
   --press-scale:     0.98;
 }
 
@@ -145,10 +138,9 @@
 
 /* ---- How to use this file ------------------------------------------------
  * 1. No raw values in styles.css. If a value isn't here, add it here first.
- * 2. --text-hero is used exactly twice: the hero H1 and the contact head.
- * 3. A primary colour appears only where it means its skill (shapes, the
- *    coloured headline word, the skill's colour field) or as a status dot.
- * 4. Red text only at display sizes; yellow is never text on a light ground.
- * 5. Focus is always visible: var(--focus-ring), or --focus-ring-inverse on
- *    red, blue and ink bands, with outline-offset: var(--focus-offset).
+ * 2. --text-cover is used exactly twice: the cover headline and the contact head.
+ * 3. --signal appears only as: feature numerals, the cover's one signal word,
+ *    the contact field, status dots and rule accents. Never body text.
+ * 4. Focus is always visible: var(--focus-ring), or --focus-ring-inverse on
+ *    ink spreads, with outline-offset: var(--focus-offset).
  * ------------------------------------------------------------------------ */

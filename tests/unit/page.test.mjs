@@ -26,19 +26,22 @@ test('ids are unique', () => {
   }
 });
 
-test('exactly six robot containers, one per robot, each with an aria-hidden poster', () => {
+test('six robots plus one specimen stage; robots carry an aria-hidden poster', () => {
   const names = [...html.matchAll(/\bdata-robot="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(names.length, 6);
-  assert.deepEqual([...names].sort(), [...ROBOTS].sort());
+  assert.deepEqual([...names].sort(), [...ROBOTS, 'specimen'].sort());
 
   // Slice the page at each container's opening tag; its poster is the first <img> after it.
   const chunks = html.split(/(?=<div class="robot )/).slice(1);
-  assert.equal(chunks.length, 6);
+  assert.equal(chunks.length, 7);
   for (const chunk of chunks) {
     const open = chunk.match(/^<div [^>]*>/)[0];
     const name = open.match(/data-robot="([^"]+)"/)?.[1];
-    assert.ok(ROBOTS.includes(name), `unknown robot in ${open}`);
     assert.match(open, /\baria-hidden="true"/, `${name} container must be aria-hidden`);
+    if (name === 'specimen') {
+      // Its poster, if any, comes from the manifest at runtime.
+      assert.ok(chunk.startsWith(`${open}</div>`), 'specimen stage must start empty');
+      continue;
+    }
     const img = chunk.match(/<img class="robot-poster"[^>]*>/)?.[0];
     assert.ok(img, `${name} has no <img class="robot-poster">`);
     assert.match(img, /\balt=""/, `${name} poster must have empty alt`);
@@ -49,93 +52,79 @@ test('exactly six robot containers, one per robot, each with an aria-hidden post
   }
 });
 
-test('exactly two display-hero headings (hero H1 and contact H2)', () => {
-  const heroes = [...html.matchAll(/<h[1-6][^>]*class="[^"]*\bdisplay-hero\b[^"]*"/g)];
-  assert.equal(heroes.length, 2);
-  assert.equal([...html.matchAll(/class="[^"]*\bdisplay-hero\b/g)].length, 2);
+test('--text-cover headings: exactly two (cover H1 and back-page H2)', () => {
+  assert.equal([...html.matchAll(/class="[^"]*\bdisplay-cover\b/g)].length, 2);
+  assert.match(html, /<h1 id="cover-title" class="display-cover">/);
+  assert.match(html, /<h2 id="contact-title" class="display-cover">/);
 });
 
-test('one h1; headings colour words with .word spans, never <em>', () => {
+test('one h1; at most one highlighted word per heading, never <em>', () => {
   assert.equal([...html.matchAll(/<h1[\s>]/g)].length, 1);
   const headings = [...html.matchAll(/<(h[1-3])\b[^>]*>([\s\S]*?)<\/\1>/g)];
   assert.ok(headings.length >= 10, 'expected the page headings to be found');
   for (const [, tag, inner] of headings) {
-    assert.doesNotMatch(inner, /<em[\s>]/, `<${tag}> still uses <em>: ${inner.slice(0, 60)}`);
-    const words = (inner.match(/class="word word--/g) ?? []).length;
-    if (tag === 'h1') continue;
-    assert.ok(words <= 1, `<${tag}> colours ${words} words: ${inner.slice(0, 60)}`);
+    assert.doesNotMatch(inner, /<em[\s>]/, `<${tag}> uses <em>: ${inner.slice(0, 60)}`);
+    assert.ok((inner.match(/class="hl"/g) ?? []).length <= 1, `<${tag}> highlights more than one word`);
   }
+  // Only the cover carries a signal word.
+  assert.equal([...html.matchAll(/class="hl"/g)].length, 1);
+});
+
+test('the cover headline is set as masked lines and still reads as one sentence', () => {
   const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)[1];
-  for (const skill of ['perception', 'compute', 'actuation']) {
-    assert.equal((h1.match(new RegExp(`class="word word--${skill}"`, 'g')) ?? []).length, 1, `hero H1 needs one ${skill} word`);
+  assert.equal([...h1.matchAll(/<span class="cover-line"><span class="cover-line-inner">/g)].length, 4);
+  const text = h1.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+  assert.equal(text, 'Systems that see, think & move.');
+});
+
+test('the cover has no eyebrow above the H1; the role opens the deck', () => {
+  const cover = html.match(/<section class="cover"[\s\S]*?<\/section>/)[0];
+  assert.doesNotMatch(cover.slice(0, cover.indexOf('<h1')), /class="(eyebrow|kicker)/);
+  assert.match(cover, /<p class="cover-deck[^"]*"[^>]*>R&amp;D AI roboticist and automation engineer at Baliyo Ventures\./);
+  assert.match(cover, /<ol class="cover-lines[^"]*"[^>]*aria-label="In this issue">/);
+});
+
+test('every section opens with a folio rule', () => {
+  for (const id of ['about', 'work', 'specimens', 'services', 'experience', 'notes', 'contact']) {
+    const start = html.indexOf(`id="${id}"`);
+    const section = html.slice(start, html.indexOf('</section>', start));
+    assert.match(section, /<p class="folio[^"]*"[^>]*><span class="folio-no">[^<]+<\/span> <span class="folio-name">/, `#${id} has no folio`);
   }
 });
 
-test('shape glyphs are decorative spans with a known skill', () => {
-  const shapes = [...html.matchAll(/<span class="shape shape--([a-z]+)"([^>]*)>/g)];
-  assert.ok(shapes.length >= 20, `expected the shape system across the page, found ${shapes.length}`);
-  for (const [, skill, attrs] of shapes) {
-    assert.ok(['perception', 'compute', 'actuation', 'data'].includes(skill), `unknown shape--${skill}`);
-    assert.match(attrs, /aria-hidden="true"/, `shape--${skill} must be aria-hidden`);
-  }
-});
-
-test('hero shows a visible three-skill legend and its shape composition', () => {
-  const legend = html.match(/<ul class="hero-legend[^"]*"[^>]*>([\s\S]*?)<\/ul>/)?.[1];
-  assert.ok(legend, 'no .hero-legend');
-  const skills = [...legend.matchAll(/class="shape shape--([a-z]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(skills, ['perception', 'compute', 'actuation']);
-  assert.doesNotMatch(html, /class="visually-hidden" aria-label="Core capabilities"/, 'the capabilities list is visible now');
-  const composition = html.match(/<div class="hero-shapes" aria-hidden="true">([\s\S]*?)<\/div>/)?.[1];
-  assert.ok(composition, 'no aria-hidden .hero-shapes');
-  for (const part of ['hero-circle', 'hero-square', 'hero-triangle', 'hero-orbit']) assert.match(composition, new RegExp(`class="${part}"`));
-});
-
-test('interlude is its own band between work and services', () => {
-  const band = html.indexOf('<section class="interlude-band"');
-  assert.ok(band > 0, 'no <section class="interlude-band">');
-  const workEnd = html.indexOf('</section>', html.indexOf('id="work"'));
-  assert.ok(band > workEnd, 'interlude band must follow the work section');
-  assert.ok(band < html.indexOf('id="services"'), 'interlude band must precede services');
+test('the photo essay is an ink band between features and toolkit', () => {
+  const band = html.indexOf('<section class="essay-band"');
+  assert.ok(band > 0, 'no <section class="essay-band">');
+  assert.ok(band > html.indexOf('</section>', html.indexOf('id="work"')), 'essay must follow the features');
+  assert.ok(band < html.indexOf('id="services"'), 'essay must precede the toolkit');
   assert.match(html.slice(band, html.indexOf('</section>', band)), /<div class="interlude[\s"]/);
 });
 
-test('hero has no eyebrow label above the H1; the role opens the intro instead', () => {
-  const hero = html.match(/<section class="hero"[\s\S]*?<\/section>/)[0];
-  const beforeH1 = hero.slice(0, hero.indexOf('<h1'));
-  assert.doesNotMatch(beforeH1, /class="eyebrow/, 'eyebrow above the hero heading (impeccable craft-floor ban)');
-  assert.match(hero, /<p class="hero-intro[^"]*"[^>]*>R&amp;D AI roboticist and automation engineer at Baliyo Ventures\./);
+test('specimens start hidden with an empty list, and are credited in the footer', () => {
+  const tag = html.match(/<section class="specimens[^"]*"[^>]*>/)?.[0];
+  assert.ok(tag, 'no specimens section');
+  assert.match(tag, /\bhidden\b/);
+  assert.match(html, /<ul class="specimen-list" aria-label="Specimens"><\/ul>/);
+  assert.match(html, /NVIDIA SimReady/);
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'assets/simready/manifest.json'), 'utf8'));
+  assert.ok(Array.isArray(manifest.specimens));
 });
 
-test('each featured frame carries a decorative detection lock reporting the skill it locked on to', () => {
-  const locks = [...html.matchAll(/<span class="lock" aria-hidden="true"><span class="lock-tag">Locked · ([a-z ]+)<\/span><\/span>/g)].map((m) => m[1]);
-  assert.deepEqual(locks, ['perception', 'edge compute']);
-  const frames = html.split('<div class="featured-frame">').slice(1);
-  assert.equal(frames.length, 2);
-  frames.forEach((chunk, i) => assert.ok(chunk.slice(0, chunk.indexOf('<figcaption')).includes('class="lock"'), `lock ${i + 1} is outside its frame`));
-});
-
-test('hero callout tags name the skill only (the legend below already numbers them)', () => {
-  const titles = [...html.matchAll(/<span class="callout-title"><span class="shape [^"]+" aria-hidden="true"><\/span> ([^<]+)<\/span>/g)].map((m) => m[1].trim());
+test('cover callouts name the skill', () => {
+  const titles = [...html.matchAll(/<span class="callout-title">([^<]+)<\/span>/g)].map((m) => m[1].trim());
   assert.deepEqual(titles, ['Perception', 'Edge compute', 'Actuation']);
 });
 
-test('the motto is plain text, not a code comment', () => {
-  assert.match(html, /<p class="mono-note[^"]*"[^>]*>build with intent\. learn in public\. ship what matters\.<\/p>/);
+test('the motto is a pull quote, not a code comment', () => {
+  assert.match(html, /<blockquote class="pull-quote"><p>build with intent\. learn in public\. ship what matters\.<\/p><\/blockquote>/);
 });
 
-test('the header carries one decorative scroll actuator', () => {
-  const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
-  assert.equal((header.match(/<span class="actuator" aria-hidden="true"><\/span>/g) ?? []).length, 1);
+test('three columns, each a draft', () => {
+  assert.equal([...html.matchAll(/<article class="note /g)].length, 3);
 });
 
-test('notes carry their skill in order: perception, compute, actuation', () => {
-  const notes = [...html.matchAll(/<article class="note note--([a-z]+)/g)].map((m) => m[1]);
-  assert.deepEqual(notes, ['perception', 'compute', 'actuation']);
-});
-
-test('retired v2 features are gone', () => {
-  for (const word of ['gsap', 'hero-scene', 'theme-toggle', 'cursor-dot', 'grain']) {
+test('retired v2 and v4 features are gone', () => {
+  for (const word of ['gsap', 'hero-scene', 'theme-toggle', 'cursor-dot', 'grain', 'servo', 'actuator', 'shape--', 'unbounded']) {
     assert.ok(!html.toLowerCase().includes(word), `index.html still mentions "${word}"`);
   }
 });
@@ -204,7 +193,7 @@ test('aria-controls, aria-labelledby and in-page links resolve', () => {
   }
 });
 
-test('landmarks, skip link and hero callouts', () => {
+test('landmarks, skip link and cover callouts', () => {
   assert.match(html, /<a class="skip-link" href="#main"/);
   assert.match(html, /<main id="main"/);
   assert.match(html, /<header[\s>]/);
@@ -228,11 +217,11 @@ test('head: import map, fonts, token + page stylesheets, module script', () => {
     },
   });
   assert.ok(html.indexOf('type="importmap"') < html.indexOf('type="module"'), 'import map must precede the module script');
-  // Jost (Futura lineage) for text, Martian Mono at a semi-condensed width for data; Geist was flagged as overused.
-  assert.match(html, /family=Jost:wght@400;500;600&family=Martian\+Mono:wdth,wght@87\.5,400;87\.5,500&family=Unbounded:wght@600;800&display=swap/);
-  assert.doesNotMatch(html, /Instrument\+Serif|family=Geist/);
+  // Archivo (variable width) for display, Newsreader for reading, JetBrains Mono for data.
+  assert.match(html, /family=Archivo:wdth,wght@62\.\.125,400\.\.900&family=JetBrains\+Mono:wght@400;500&family=Newsreader:/);
+  assert.doesNotMatch(html, /family=(Geist|Jost|Unbounded|Martian)/);
   assert.ok(html.indexOf('href="design/tokens.css"') < html.indexOf('href="styles.css"'));
-  assert.match(html, /<meta name="theme-color" content="#E8EAEE">/);
+  assert.match(html, /<meta name="theme-color" content="#F1EDE4">/);
   assert.match(html, /<script type="module" src="script\.js"><\/script>/);
 });
 

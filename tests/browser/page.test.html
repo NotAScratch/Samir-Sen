@@ -186,40 +186,6 @@ test('quadruped walking follows its own visibility and live state', async () => 
   } finally { remove(frame); }
 });
 
-test('servo strip shapes turn toward the pointer while the strip is in view', async () => {
-  const { frame, page } = await loadPage();
-  try {
-    frame.style.width = '1200px';
-    frame.style.height = '800px';
-    const strip = page.querySelector('.strip');
-    // The page scrolls smoothly; jump instead so the strip is really in view and its box is final.
-    strip.scrollIntoView({ block: 'center', behavior: 'instant' });
-    const triangle = strip.querySelector('.shape--actuation');
-    const eye = strip.querySelector('.shape--perception');
-    await wait(200); // let the strip's IntersectionObserver report it in view
-    const box = triangle.getBoundingClientRect();
-    const win = page.defaultView;
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: box.right + 100, clientY: box.top - 100, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => triangle.style.getPropertyValue('--servo-tilt') !== '', 'triangle to receive a tilt');
-    assert(parseFloat(triangle.style.getPropertyValue('--servo-tilt')) < 0, `pointer above should tilt up, got ${triangle.style.getPropertyValue('--servo-tilt')}`);
-    // The pupil looks toward a pointer within reach of the circle itself (the circle sits far left of the triangle).
-    const eyeBox = eye.getBoundingClientRect();
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: eyeBox.right + 60, clientY: eyeBox.top - 60, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => parseFloat(eye.style.getPropertyValue('--servo-y')) < 0, 'pupil to look up toward a nearby pointer');
-    assert(strip.classList.contains('is-tracking'), 'strip is not marked as tracking a mouse');
-
-    // A pointer far outside the servos' reach leaves them level.
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: 0, clientY: 0, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => parseFloat(triangle.style.getPropertyValue('--servo-tilt')) === 0, 'distant pointer to leave the triangle level');
-
-    // Scrolling the strip away puts every servo back at rest.
-    win.dispatchEvent(new win.PointerEvent('pointermove', { clientX: box.right + 100, clientY: box.top - 100, pointerType: 'mouse', bubbles: true }));
-    await waitFor(() => parseFloat(triangle.style.getPropertyValue('--servo-tilt')) < 0, 'triangle to tilt again');
-    page.querySelector('.site-footer').scrollIntoView({ behavior: 'instant' });
-    await waitFor(() => triangle.style.getPropertyValue('--servo-tilt') === '', 'servos to rest once the strip leaves view');
-  } finally { remove(frame); }
-});
-
 await run();
 </script>
 </body>

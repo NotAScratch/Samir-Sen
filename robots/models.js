@@ -12,13 +12,15 @@ const FADE_SECONDS = 0.3;
 // Dark untextured parts become graphite joints, everything else the white shell.
 const matte = (M) => (material) => (isDarkColor(material.color, Boolean(material.map)) ? M.joint : M.shell);
 
-/** Loads a GLB as `{ object, clips }`: matte, `height` tall, centred on x/z, feet on y=0. */
-export async function loadModel(url, M, { height }) {
+/** Loads a GLB as `{ object, clips }`: matte, `height` tall, centred on x/z, feet on y=0.
+   `keepMaterials` leaves the file's own materials (specimens); `fit` scales the
+   largest dimension, not the height, to `height` (objects wider than tall). */
+export async function loadModel(url, M, { height, keepMaterials = false, fit = false }) {
   const gltf = await loader.loadAsync(url); // rejects on HTTP errors
   const pick = matte(M);
   gltf.scene.traverse((o) => {
     if (!o.isMesh) return;
-    o.material = Array.isArray(o.material) ? o.material.map(pick) : pick(o.material);
+    if (!keepMaterials) o.material = Array.isArray(o.material) ? o.material.map(pick) : pick(o.material);
     o.castShadow = true;
     o.receiveShadow = true;
   });
@@ -26,7 +28,7 @@ export async function loadModel(url, M, { height }) {
   // Precise bounds follow skinned vertices instead of the stale bind-pose box.
   const measure = () => new THREE.Box3().setFromObject(gltf.scene, true);
   const size = measure().getSize(new THREE.Vector3());
-  gltf.scene.scale.multiplyScalar(height / size.y);
+  gltf.scene.scale.multiplyScalar(height / (fit ? Math.max(size.x, size.y, size.z) : size.y));
   const box = measure();
   const centre = box.getCenter(new THREE.Vector3());
   gltf.scene.position.set(-centre.x, -box.min.y, -centre.z);
@@ -53,6 +55,20 @@ export async function buildArm(M, url) {
     frame: { position: [1.05, 0.79, 2.26], target: [-0.01, 0.5, 0] },
     update(t, { motion }) {
       turntable.rotation.y = motion ? 0.436 * Math.sin((t * 2 * Math.PI) / 12) : 0;
+    },
+  };
+}
+
+/** A SimReady specimen: the asset's own materials, fitted into a unit box, on a slow turntable. */
+export async function buildSpecimen(url) {
+  const { object: turntable } = await loadModel(url, null, { height: 1.0, keepMaterials: true, fit: true });
+  const root = new THREE.Group();
+  root.add(turntable);
+  return {
+    object: root,
+    frame: { position: [1.5, 1.05, 2.6], target: [0, 0.4, 0] },
+    update(t, { motion }) {
+      turntable.rotation.y = motion ? (t * 2 * Math.PI) / 24 : 0.6;
     },
   };
 }

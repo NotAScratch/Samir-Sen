@@ -4,9 +4,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Style contract for styles.css + design/tokens.css (v3 "Precision White"):
-// tokens only, no depth effects, and the hooks robots/index.js and script.js
-// rely on. Reads the files as text; no browser needed.
+// Style contract for styles.css + design/tokens.css (v5 "Field Edition"):
+// tokens only, no depth effects, one signal colour used where it means
+// something, and the hooks robots/index.js and script.js rely on. Reads the
+// files as text; no browser needed.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const tokens = fs.readFileSync(path.join(root, 'design/tokens.css'), 'utf8');
@@ -14,8 +15,8 @@ const tokens = fs.readFileSync(path.join(root, 'design/tokens.css'), 'utf8');
 const stripComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, '');
 const code = stripComments(css);
 
-// Custom properties written at runtime (inline style / robots/index.js), not tokens. Ruling D.
-const RUNTIME_VARS = new Set(['--ax', '--ay', '--i', '--servo-tilt', '--servo-x', '--servo-y']);
+// Custom properties written at runtime (inline style / robots/index.js), not tokens.
+const RUNTIME_VARS = new Set(['--ax', '--ay', '--i']);
 
 // Minimal CSS reader: every block with its prelude, own declarations and enclosing preludes.
 function parseRules(src) {
@@ -45,6 +46,7 @@ function parseRules(src) {
 const rules = parseRules(code);
 const lineOf = (index) => code.slice(0, index).split('\n').length;
 const selectorsOf = (rule) => rule.prelude.split(',').map((s) => s.trim());
+const NO_PREF = '@media (prefers-reduced-motion: no-preference)';
 
 test('styles.css has no raw colours, px lengths or durations', () => {
   const banned = [
@@ -59,14 +61,19 @@ test('styles.css has no raw colours, px lengths or durations', () => {
   }
 });
 
+test('lengths outside media/container queries come from tokens', () => {
+  const hits = rules
+    .filter((r) => !/^@/.test(r.prelude))
+    .flatMap((r) => [...r.body.matchAll(/(?<![\w-])\d*\.?\d+(rem|ch|vw|vh)\b/g)].map((m) => `${r.prelude}: ${m[0]}`));
+  assert.deepEqual(hits, [], `invented lengths: ${hits.join(', ')}`);
+});
+
 test('styles.css has no shadows, gradients or backdrop blur', () => {
   assert.doesNotMatch(css, /text-shadow/);
-  assert.doesNotMatch(css, /linear-gradient/);
-  assert.doesNotMatch(css, /radial-gradient/);
+  assert.doesNotMatch(css, /gradient\(/);
   assert.doesNotMatch(css, /backdrop-filter/);
-  for (const m of css.matchAll(/box-shadow\s*:\s*([^;}]*)/g)) {
-    assert.equal(m[1].trim(), 'none', `box-shadow other than none: ${m[0]}`);
-  }
+  assert.doesNotMatch(css, /box-shadow/);
+  assert.doesNotMatch(css, /border-radius:\s*(?!\s)(?!var\(--radius\)|50%)/, 'only --radius (0) and round dots');
 });
 
 test('every var(--name) in styles.css is defined in design/tokens.css', () => {
@@ -88,283 +95,81 @@ const contrast = (a, b) => {
 };
 const tokenValue = (name) => stripComments(tokens).match(new RegExp(`${name}\\s*:\\s*([^;]+);`))?.[1].trim();
 
-test('tokens.css: v4 palette, skill aliases and contrast floors', () => {
+test('tokens.css: v5 palette and contrast floors', () => {
   const palette = {
-    '--bg': '#E8EAEE', '--paper': '#F4F5F7', '--ink': '#141414', '--ink-muted': '#4A4C52', '--ink-faint': '#5E6068',
-    '--red': '#D7261E', '--blue': '#1F45B5', '--yellow': '#F2B705', '--white': '#FFFFFF',
+    '--paper': '#F1EDE4', '--paper-deep': '#E6E0D3', '--ink': '#0F0E0C', '--ink-muted': '#45423C',
+    '--ink-faint': '#625E55', '--signal': '#E8380C', '--on-ink-muted': '#B9B3A6',
   };
   for (const [name, hex] of Object.entries(palette)) assert.equal(tokenValue(name), hex, name);
-  const aliases = { '--perception': 'var(--red)', '--compute': 'var(--blue)', '--actuation': 'var(--yellow)', '--data': 'var(--ink)' };
-  for (const [name, value] of Object.entries(aliases)) assert.equal(tokenValue(name), value, name);
-  assert.match(tokenValue('--font-display'), /^"Unbounded"/);
+  assert.equal(tokenValue('--on-ink'), 'var(--paper)');
+  assert.equal(tokenValue('--on-signal'), 'var(--ink)');
 
   const c = (fg, bg) => contrast(palette[fg], palette[bg]);
-  assert.ok(c('--ink-muted', '--bg') >= 4.5, 'body copy on ground');
-  assert.ok(c('--ink-muted', '--paper') >= 4.5, 'body copy on paper');
-  assert.ok(c('--ink-faint', '--bg') >= 4.5, 'labels on ground');
-  assert.ok(c('--white', '--red') >= 4.5, 'white on the contact band');
-  assert.ok(c('--ink', '--yellow') >= 4.5, 'ink on the interlude band');
-  assert.ok(c('--red', '--bg') >= 3, 'red display type on ground');
+  assert.ok(c('--ink-muted', '--paper') >= 4.5, 'body on paper');
+  assert.ok(c('--ink-muted', '--paper-deep') >= 4.5, 'body on deep paper');
+  assert.ok(c('--ink-faint', '--paper') >= 4.5, 'labels on paper');
+  assert.ok(c('--ink-faint', '--paper-deep') >= 4.5, 'labels on deep paper');
+  assert.ok(c('--on-ink-muted', '--ink') >= 4.5, 'secondary type on ink');
+  assert.ok(c('--ink', '--signal') >= 4.5, 'ink type on the back page');
+  assert.ok(c('--signal', '--paper') >= 3, 'signal display type on paper');
+  assert.ok(c('--signal', '--paper-deep') >= 3, 'signal display type on deep paper');
 });
 
-test('tokens.css: robot tokens follow the v4 materials, tile threshold token exists', () => {
-  assert.equal(tokenValue('--robot-shell'), 'var(--paper)');
+test('tokens.css: type families, robot materials, retired v4 tokens', () => {
+  assert.match(tokenValue('--font-display'), /^"Archivo"/);
+  assert.match(tokenValue('--font-serif'), /^"Newsreader"/);
+  assert.match(tokenValue('--font-mono'), /^"JetBrains Mono"/);
+  // The shell keeps the value the posters were rendered with.
+  assert.equal(tokenValue('--robot-shell'), '#F4F5F7');
   assert.equal(tokenValue('--robot-joint'), 'var(--ink)');
-  assert.equal(tokenValue('--robot-signal'), 'var(--red)');
-  assert.equal(tokenValue('--bp-tiles-4'), '60rem');
-});
-
-test('tokens.css: legacy aliases removed, --dur-gait added', () => {
-  assert.doesNotMatch(tokens, /LEGACY ALIASES/);
-  assert.match(tokens, /--dur-gait\s*:\s*1140ms/);
-  // --font-display is a v2 name that v4 deliberately reuses for Unbounded (ledger ruling).
-  for (const legacy of ['--surface', '--text-muted', '--text-xs', '--radius-sm', '--shadow-1', '--ease-spring']) {
-    assert.doesNotMatch(tokens, new RegExp(`${legacy}\\s*:`), `${legacy} still defined`);
-    assert.doesNotMatch(code, new RegExp(`var\\(${legacy}\\)`), `${legacy} still used`);
-  }
-});
-
-test('--text-figure token is used for profile facts, contact email and interlude line', () => {
-  assert.match(tokens, /--text-figure\s*:\s*clamp\(1\.75rem,\s*3\.2vw,\s*3rem\)/);
-  for (const selector of ['.fact-value', '.email-link', '.interlude-line']) {
-    const rule = rules.find((r) => r.prelude === selector);
-    assert.ok(rule, `${selector} rule is missing`);
-    assert.match(rule.body, /font-size:\s*var\(--text-figure\)/, `${selector} must use --text-figure`);
-  }
-});
-
-test('robot activation margin is a CSS design token', () => {
+  assert.equal(tokenValue('--robot-signal'), 'var(--signal)');
   assert.match(tokens, /--robot-activation-margin\s*:\s*12\.5rem/);
-  assert.doesNotMatch(fs.readFileSync(path.join(root, 'robots/logic.js'), 'utf8'), /margin\s*=\s*200/);
-});
-
-test('humanoid callouts adapt to the robot container and stay on one line when constrained', () => {
-  const humanoid = rules.find((r) => r.prelude === '.robot--humanoid' && /container-type/.test(r.body));
-  assert.ok(humanoid, '.robot--humanoid must establish an inline-size query container');
-  assert.match(humanoid.body, /container-type:\s*inline-size/);
-
-  const constrained = rules.filter((r) => r.parents.some((p) => /^@container\b/.test(p)));
-  assert.match(tokens, /--bp-callout-compact\s*:\s*28rem/);
-  assert.ok(constrained.some((r) => r.parents.includes('@container (max-width: 28rem)')), 'query must use the token threshold');
-  assert.ok(constrained.length > 0, 'no callout adaptation uses a container query');
-  assert.ok(constrained.some((r) => r.prelude === '.callout[data-anchor="actuation"]' && /display:\s*none/.test(r.body)), 'actuation is not hidden in a constrained robot container');
-  assert.ok(constrained.some((r) => r.prelude === '.callout-title' && /white-space:\s*nowrap/.test(r.body)), 'callout titles are not kept on one line');
-  assert.ok(constrained.some((r) => r.prelude === '.callout-detail' && /display:\s*none/.test(r.body)), 'callout details are not hidden in the constrained robot container');
-});
-
-test('approved mobile and hover corrections are present', () => {
-  const viewfinder = rules.find((r) => r.prelude === '.profile-grid .viewfinder' && r.parents.length === 0);
-  assert.ok(viewfinder, 'mobile viewfinder rule is missing');
-  assert.match(viewfinder.body, /grid-column:\s*1\s*\/\s*-1/);
-
-  const hover = rules.find((r) => r.prelude === '.button-primary:hover');
-  assert.ok(hover, 'primary button has no hover state');
-  assert.match(hover.body, /border-color:\s*var\(--ink-muted\)/);
-  assert.match(hover.body, /background:\s*var\(--ink-muted\)/);
-  // v4: the footer is an ink band, so its credits are set light (ledger ruling).
-  const credits = rules.find((r) => r.prelude === '.footer-credits');
-  assert.ok(credits);
-  assert.match(credits.body, /color:\s*var\(--bg\)/);
-});
-
-test('--text-hero appears exactly once, in the shared .display-hero rule', () => {
-  assert.equal(css.split('--text-hero').length - 1, 1);
-  const owners = rules.filter((r) => r.body.includes('--text-hero'));
-  assert.equal(owners.length, 1);
-  assert.ok(selectorsOf(owners[0]).includes('.display-hero'), `--text-hero set on "${owners[0].prelude}"`);
-});
-
-const ruleFor = (selector, pattern = /./) => rules.find((r) => selectorsOf(r).includes(selector) && pattern.test(r.body));
-
-test('each skill shape is its own primitive in its own colour', () => {
-  const shapes = { perception: /border-radius:\s*50%/, compute: /border-radius:\s*0/, actuation: /clip-path:\s*polygon\(/, data: /border-radius:\s*var\(--radius-pill\) 0 0 var\(--radius-pill\)/ };
-  for (const [skill, form] of Object.entries(shapes)) {
-    const rule = ruleFor(`.shape--${skill}`, /background/);
-    assert.ok(rule, `.shape--${skill} has no rule`);
-    assert.match(rule.body, new RegExp(`background:\\s*var\\(--${skill}\\)`), `.shape--${skill} colour`);
-    assert.match(rule.body, form, `.shape--${skill} form`);
-  }
-  assert.match(ruleFor('.shape', /width/).body, /width:\s*var\(--glyph\)/);
-});
-
-test('coloured headline words: red and blue type, actuation as an ink word on a yellow bar', () => {
-  assert.match(ruleFor('.word--perception').body, /color:\s*var\(--perception\)/);
-  assert.match(ruleFor('.word--compute').body, /color:\s*var\(--compute\)/);
-  const move = ruleFor('.word--actuation').body;
-  assert.doesNotMatch(move, /(?<![-\w])color:\s*var\(--actuation\)/, 'yellow is never text on a light surface');
-  assert.match(move, /text-decoration-color:\s*var\(--actuation\)/);
-  assert.match(move, /text-decoration-thickness:\s*var\(--underline-bar\)/);
-  assert.match(tokens, /--underline-bar\s*:\s*0\.12em/);
-});
-
-test('colour fields: compute profile, actuation interlude, perception contact, ink strip and footer', () => {
-  assert.match(ruleFor('.viewfinder-frame', /background/).body, /background:\s*var\(--compute\)/);
-  assert.match(ruleFor('.interlude-band', /background/).body, /background:\s*var\(--actuation\)/);
-  const contact = ruleFor('.contact', /background/).body;
-  assert.match(contact, /background:\s*var\(--perception\)/);
-  assert.match(contact, /color:\s*var\(--white\)/);
-  for (const band of ['.strip', '.site-footer']) {
-    const body = ruleFor(band, /background/).body;
-    assert.match(body, /background:\s*var\(--ink\)/, `${band} background`);
-    assert.match(body, /color:\s*var\(--white\)/, `${band} colour`);
+  assert.match(tokens, /--dur-gait\s*:\s*1140ms/);
+  for (const retired of ['--bg', '--red', '--blue', '--yellow', '--perception', '--compute', '--actuation', '--font-sans', '--servo-reach']) {
+    assert.doesNotMatch(stripComments(tokens), new RegExp(`${retired}\\s*:`), `${retired} still defined`);
   }
 });
 
-test('primary colours appear only on skill shapes, words, fields, diagrams and status dots', () => {
-  const primary = /var\(--(red|blue|yellow|perception|compute|actuation)\)/;
-  const allowed = /shape|word|status-dot|viewfinder|interlude|contact|email|hero-|diagram|note--|index-row|service|wordmark|case-close|button|actuator/;
-  const owners = rules.filter((r) => primary.test(r.body));
-  assert.ok(owners.length > 0);
-  for (const rule of owners) assert.match(rule.prelude, allowed, `primary colour used on "${rule.prelude}"`);
-  assert.match(ruleFor('.status-dot', /background/).body, /background:\s*var\(--red\)/);
+test('--text-cover is set once, on the shared .display-cover rule', () => {
+  assert.equal(code.split('--text-cover').length - 1, 1);
+  assert.ok(rules.some((r) => r.prelude === '.display-cover' && /font-size:\s*var\(--text-cover\)/.test(r.body)));
 });
 
-test('v3-only tokens are gone from tokens.css and styles.css', () => {
-  for (const name of ['--line', '--line-strong', '--accent', '--font-serif', '--serif-scale', '--tracking-serif']) {
-    assert.doesNotMatch(stripComments(tokens), new RegExp(`${name}\\s*:`), `${name} still defined`);
-    assert.doesNotMatch(code, new RegExp(`var\\(${name}\\)`), `${name} still used`);
-  }
+test('signal colour appears only where TASTE allows it', () => {
+  const allowed = new Set([
+    '.hl', '.status-dot', '.callout::before', '.feature-no', '.service-index',
+    '.diagram-box', '.diagram-signal', '.diagram-heading', '.contact', '.contact .button-ink:hover',
+  ]);
+  const owners = rules.filter((r) => /var\(--signal\)/.test(r.body)).flatMap(selectorsOf);
+  const stray = owners.filter((sel) => !allowed.has(sel));
+  assert.deepEqual(stray, [], `signal used on: ${stray.join(', ')}`);
 });
 
-test('focus turns white on red, blue and ink bands', () => {
+test('type roles: display caps, serif reading text, mono for data', () => {
+  const display = rules.find((r) => selectorsOf(r).includes('.display-cover') && /font-family:\s*var\(--font-display\)/.test(r.body));
+  assert.ok(display && /text-transform:\s*uppercase/.test(display.body) && /var\(--display-width\)/.test(display.body));
+  const body = rules.find((r) => r.prelude === 'body');
+  assert.match(body.body, /font-family:\s*var\(--font-serif\)/);
+  const mono = rules.find((r) => /font-family:\s*var\(--font-mono\)/.test(r.body) && selectorsOf(r).length > 10);
+  assert.ok(mono, 'no shared mono rule');
+  for (const sel of ['.folio', '.caption', '.button', '.spec dt']) assert.ok(selectorsOf(mono).includes(sel), `${sel} is not mono`);
+  for (const prose of ['.pull-quote', '.note-copy', '.standfirst']) assert.ok(!selectorsOf(mono).includes(prose), `${prose} must not be mono`);
+});
+
+test('the cover sets itself: lines rise from masks, only without reduced motion', () => {
+  const rise = rules.find((r) => r.prelude === '.cover-line-inner' && /animation:[^;]*cover-rise/.test(r.body));
+  assert.ok(rise && rise.parents.includes(NO_PREF), 'cover-rise must sit in the no-preference gate');
+  assert.match(rise.body, /var\(--dur-cover\)/);
+  assert.ok(rules.some((r) => r.prelude === '.cover-line' && /overflow:\s*clip/.test(r.body)), 'cover lines need a mask');
+});
+
+test('focus rings: global ring, inverse on the ink spreads', () => {
+  const focus = rules.find((r) => selectorsOf(r).includes(':focus-visible'));
+  assert.ok(focus, 'no global :focus-visible rule');
+  assert.match(focus.body, /outline:\s*var\(--focus-ring\)/);
+  assert.match(focus.body, /outline-offset:\s*var\(--focus-offset\)/);
   const inverse = rules.filter((r) => /outline:\s*var\(--focus-ring-inverse\)/.test(r.body)).flatMap(selectorsOf);
-  for (const band of ['.contact', '.strip', '.site-footer', '.viewfinder-frame']) {
-    assert.ok(inverse.some((s) => s.startsWith(band) && s.includes(':focus-visible')), `${band} has no inverse focus ring`);
-  }
-});
-
-test('service tiles go to four columns in a token-threshold container query', () => {
-  // An element can't match its own container query, so the container is the services shell.
-  const container = rules.find((r) => selectorsOf(r).some((sel) => /services/.test(sel)) && /container-type:\s*inline-size/.test(r.body));
-  assert.ok(container, 'the services section needs an inline-size query container');
-  assert.match(tokens, /--bp-tiles-2\s*:\s*36rem/);
-  assert.ok(rules.some((r) => r.parents.includes('@container (min-width: 36rem)') && /grid-template-columns:\s*repeat\(2,/.test(r.body)), 'no 2-column rule at --bp-tiles-2');
-  const four = rules.find((r) => r.parents.includes('@container (min-width: 60rem)') && /grid-template-columns:\s*repeat\(4,/.test(r.body));
-  assert.ok(four, 'no 4-column rule at the --bp-tiles-4 (60rem) threshold');
-});
-
-test('capabilities strip may wrap at every width (no sideways scroll on tablets)', () => {
-  // Five Unbounded items need ~800px on one line; a 768px tablet has ~700px.
-  const strip = rules.filter((r) => selectorsOf(r).includes('.strip-list'));
-  assert.ok(strip.length > 0);
-  for (const rule of strip) assert.doesNotMatch(rule.body, /flex-wrap:\s*nowrap/, `.strip-list forbids wrapping in ${rule.parents.join(' ') || 'base'}`);
-});
-
-test('every label on a yellow hover row turns ink (ink-faint on yellow is 3.45:1)', () => {
-  assert.ok(contrast('#5E6068', '#F2B705') < 4.5, 'premise: --ink-faint fails on --yellow');
-  for (const part of ['.index-domain', '.index-stack']) {
-    const rule = rules.find((r) => selectorsOf(r).includes(`.index-row:hover ${part}`) && r.parents.length === 0);
-    assert.ok(rule, `no top-level .index-row:hover ${part} rule`);
-    assert.match(rule.body, /color:\s*var\(--ink\)/, `${part} must be ink on the yellow row`);
-  }
-});
-
-test('compact callouts shed the shape, padding and long leader so tags fit narrow robot columns', () => {
-  // At 768-800px the desktop robot column is ~265px wide; the full tag ran 11px past the viewport.
-  const compact = rules.filter((r) => r.parents.includes('@container (max-width: 28rem)'));
-  assert.ok(compact.some((r) => r.prelude === '.callout-title .shape' && /display:\s*none/.test(r.body)), 'shape still shown in compact tags');
-  assert.ok(compact.some((r) => r.prelude === '.callout-title' && /padding-inline:\s*var\(--space-1\)/.test(r.body)), 'compact tag padding not reduced');
-  assert.ok(compact.some((r) => r.prelude === '.callout' && /minmax\(var\(--space-2\),\s*1fr\)/.test(r.body)), 'compact leader minimum not reduced');
-});
-
-const NO_PREF = '@media (prefers-reduced-motion: no-preference)';
-const animated = (selector, name) => rules.some((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes(selector) && new RegExp(`animation(-name)?:[^;]*\\b${name}\\b`).test(r.body));
-const hasKeyframes = (name) => rules.some((r) => r.parents.some((p) => p === `@keyframes ${name}`));
-
-test('type: Jost for text, Martian Mono for data, and buttons speak in the text face', () => {
-  assert.match(tokenValue('--font-sans'), /^"Jost"/);
-  assert.match(tokenValue('--font-mono'), /^"Martian Mono"/);
-  const monoList = rules.find((r) => /font-family:\s*var\(--font-mono\)/.test(r.body) && selectorsOf(r).length > 10);
-  assert.ok(monoList, 'shared mono label rule not found');
-  for (const control of ['.button', '.menu-toggle']) assert.ok(!selectorsOf(monoList).includes(control), `${control} still wears the mono costume`);
-  assert.match(ruleFor('.button', /font-family/).body, /font-family:\s*var\(--font-sans\)/);
-});
-
-test('hero assembles on load: circle rolls in, square drops, triangle slides, orbit draws, robot powers on', () => {
-  for (const [selector, name] of [['.hero-circle', 'hero-roll'], ['.hero-square', 'hero-drop'], ['.hero-triangle', 'hero-slide'], ['.hero-orbit', 'hero-draw'], ['.robot--humanoid', 'hero-power']]) {
-    assert.ok(animated(selector, name), `${selector} does not run ${name} under no-preference`);
-    assert.ok(hasKeyframes(name), `@keyframes ${name} missing`);
-  }
-  assert.match(tokenValue('--dur-assembly'), /^(\d+)ms$/);
-  assert.ok(parseInt(tokenValue('--dur-assembly'), 10) <= 800, 'focal entrance longer than 800ms');
-  assert.ok(!rules.some((r) => r.parents.length === 0 && /hero-(roll|drop|slide|draw|power)/.test(r.body)), 'assembly runs outside the motion gate');
-});
-
-test('hero disassembles as it scrolls away, only where scroll timelines exist', () => {
-  const gate = '@supports (animation-timeline: view()) and (animation-range: exit 0% exit 100%)';
-  const apart = rules.filter((r) => r.parents.includes(NO_PREF) && r.parents.includes(gate) && /animation-timeline:\s*auto,\s*view\(\)/.test(r.body));
-  assert.ok(apart.length > 0, 'no view()-driven disassembly inside the motion + support gates');
-});
-
-test('featured projects lock on: four corner brackets snap in on hover or keyboard focus', () => {
-  const lock = ruleFor('.lock', /opacity/);
-  assert.match(lock.body, /opacity:\s*0/);
-  const on = rules.find((r) => selectorsOf(r).includes('.featured:hover .lock') && selectorsOf(r).includes('.featured:focus-within .lock'));
-  assert.ok(on && /opacity:\s*1/.test(on.body), 'lock does not appear on hover and focus-within');
-  for (const corner of ['.lock::before', '.lock::after']) assert.match(ruleFor(corner, /clip-path/).body, /clip-path:\s*polygon\(/, `${corner} is not a pair of clipped brackets`);
-});
-
-test('servo strip: shapes tilt toward the pointer and the perception circle grows a tracking pupil', () => {
-  const tilt = rules.find((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes('.strip .shape') && /rotate:\s*var\(--servo-tilt,\s*0deg\)/.test(r.body));
-  assert.ok(tilt && /transition:[^;]*rotate/.test(tilt.body), 'strip shapes do not tilt with --servo-tilt');
-  const pupil = rules.find((r) => r.parents.includes(NO_PREF) && selectorsOf(r).includes('.strip.is-tracking .shape--perception::after') && /var\(--servo-x/.test(r.body) && /var\(--servo-y/.test(r.body));
-  assert.ok(pupil, 'perception pupil does not follow --servo-x/--servo-y while tracking');
-  // Without tracking (touch, reduced motion, before script runs) the circle stays a solid perception disc.
-  assert.ok(!rules.some((r) => selectorsOf(r).includes('.strip .shape--perception::after')), 'pupil drawn even when the servo is off');
-});
-
-test('scroll actuator: a yellow carriage rides the header rule on the root scroll timeline', () => {
-  const gate = '@supports (animation-timeline: scroll())';
-  const carriage = rules.find((r) => r.parents.includes(NO_PREF) && r.parents.includes(gate) && selectorsOf(r).includes('.actuator::before') && /animation-timeline:\s*scroll\(root\)/.test(r.body));
-  assert.ok(carriage, 'no scroll(root) actuator carriage inside the motion + support gates');
-  assert.match(ruleFor('.actuator::before', /background/).body, /background:\s*var\(--actuation\)/);
-});
-
-test('the hero never widens the page while its parts slide in', () => {
-  assert.match(ruleFor('.hero', /overflow/).body, /overflow-x:\s*clip/);
-});
-
-test('the orbit draws itself: hero-draw interpolates between two inset() shapes', () => {
-  const frames = rules.filter((r) => r.parents.some((p) => p === '@keyframes hero-draw'));
-  assert.ok(frames.some((r) => r.prelude === 'from' && /clip-path:\s*inset\(/.test(r.body)), 'no inset() start frame');
-  assert.ok(frames.some((r) => r.prelude === 'to' && /clip-path:\s*inset\(calc\(-1 \* var\(--space-3\)\)\)/.test(r.body)), 'no inset() end frame (inset vs none snaps at 50%)');
-});
-
-test('the actuator sits on the header rule and moves on the compositor', () => {
-  assert.match(ruleFor('.actuator', /bottom/).body, /bottom:\s*0;/);
-  // The track is the size container, not the header: a contained header would trap the fixed mobile menu.
-  assert.match(ruleFor('.actuator', /container-type/).body, /container-type:\s*inline-size/);
-  assert.ok(!rules.some((r) => selectorsOf(r).includes('.site-header') && /container-type/.test(r.body)), 'header must not become a containing block');
-  const frames = rules.filter((r) => r.parents.some((p) => p === '@keyframes actuator-stroke'));
-  assert.ok(frames.length && frames.every((r) => !/\bleft:/.test(r.body)) && frames.some((r) => /translate:\s*calc\(100cqw - var\(--space-4\)\)/.test(r.body)), 'actuator must travel by translate across the header width');
-});
-
-test('the lock tag reads inside the frame, so it is in view when keyboard focus lands on the case-study button', () => {
-  const tag = ruleFor('.lock-tag', /bottom/);
-  assert.doesNotMatch(tag.body, /bottom:\s*calc\(100%/, 'tag above the frame scrolls out of view on focus');
-  assert.match(tag.body, /bottom:\s*calc\(var\(--space-3\) \+ var\(--space-4\)\)/);
-});
-
-test('prose labels leave the mono face: the motto and "Write to me" are set in Jost', () => {
-  const monoList = rules.find((r) => /font-family:\s*var\(--font-mono\)/.test(r.body) && selectorsOf(r).length > 10);
-  for (const prose of ['.mono-note', '.contact-eyebrow']) {
-    assert.ok(!selectorsOf(monoList).includes(prose), `${prose} still wears the mono costume`);
-    assert.match(ruleFor(prose, /font-family/).body, /font-family:\s*var\(--font-sans\)/, `${prose} is not in Jost`);
-  }
-});
-
-test('the actuator hides while the phone menu is open (and only below the breakpoint)', () => {
-  const hide = rules.find((r) => selectorsOf(r).includes('body.menu-open .actuator') && /display:\s*none/.test(r.body));
-  assert.ok(hide, 'actuator stays painted over the open menu');
-  assert.ok(hide.parents.some((p) => /\(width < 48rem\)/.test(p)), 'must be scoped to phones so a widened window does not hide it');
-});
-
-test('servo reach is a token', () => {
-  assert.match(tokenValue('--servo-reach'), /^\d+(\.\d+)?rem$/);
-});
-
-test('browser surfaces are themed: scrollbar from the palette', () => {
-  assert.match(ruleFor('html', /scrollbar-color/).body, /scrollbar-color:\s*var\(--ink\) var\(--bg\)/);
+  for (const sel of ['.essay-band :focus-visible', '.site-footer :focus-visible']) assert.ok(inverse.includes(sel), `${sel} lacks the inverse ring`);
 });
 
 test('media queries use the single 48rem breakpoint', () => {
@@ -380,11 +185,10 @@ test('robot containers: poster aspect ratios, canvas overlay, live and failed st
     assert.ok(rule, `.robot--${name} has no aspect-ratio`);
     assert.match(rule.body, new RegExp(`aspect-ratio:\\s*${w}\\s*/\\s*${h}\\s*;`), `.robot--${name} aspect-ratio`);
   }
-  const base = rules.find((r) => r.prelude === '.robot');
-  assert.match(base.body, /position:\s*relative/);
+  assert.ok(rules.some((r) => r.prelude === '.robot--specimen' && /aspect-ratio/.test(r.body)), 'specimen stage has no size');
   const canvas = rules.find((r) => r.prelude === '.robot > canvas');
   assert.ok(canvas, 'no .robot > canvas rule');
-  for (const decl of [/position:\s*absolute/, /inset:\s*0/, /width:\s*100%/, /height:\s*100%/, /opacity:\s*0/, /var\(--dur-base\)/]) {
+  for (const decl of [/position:\s*absolute/, /inset:\s*0/, /width:\s*100%/, /height:\s*100%/, /opacity:\s*0/]) {
     assert.match(canvas.body, decl);
   }
   assert.ok(rules.some((r) => r.prelude === '.robot.is-live > canvas' && /opacity:\s*1/.test(r.body)));
@@ -393,15 +197,15 @@ test('robot containers: poster aspect ratios, canvas overlay, live and failed st
   assert.ok(rules.some((r) => r.prelude === '.robot.is-failed > .robot-poster' && /visibility:\s*visible/.test(r.body)));
 });
 
-test('hero callouts sit on their anchors above the canvas', () => {
+test('cover callouts sit on their anchors above the canvas', () => {
   const callout = rules.find((r) => r.prelude === '.callout');
   assert.ok(callout);
-  assert.match(callout.body, /position:\s*absolute/);
   assert.match(callout.body, /left:\s*var\(--ax\)/);
   assert.match(callout.body, /top:\s*var\(--ay\)/);
   assert.match(callout.body, /z-index:\s*[1-9]/);
-  const hidden = rules.find((r) => r.prelude === '.callout[data-anchor="actuation"]' && /display:\s*none/.test(r.body) && r.parents.some((p) => /\(width < 48rem\)/.test(p)));
-  assert.ok(hidden && hidden.parents.some((p) => /\(width < 48rem\)/.test(p)), 'actuation callout not hidden below 48rem');
+  assert.ok(rules.some((r) => r.prelude === '.callout[data-anchor="actuation"]' && /display:\s*none/.test(r.body) && r.parents.some((p) => /\(width < 48rem\)/.test(p))), 'actuation callout not hidden below 48rem');
+  assert.ok(rules.some((r) => r.parents.some((p) => /^@container \(max-width: 28rem\)/.test(p))), 'no compact-callout container query');
+  assert.match(tokens, /--bp-callout-compact\s*:\s*28rem/);
 });
 
 test('reveal is gated on scripting and motion preference', () => {
@@ -411,36 +215,33 @@ test('reveal is gated on scripting and motion preference', () => {
   for (const rule of hiding) assert.ok(rule.parents.includes(gate), '.reveal hidden outside the scripting/motion gate');
   const shown = rules.find((r) => r.prelude === '.reveal.is-in');
   assert.ok(shown && shown.parents.includes(gate) && /opacity:\s*1/.test(shown.body));
-  const reveal = hiding[0];
-  assert.match(reveal.body, /var\(--reveal-distance\)/);
-  assert.match(reveal.body, /var\(--dur-reveal\)/);
-  assert.match(reveal.body, /calc\(var\(--i, 0\) \* var\(--stagger\)\)/);
+  assert.match(hiding[0].body, /calc\(var\(--i, 0\) \* var\(--stagger\)\)/);
 });
 
-test('interlude track walks only while walking, never under reduced motion', () => {
+test('photo-essay track walks only while walking, never under reduced motion', () => {
   const track = rules.find((r) => r.prelude === '.interlude-track line');
   assert.ok(track && /vector-effect:\s*non-scaling-stroke/.test(track.body), 'track line needs non-scaling-stroke');
   const animated = rules.filter((r) => /animation(-name)?\s*:/.test(r.body) && /interlude-track/.test(r.prelude));
   assert.ok(animated.length > 0, 'track has no animation');
   for (const rule of animated) {
-    assert.ok(rule.parents.includes('@media (prefers-reduced-motion: no-preference)'), `${rule.prelude} animates outside no-preference`);
-    assert.match(rule.body, /var\(--dur-gait\)/);
-    assert.match(rule.body, /linear/);
-    assert.match(rule.body, /infinite/);
-    assert.match(rule.body, /paused/);
+    assert.ok(rule.parents.includes(NO_PREF), `${rule.prelude} animates outside no-preference`);
+    assert.match(rule.body, /var\(--dur-gait\) linear infinite paused/);
   }
   const running = rules.find((r) => r.prelude === '.interlude.is-walking .interlude-track line');
   assert.ok(running && /animation-play-state:\s*running/.test(running.body));
-  const keyframes = rules.find((r) => /^@keyframes\b/.test(r.parents.at(-1) ?? '') && /stroke-dashoffset:\s*var\(--walk-distance\)/.test(r.body));
-  assert.ok(keyframes, 'keyframes must move the dash offset by --walk-distance');
+  assert.ok(rules.some((r) => /^@keyframes\b/.test(r.parents.at(-1) ?? '') && /stroke-dashoffset:\s*var\(--walk-distance\)/.test(r.body)));
 });
 
 test('shared accessibility hooks are styled', () => {
   assert.ok(rules.some((r) => r.prelude === '.visually-hidden' && /clip/.test(r.body)));
   assert.ok(rules.some((r) => /\.skip-link:focus/.test(r.prelude)));
-  const focus = rules.find((r) => selectorsOf(r).includes(':focus-visible'));
-  assert.ok(focus, 'no global :focus-visible rule');
-  assert.match(focus.body, /outline:\s*var\(--focus-ring\)/);
-  assert.match(focus.body, /outline-offset:\s*var\(--focus-offset\)/);
-  assert.ok(rules.some((r) => r.prelude === 'body.menu-open #menu'), 'no open-menu state');
+  const button = rules.find((r) => r.prelude === '.button');
+  assert.match(button.body, /min-height:\s*var\(--control-h\)/);
+  assert.ok(rules.some((r) => r.prelude === '.index-row' && /min-height:\s*var\(--control-h\)/.test(r.body)));
+});
+
+test('the page never scrolls sideways', () => {
+  const body = rules.find((r) => r.prelude === 'body');
+  assert.match(body.body, /overflow-x:\s*clip/);
+  assert.ok(rules.some((r) => r.prelude === '.site-footer' && /overflow:\s*clip/.test(r.body)));
 });
